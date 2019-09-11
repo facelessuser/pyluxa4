@@ -3,7 +3,7 @@
 Luxafor flag controller.
 
 ```
-usage: lux [-h] [--version] [--set SET | --pattern PATTERN] [--pins PINS]
+usage: lux [-h] [--version] (--set SET | --pattern PATTERN) [--pins PINS]
            [--mode MODE] [--wave WAVE] [--speed SPEED] [--repeat REPEAT]
 
 Luxafor control script.
@@ -13,7 +13,7 @@ optional arguments:
   --version          show program's version number and exit
   --set SET          Set color
   --pattern PATTERN  Patterns: 1-9
-  --pins PINS        Pins: 1-6 or 'back', 'tab', or 'all'
+  --pins PINS        Pins: 1-6, back, tab, or all
   --mode MODE        Mode: static, fade, strobe, wave
   --wave WAVE        Wave configuration: 1-5
   --speed SPEED      Speed for strobe, wave, or fade: 1-255

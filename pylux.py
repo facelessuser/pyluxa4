@@ -358,7 +358,7 @@ def main():
     parser = argparse.ArgumentParser(prog='lux', description='Luxafor control script.')
     # Flag arguments
     parser.add_argument('--version', action='version', version=('%(prog)s ' + __version__))
-    group = parser.add_mutually_exclusive_group()
+    group = parser.add_mutually_exclusive_group(required=True)
     group.add_argument('--set', action='store', default='000000', help="Set color")
     group.add_argument('--pattern', action='store', type=int, default=0, help="Patterns: 1-9")
     parser.add_argument('--pins', action='store', default='all', help="Pins: 1-6, back, tab, or all")
