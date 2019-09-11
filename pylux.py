@@ -139,7 +139,6 @@ class LuxCmd:
             cmd = self.cmd_static()
 
         self.cmd = bytes(cmd)
-        print(self.cmd)
 
     def cmd_pattern(self):
         """
