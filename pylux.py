@@ -34,6 +34,8 @@ MODE_FADE = 0x02
 MODE_STROBE = 0x03
 MODE_WAVE = 0x04
 MODE_PATTERN = 0x6
+MODE_INVALID = -1
+MODE_VALID = (MODE_STATIC, MODE_FADE, MODE_STROBE, MODE_WAVE, MODE_PATTERN)
 MODE_MAP = {
     'static': MODE_STATIC,
     'fade': MODE_FADE,
@@ -109,20 +111,15 @@ class LuxCmd:
 
     """
 
-    def __init__(self, red, green, blue, mode=MODE_STATIC, pins=PINS_ALL, speed=1, repeat=1, wave=0, pattern=0):
+    def __init__(self, red, green, blue, mode=MODE_STATIC, pins=PINS_ALL, speed=1, repeat=1, wave=1, pattern=1):
         """Initialize."""
 
-        if mode == MODE_WAVE and not (0 < wave <= 5):
-            raise ValueError('Wave must be a positive integer between 1-5, {} was given'.format(wave))
-        if mode == MODE_PATTERN and not (1 <= pattern <= 8):
-            raise ValueError("Pattern must be a positive integer between 0-8, {} was given".format(pattern))
-
-        self.mode = mode
+        self.mode = MODE_STATIC if mode not in MODE_VALID else mode
         self.red = clamp(red)
         self.green = clamp(green)
         self.blue = clamp(blue)
-        self.wave = wave
-        self.pattern = pattern
+        self.wave = clamp(wave, 1, 5)
+        self.pattern = clamp(pattern, 1, 9)
         self.speed = clamp(speed, 1, 255)
         self.repeat = clamp(repeat, 1, 255)
         self.pins = PINS_ALL if pins not in PINS_VALID else pins
@@ -303,22 +300,43 @@ class LuxFlag:
         speed = kwargs.get('speed', 1) if mode == MODE_FADE else 0
         self.set_color(COLOR_OFF, mode=mode, pins=kwargs.get('pins', PINS_ALL), speed=speed)
 
-    def set_color(self, color, *, mode=MODE_STATIC, pins=PINS_ALL, speed=1, repeat=1, wave=0):
+    def set_color(self, color, *, mode=MODE_STATIC, pins=PINS_ALL, speed=1, repeat=1, wave=1):
         """Set color."""
 
-        # Ignore pattern mode
-        if mode == MODE_PATTERN:
-            mode = MODE_STATIC
+        # Validate inputs
+        red, green, blue = color
+        if mode == MODE_WAVE and not (1 <= wave <= 5):
+            raise ValueError('Wave must be a positive integer between 1-5, {} was given'.format(wave))
+        elif not (0 <= red <= 255):
+            raise ValueError('Red channel must be a positive integer between 0-255, {} was given'.format(red))
+        elif not (0 <= green <= 255):
+            raise ValueError('Green channel must be a positive integer between 0-255, {} was given'.format(green))
+        elif not (0 <= blue <= 255):
+            raise ValueError('Blue channel must be a positive integer between 0-255, {} was given'.format(blue))
+        elif not (1 <= speed <= 255):
+            raise ValueError('Speed channel must be a positive integer between 1-255, {} was given'.format(speed))
+        elif not (1 <= repeat <= 255):
+            raise ValueError('Repeat channel must be a positive integer between 1-255, {} was given'.format(repeat))
+        elif mode not in MODE_VALID or mode == MODE_PATTERN:
+            raise ValueError('Mode {} is an invalid value'.format(mode))
+        elif pins not in PINS_VALID:
+            raise ValueError('Pins {} is not a valid value'.format(pins))
 
-        self._execute(color, mode=mode, pins=pins, speed=speed, repeat=repeat, wave=wave)
+        self._execute(red, green, blue, mode=mode, pins=pins, speed=speed, repeat=repeat, wave=wave)
 
     def set_pattern(self, pattern, *, repeat=1):
         """Set pattern."""
 
+        # Validate inputs
+        if not (1 <= pattern <= 9):
+            raise ValueError('Pattern must be a positive integer between 1-9, {} was given'.format(pattern))
+        elif not (1 <= repeat <= 255):
+            raise ValueError('Repeat channel must be a positive integer between 1-255, {} was given'.format(repeat))
+
         if pattern == PAT_RAINBOW:
             self._pattern_rainbow(repeat=repeat)
         else:
-            self._execute(COLOR_OFF, mode=MODE_PATTERN, repeat=repeat, pattern=pattern)
+            self._execute(*COLOR_OFF, mode=MODE_PATTERN, repeat=repeat, pattern=pattern)
 
     def _pattern_rainbow(self, *, repeat=1):
         """Pattern rainbow."""
@@ -334,10 +352,9 @@ class LuxFlag:
             self.set_purple(mode=MODE_FADE, speed=100)
         self.set_off(mode=MODE_FADE, speed=100)
 
-    def _execute(self, color, *, mode=MODE_STATIC, pins=PINS_ALL, speed=1, repeat=1, wave=0, pattern=0):
+    def _execute(self, red, green, blue, *, mode=MODE_STATIC, pins=PINS_ALL, speed=1, repeat=1, wave=1, pattern=1):
         """Set color."""
 
-        red, green, blue = color
         if not (red or green or blue):
             # We don't support strobe of waving on turning off
             strobe = False
@@ -371,13 +388,12 @@ def main():
     args = parser.parse_args()
 
     with LuxFlag() as lf:
-
         pins = resolve_pins(args.pins)
         if args.pattern:
             pattern = args.pattern
             mode = 0
         elif args.mode:
-            mode = MODE_MAP.get(args.mode.lower(), MODE_STATIC)
+            mode = MODE_MAP.get(args.mode.lower(), MODE_INVALID)
             pattern = 0
         speed = args.speed
         repeat = args.repeat
