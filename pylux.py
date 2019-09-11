@@ -360,13 +360,15 @@ def main():
     # Flag arguments
     parser.add_argument('--version', action='version', version=('%(prog)s ' + __version__))
     group = parser.add_mutually_exclusive_group()
-    group.add_argument('--set', action='store', default='000000', help="Set pins.")
+    group.add_argument('--set', action='store', default='000000', help="Set color")
     group.add_argument('--pattern', action='store', type=int, default=0, help="Patterns: 1-9")
-    parser.add_argument('--pins', action='store', default='all', help="Pins 1-6 or 'back', 'tab', or 'all'")
-    parser.add_argument('--mode', action='store', default='static', help="Mode: static, fade, strobe, wave, pattern")
-    parser.add_argument('--wave', action='store', type=int, default=1, help="Wave.")
-    parser.add_argument('--speed', action='store', type=int, default=1, help="Speed for strobe, wave, or fade.")
-    parser.add_argument('--repeat', action='store', type=int, default=1, help="Repeat for strobe or wave.")
+    parser.add_argument('--pins', action='store', default='all', help="Pins: 1-6, back, tab, or all")
+    parser.add_argument('--mode', action='store', default='static', help="Mode: static, fade, strobe, wave")
+    parser.add_argument('--wave', action='store', type=int, default=1, help="Wave configuration: 1-5")
+    parser.add_argument('--speed', action='store', type=int, default=1, help="Speed for strobe, wave, or fade: 1-255")
+    parser.add_argument(
+        '--repeat', action='store', type=int, default=1, help="Repeat for strobe, wave, or pattern: 1-255"
+    )
     args = parser.parse_args()
 
     with LuxFlag() as lf:
