@@ -12,6 +12,8 @@ import time
 
 __version__ = '0.1'
 
+__all__ = ('LuxFlag',)
+
 COLOR_NAMES = ('red', 'orange', 'yellow', 'green', 'blue', 'pink', 'purple', 'cyan', 'white', 'off')
 COLOR_SIZE = 6
 COLOR_RED = (255, 0, 0)
@@ -85,7 +87,7 @@ def resolve_pins(option):
     return pins
 
 
-class LuxCmd:
+class _LuxCmd:
     """
     Luxafor command class.
 
@@ -114,15 +116,15 @@ class LuxCmd:
     def __init__(self, red, green, blue, mode=MODE_STATIC, pins=PINS_ALL, speed=1, repeat=1, wave=1, pattern=1):
         """Initialize."""
 
-        self.mode = MODE_STATIC if mode not in MODE_VALID else mode
-        self.red = clamp(red)
-        self.green = clamp(green)
-        self.blue = clamp(blue)
-        self.wave = clamp(wave, 1, 5)
-        self.pattern = clamp(pattern, 1, 9)
-        self.speed = clamp(speed, 1, 255)
-        self.repeat = clamp(repeat, 1, 255)
-        self.pins = PINS_ALL if pins not in PINS_VALID else pins
+        self.mode = mode
+        self.red = red
+        self.green = green
+        self.blue = blue
+        self.wave = wave
+        self.pattern = pattern
+        self.speed = speed
+        self.repeat = repeat
+        self.pins = pins
 
         if mode == MODE_FADE:
             cmd = self.cmd_fade()
@@ -294,17 +296,18 @@ class LuxFlag:
     def set_off(self, **kwargs):
         """Set color off."""
 
-        mode = kwargs.get('mode', MODE_STATIC)
-        if mode not in (MODE_STATIC, MODE_FADE):
-            mode = MODE_STATIC
-        speed = kwargs.get('speed', 1) if mode == MODE_FADE else 0
-        self.set_color(COLOR_OFF, mode=mode, pins=kwargs.get('pins', PINS_ALL), speed=speed)
+        mode = kwargs.get('mode', 'static').lower()
+        if mode not in ("static", "fade"):
+            mode = "static"
+        self.set_color(COLOR_OFF, mode=mode, pins=kwargs.get('pins', PINS_ALL), speed=kwargs.get('speed', 1))
 
-    def set_color(self, color, *, mode=MODE_STATIC, pins=PINS_ALL, speed=1, repeat=1, wave=1):
+    def set_color(self, color, *, mode="static", pins="all", speed=1, repeat=1, wave=1):
         """Set color."""
 
         # Validate inputs
         red, green, blue = color
+        pins = resolve_pins(pins)
+        mode = MODE_MAP.get(mode.lower(), MODE_INVALID)
         if mode == MODE_WAVE and not (1 <= wave <= 5):
             raise ValueError('Wave must be a positive integer between 1-5, {} was given'.format(wave))
         elif not (0 <= red <= 255):
@@ -361,7 +364,7 @@ class LuxFlag:
             wave = 0
 
         # Execute the command
-        lc = LuxCmd(red, green, blue, mode, pins, speed, repeat, wave, pattern)
+        lc = _LuxCmd(red, green, blue, mode, pins, speed, repeat, wave, pattern)
         self._device.write(lc.cmd)
 
         # Wait for commands that take time to complete
@@ -388,13 +391,13 @@ def main():
     args = parser.parse_args()
 
     with LuxFlag() as lf:
-        pins = resolve_pins(args.pins)
         if args.pattern:
             pattern = args.pattern
             mode = 0
         elif args.mode:
-            mode = MODE_MAP.get(args.mode.lower(), MODE_INVALID)
+            mode = args.mode
             pattern = 0
+        pins = args.pins
         speed = args.speed
         repeat = args.repeat
         wave = args.wave
