@@ -20,11 +20,12 @@ optional arguments:
   --repeat REPEAT    Repeat for strobe, wave, or pattern: 1-255
 ```
 
-- Generally, you would use `--set` and specify a color.
+- Generally, you would use `--set` and specify a color by either the form `RRGGBB` or one of the supported color names:
+  `pink`, `red`, `orange`, `yellow`, `green`, `cyan`, `blue`, `purple`, and `white`.
 - You can specify the `--mode` with `strobe`, `wave`, or `fade` to enable the desired effect.
 - `--wave` is used to change the wave pattern used when `--mode` is `wave`.
 - `--speed` controls the speed of `strobe`, `fade`, and `wave` effects.
 - `--repeat` is used to repeat periodic effects or patterns. `--repeat` works on `strobe`, `wave`, and `--pattern`.
-- `--pattern` is used instead of `--set` and can select on of nine patterns. Patterns 1-8 trigger one of the built-in
+- `--pattern` is used instead of `--set` and can select one of nine patterns. Patterns 1-8 trigger one of the built-in
   patterns, while pattern 9 triggers a custom rainbow pattern provided by `pylux`. `--repeat` will repeat a given
-  pattern.
+  pattern the specified number of times.
