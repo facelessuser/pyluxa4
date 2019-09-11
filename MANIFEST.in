@@ -1,0 +1,8 @@
+recursive-include pylux *.py
+recursive-include tests *.py
+recursive-include requirements *.txt
+include setup.py
+include setup.cfg
+include LICENSE.md
+include README.md
+include MANIFEST.in

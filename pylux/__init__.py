@@ -6,16 +6,12 @@ libusb/hidapi: https://github.com/libusb/hidapi
 
 """
 import hid
-import argparse
 import sys
-import time
 
 __version__ = '0.1'
 
 __all__ = ('LuxFlag',)
 
-COLOR_NAMES = ('red', 'orange', 'yellow', 'green', 'blue', 'pink', 'purple', 'cyan', 'white', 'off')
-COLOR_SIZE = 6
 COLOR_RED = (255, 0, 0)
 COLOR_ORANGE = (255, 102, 0)
 COLOR_YELLOW = (255, 255, 0)
@@ -299,7 +295,7 @@ class LuxFlag:
         mode = kwargs.get('mode', 'static').lower()
         if mode not in ("static", "fade"):
             mode = "static"
-        self.set_color(COLOR_OFF, mode=mode, pins=kwargs.get('pins', PINS_ALL), speed=kwargs.get('speed', 1))
+        self.set_color(COLOR_OFF, mode=mode, pins=kwargs.get('pins', "all"), speed=kwargs.get('speed', 1))
 
     def set_color(self, color, *, mode="static", pins="all", speed=1, repeat=1, wave=1):
         """Set color."""
@@ -345,15 +341,15 @@ class LuxFlag:
         """Pattern rainbow."""
 
         for x in range(repeat):
-            self.set_pink(mode=MODE_FADE, speed=100)
-            self.set_red(mode=MODE_FADE, speed=100)
-            self.set_orange(mode=MODE_FADE, speed=100)
-            self.set_yellow(mode=MODE_FADE, speed=100)
-            self.set_green(mode=MODE_FADE, speed=100)
-            self.set_cyan(mode=MODE_FADE, speed=100)
-            self.set_blue(mode=MODE_FADE, speed=100)
-            self.set_purple(mode=MODE_FADE, speed=100)
-        self.set_off(mode=MODE_FADE, speed=100)
+            self.set_pink(mode="fade", speed=100)
+            self.set_red(mode="fade", speed=100)
+            self.set_orange(mode="fade", speed=100)
+            self.set_yellow(mode="fade", speed=100)
+            self.set_green(mode="fade", speed=100)
+            self.set_cyan(mode="fade", speed=100)
+            self.set_blue(mode="fade", speed=100)
+            self.set_purple(mode="fade", speed=100)
+        self.set_off(mode="fade", speed=100)
 
     def _execute(self, red, green, blue, *, mode=MODE_STATIC, pins=PINS_ALL, speed=1, repeat=1, wave=1, pattern=1):
         """Set color."""
@@ -371,57 +367,3 @@ class LuxFlag:
         if lc.mode != MODE_STATIC:
             while self._device.read(MSG_SIZE, 100) != MSG_NON_IMMEDIATE_COMPLETE:
                 pass
-
-
-def main():
-    """Main."""
-    parser = argparse.ArgumentParser(prog='lux', description='Luxafor control script.')
-    # Flag arguments
-    parser.add_argument('--version', action='version', version=('%(prog)s ' + __version__))
-    group = parser.add_mutually_exclusive_group(required=True)
-    group.add_argument('--set', action='store', default='000000', help="Set color")
-    group.add_argument('--pattern', action='store', type=int, default=0, help="Patterns: 1-9")
-    parser.add_argument('--pins', action='store', default='all', help="Pins: 1-6, back, tab, or all")
-    parser.add_argument('--mode', action='store', default='static', help="Mode: static, fade, strobe, wave")
-    parser.add_argument('--wave', action='store', type=int, default=1, help="Wave configuration: 1-5")
-    parser.add_argument('--speed', action='store', type=int, default=1, help="Speed for strobe, wave, or fade: 1-255")
-    parser.add_argument(
-        '--repeat', action='store', type=int, default=1, help="Repeat for strobe, wave, or pattern: 1-255"
-    )
-    args = parser.parse_args()
-
-    with LuxFlag() as lf:
-        if args.pattern:
-            pattern = args.pattern
-            mode = 0
-        elif args.mode:
-            mode = args.mode
-            pattern = 0
-        pins = args.pins
-        speed = args.speed
-        repeat = args.repeat
-        wave = args.wave
-        color = args.set.lower()
-        if pattern:
-            lf.set_pattern(pattern, repeat=repeat)
-        elif color in COLOR_NAMES:
-            # Handle named colors
-            getattr(lf, 'set_{}'.format(color))(pins=pins, mode=mode, speed=speed, repeat=repeat, wave=wave)
-        elif len(color) == COLOR_SIZE:
-            # Handle colors in the form RRGGBB
-            try:
-                r = int(color[0:2], 16)
-                g = int(color[2:4], 16)
-                b = int(color[4: 6], 16)
-            except Exception:
-                raise ValueError('Invalid color {}'.format(color))
-
-            lf.set_color(r, g, b, pins=pins, mode=mode, speed=speed, repeat=repeat, wave=wave)
-        else:
-            raise ValueError('Invalid color {}'.format(color))
-
-    return 0
-
-
-if __name__ == '__main__':
-    sys.exit(main())
