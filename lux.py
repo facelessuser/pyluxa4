@@ -14,6 +14,16 @@ __version__ = '0.1'
 
 COLOR_NAMES = ('red', 'orange', 'yellow', 'green', 'blue', 'pink', 'purple', 'cyan', 'white', 'off')
 COLOR_SIZE = 6
+COLOR_RED = (255, 0, 0)
+COLOR_ORANGE = (255, 102, 0)
+COLOR_YELLOW = (255, 255, 0)
+COLOR_GREEN = (0, 255, 0)
+COLOR_BLUE = (0, 0, 255)
+COLOR_PINK = (255, 0, 255)
+COLOR_PURPLE = (75, 0, 130)
+COLOR_CYAN = (0, 255, 255)
+COLOR_WHITE = (255, 255, 255)
+COLOR_OFF = (0, 0, 0)
 
 LUXAFOR_VENDOR = 0x04d8
 LUXAFOR_PRODUCT = 0xf372
@@ -24,6 +34,13 @@ MODE_FADE = 0x02
 MODE_STROBE = 0x03
 MODE_WAVE = 0x04
 MODE_PATTERN = 0x6
+MODE_MAP = {
+    'static': MODE_STATIC,
+    'fade': MODE_FADE,
+    'strobe': MODE_STROBE,
+    'wave': MODE_WAVE,
+    'pattern': MODE_PATTERN
+}
 
 PINS_ALL = 0xff
 PINS_BACK_SIDE = 0x42
@@ -32,10 +49,14 @@ PINS_VALID = (1, 2, 3, 4, 5, 6, 0x41, 0x42, 0xff)
 
 # Message that is sent when a command, that cannont be completed immediatey,
 # complets (such as fade).
-MSG_SIZE = 8
 MSG_NON_IMMEDIATE_COMPLETE = b'\x00\x01\x00\x00\x00\x00\x00\x00'
+MSG_NONE = b''
+MSG_SIZE = 8
 
 CMD_REPORT_NUM = 0
+
+# Extra custom patterns
+PAT_RAINBOW = 9
 
 
 def clamp(value, mn=0, mx=255):
@@ -63,142 +84,147 @@ def resolve_pins(option):
 
 
 class LuxCmd:
-    """Luxafor command class."""
+    """
+    Luxafor command class.
 
-    def __init__(self, red, green, blue, pins=PINS_ALL, fade=0, strobe=False, wave=0, pattern=0, speed=1, repeat=1):
+    These are not implemented.
+
+    - Simple
+
+      Byte 0: Report number (Luxafor flag only has 0)
+      Byte 1: Color: R, G, B, C, M, Y, W, O
+      Byte 2: NA
+      Byte 3: NA
+      Byte 4: NA
+      Byte 5: NA
+      Byte 6: NA
+      Byte 7: NA
+      Byte 8: NA
+
+    - Productivity
+
+      Byte 0: Report number: 0 (Luxafor flag only has 0)
+      Byte 1: Command Mode: 10
+      Byte 2: Command: E (enable), D (Disable), R, G, B, C, Y, M, W, O (colors)
+
+    """
+
+    def __init__(self, red, green, blue, mode=MODE_STATIC, pins=PINS_ALL, speed=1, repeat=1, wave=0, pattern=0):
         """Initialize."""
 
-        if not (0 <= wave <= 5):
+        if mode == MODE_WAVE and not (0 < wave <= 5):
             raise ValueError('Wave must be a positive integer between 1-5, {} was given'.format(wave))
-        if not (0 <= pattern <= 8):
+        if mode == MODE_PATTERN and not (1 <= pattern <= 8):
             raise ValueError("Pattern must be a positive integer between 0-8, {} was given".format(pattern))
 
+        self.mode = mode
         self.red = clamp(red)
         self.green = clamp(green)
         self.blue = clamp(blue)
-        self.fade = clamp(fade)
-        self.strobe = strobe
         self.wave = wave
         self.pattern = pattern
-        self.speed = clamp(speed)
-        self.repeat = clamp(repeat)
+        self.speed = clamp(speed, 1, 255)
+        self.repeat = clamp(repeat, 1, 255)
         self.pins = PINS_ALL if pins not in PINS_VALID else pins
 
-    def construct(self):
-        """
-        Construct the command.
-
-        - Simple
-
-          Byte 0: Report number (Luxafor flag only has 0)
-          Byte 1: Color: R, G, B, C, M, Y, W, O
-          Byte 2: NA
-          Byte 3: NA
-          Byte 4: NA
-          Byte 5: NA
-          Byte 6: NA
-          Byte 7: NA
-          Byte 8: NA
-
-        - Static
-
-          Byte 0: Report number: 0 (Luxafor flag only has 0)
-          Byte 1: Command Mode: 1
-          Byte 2: Pins: 1-6, 0x42 (back), 0x41 (tab), 0xFF (all)
-          Byte 3: Red channel: 0-255
-          Byte 4: Green channel: 0-255
-          Byte 5: Blue channel: 0-255
-          Byte 6: Fade duration: 0-255
-          Byte 7: NA
-          Byte 8: NA
-
-        - Fade
-
-          Byte 0: Report number: 0 (Luxafor flag only has 0)
-          Byte 1: Command Mode: 2
-          Byte 2: Pins: 1-6, 0x42 (back), 0x41 (tab), 0xFF (all)
-          Byte 3: Red channel: 0-255
-          Byte 4: Green channel: 0-255
-          Byte 5: Blue channel: 0-255
-          Byte 6: Fade duration: 0-255
-          Byte 7: NA
-          Byte 8: NA
-
-        - Strobe
-
-          Byte 0: Report number: 0 (Luxafor flag only has 0)
-          Byte 1: Command Mode: 3
-          Byte 2: Pins: 1-6, 0x42 (back), 0x41 (tab), 0xFF (all)
-          Byte 3: Red channel: 0-255
-          Byte 4: Green channel: 0-255
-          Byte 5: Blue channel: 0-255
-          Byte 6: Speed: 0-255
-          Byte 7: NA
-          Byte 8: Repeat: 0-255
-
-        - Wave
-
-          Byte 0: Report number: 0 (Luxafor flag only has 0)
-          Byte 1: Command Mode: 4
-          Byte 2: Wave type: 1-5
-          Byte 3: Red channel: 0-255
-          Byte 4: Green channel: 0-255
-          Byte 5: Blue channel: 0-255
-          Byte 6: NA
-          Byte 7: Repeat: 0-255
-          Byte 8: Speed: 0-255
-
-        - Built in
-
-          Byte 0: Report number: 0 (Luxafor flag only has 0)
-          Byte 1: Command Mode: 6
-          Byte 2: Pattern ID: 0-8
-          Byte 3: Repeat: 0-255
-
-        - Productivity
-
-          Byte 0: Report number: 0 (Luxafor flag only has 0)
-          Byte 1: Command Mode: 10
-          Byte 2: Command: E (enable), D (Disable), R, G, B, C, Y, M, W, O (colors)
-
-        """
-
-        if self.fade:
-            mode = MODE_FADE
-        elif self.strobe:
-            mode = MODE_STROBE
-        elif self.wave:
-            mode = MODE_WAVE
-        elif self.pattern:
-            mode = MODE_PATTERN
+        if mode == MODE_FADE:
+            cmd = self.cmd_fade()
+        elif mode == MODE_STROBE:
+            cmd = self.cmd_strobe()
+        elif mode == MODE_WAVE:
+            cmd = self.cmd_wave()
+        elif mode == MODE_PATTERN:
+            cmd = self.cmd_pattern()
         else:
-            mode = MODE_STATIC
+            cmd = self.cmd_static()
 
-        byte2 = self.pins
-        byte3 = self.red
-        byte4 = self.green
-        byte5 = self.blue
-        byte6 = self.fade
-        byte7 = 0
-        byte8 = 0
+        self.cmd = bytes(cmd)
+        print(self.cmd)
 
-        if self.pattern:
-            byte2 = self.pattern
-            byte3 = self.repeat
-            byte4 = 0
-            byte5 = 0
-            byte6 = 0
-        elif self.strobe:
-            byte6 = self.speed
-            byte8 = self.repeat
-        elif self.wave:
-            byte2 = self.wave
-            byte6 = 0
-            byte7 = self.repeat
-            byte8 = self.speed
+    def cmd_pattern(self):
+        """
+        Build pattern command.
 
-        print(bytes([CMD_REPORT_NUM, mode, byte2, byte3, byte4, byte5, byte6, byte7, byte8]))
-        return bytes([CMD_REPORT_NUM, mode, byte2, byte3, byte4, byte5, byte6, byte7, byte8])
+        Byte 0: Report number: 0 (Luxafor flag only has 0)
+        Byte 1: Command Mode: 6
+        Byte 2: Pattern ID: 0-8
+        Byte 3: Repeat: 0-255
+
+        """
+
+        return [CMD_REPORT_NUM, MODE_PATTERN, self.pattern, self.repeat, 0, 0, 0, 0, 0]
+
+    def cmd_strobe(self):
+        """
+        Build strobe command.
+
+        Byte 0: Report number: 0 (Luxafor flag only has 0)
+        Byte 1: Command Mode: 3
+        Byte 2: Pins: 1-6, 0x42 (back), 0x41 (tab), 0xFF (all)
+        Byte 3: Red channel: 0-255
+        Byte 4: Green channel: 0-255
+        Byte 5: Blue channel: 0-255
+        Byte 6: Speed: 0-255
+        Byte 7: NA
+        Byte 8: Repeat: 0-255
+
+        """
+
+        return [CMD_REPORT_NUM, MODE_STROBE, self.pins, self.red, self.green, self.blue, self.speed, 0, self.repeat]
+
+    def cmd_wave(self):
+        """
+        Build wave command.
+
+        Byte 0: Report number: 0 (Luxafor flag only has 0)
+        Byte 1: Command Mode: 4
+        Byte 2: Wave type: 1-5
+        Byte 3: Red channel: 0-255
+        Byte 4: Green channel: 0-255
+        Byte 5: Blue channel: 0-255
+        Byte 6: NA
+        Byte 7: Repeat: 0-255
+        Byte 8: Speed: 0-255
+
+        """
+
+        return [CMD_REPORT_NUM, MODE_WAVE, self.wave, self.red, self.green, self.blue, 0, self.repeat, self.speed]
+
+    def cmd_fade(self):
+        """
+        Build fade command.
+
+        Byte 0: Report number: 0 (Luxafor flag only has 0)
+        Byte 1: Command Mode: 2
+        Byte 2: Pins: 1-6, 0x42 (back), 0x41 (tab), 0xFF (all)
+        Byte 3: Red channel: 0-255
+        Byte 4: Green channel: 0-255
+        Byte 5: Blue channel: 0-255
+        Byte 6: Fade duration: 0-255
+        Byte 7: NA
+        Byte 8: NA
+
+        """
+
+        return [CMD_REPORT_NUM, MODE_FADE, self.pins, self.red, self.green, self.blue, self.speed, 0, 0]
+
+    def cmd_static(self):
+        """
+        Build static command.
+
+        Byte 0: Report number: 0 (Luxafor flag only has 0)
+        Byte 1: Command Mode: 1
+        Byte 2: Pins: 1-6, 0x42 (back), 0x41 (tab), 0xFF (all)
+        Byte 3: Red channel: 0-255
+        Byte 4: Green channel: 0-255
+        Byte 5: Blue channel: 0-255
+        Byte 6: Fade duration: 0-255
+        Byte 7: NA
+        Byte 8: NA
+
+        """
+
+        return [CMD_REPORT_NUM, MODE_STATIC, self.pins, self.red, self.green, self.blue, 0, 0, 0]
 
 
 class LuxFlag:
@@ -207,7 +233,6 @@ class LuxFlag:
     def __init__(self):
         """Initialize."""
 
-        self.ignore = False
         self._device = hid.Device(vid=LUXAFOR_VENDOR, pid=LUXAFOR_PRODUCT)
 
     def __enter__(self):
@@ -228,87 +253,105 @@ class LuxFlag:
     def set_red(self, **kwargs):
         """Set color red."""
 
-        self.set_color(255, 0, 0, **kwargs)
+        self.set_color(COLOR_RED, **kwargs)
 
     def set_orange(self, **kwargs):
         """Set color orange."""
 
-        self.set_color(255, 102, 0, **kwargs)
+        self.set_color(COLOR_ORANGE, **kwargs)
 
     def set_yellow(self, **kwargs):
         """Set color yellow."""
 
-        self.set_color(255, 255, 0, **kwargs)
+        self.set_color(COLOR_YELLOW, **kwargs)
 
     def set_green(self, **kwargs):
         """Set color green."""
 
-        self.set_color(0, 255, 0, **kwargs)
+        self.set_color(COLOR_GREEN, **kwargs)
 
     def set_blue(self, **kwargs):
         """Set color blue."""
 
-        self.set_color(0, 0, 255, **kwargs)
+        self.set_color(COLOR_BLUE, **kwargs)
 
     def set_purple(self, **kwargs):
         """Set color purple."""
 
-        self.set_color(75, 0, 130, **kwargs)
+        self.set_color(COLOR_PURPLE, **kwargs)
 
     def set_pink(self, **kwargs):
         """Set color pink."""
 
-        self.set_color(255, 0, 255, **kwags)
+        self.set_color(COLOR_PINK, **kwargs)
 
-    def set_cyan(self, **kwags):
+    def set_cyan(self, **kwargs):
         """Set color cyan."""
 
-        self.set_color(0, 255, 255, **kwargs)
+        self.set_color(COLOR_CYAN, **kwargs)
 
     def set_white(self, **kwargs):
         """Set color white."""
 
-        self.set_color(255, 255, 255, **kwargs)
+        self.set_color(COLOR_WHITE, **kwargs)
 
     def set_off(self, **kwargs):
         """Set color off."""
 
-        self.set_color(0, 0, 0, pins=kwargs.get('pins', PINS_ALL), fade=kwargs.get('fade', 0))
+        mode = kwargs.get('mode', MODE_STATIC)
+        if mode not in (MODE_STATIC, MODE_FADE):
+            mode = MODE_STATIC
+        speed = kwargs.get('speed', 1) if mode == MODE_FADE else 0
+        self.set_color(COLOR_OFF, mode=mode, pins=kwargs.get('pins', PINS_ALL), speed=speed)
 
-    def set_color(
-            self, red, green, blue, *,
-            pins=PINS_ALL, fade=0, strobe=False, wave=0, pattern=0, speed=1, repeat=1
-        ):
+    def set_color(self, color, *, mode=MODE_STATIC, pins=PINS_ALL, speed=1, repeat=1, wave=0):
         """Set color."""
 
-        is_on = (red or green or blue or pattern)
+        # Ignore pattern mode
+        if mode == MODE_PATTERN:
+            mode = MODE_STATIC
 
-        if is_on:
-            # If we fade in to a color while a color is showing,
-            # the color will simply turn off, so turn it off, then fade in.
-            self.ignore = True
-            self.set_off(pins=pins, fade=(fade if not pattern else 0))
-            self.ignore = False
+        self._execute(color, mode=mode, pins=pins, speed=speed, repeat=repeat, wave=wave)
+
+    def set_pattern(self, pattern, *, repeat=1):
+        """Set pattern."""
+
+        if pattern == PAT_RAINBOW:
+            self._pattern_rainbow(repeat=repeat)
         else:
+            self._execute(COLOR_OFF, mode=MODE_PATTERN, repeat=repeat, pattern=pattern)
+
+    def _pattern_rainbow(self, *, repeat=1):
+        """Pattern rainbow."""
+
+        for x in range(repeat):
+            self.set_pink(mode=MODE_FADE, speed=100)
+            self.set_red(mode=MODE_FADE, speed=100)
+            self.set_orange(mode=MODE_FADE, speed=100)
+            self.set_yellow(mode=MODE_FADE, speed=100)
+            self.set_green(mode=MODE_FADE, speed=100)
+            self.set_cyan(mode=MODE_FADE, speed=100)
+            self.set_blue(mode=MODE_FADE, speed=100)
+            self.set_purple(mode=MODE_FADE, speed=100)
+        self.set_off(mode=MODE_FADE, speed=100)
+
+    def _execute(self, color, *, mode=MODE_STATIC, pins=PINS_ALL, speed=1, repeat=1, wave=0, pattern=0):
+        """Set color."""
+
+        red, green, blue = color
+        if not (red or green or blue):
             # We don't support strobe of waving on turning off
             strobe = False
             wave = 0
 
-        lc = LuxCmd(red, green, blue, pins, fade, strobe, wave, pattern, speed, repeat)
-        self._device.write(lc.construct())
+        # Execute the command
+        lc = LuxCmd(red, green, blue, mode, pins, speed, repeat, wave, pattern)
+        self._device.write(lc.cmd)
 
-        # Move this
-        if (fade or ((strobe or wave or pattern) and repeat)) and not self.ignore:
-            # Wait for fade to complete
-            while self._device.read(MSG_SIZE) != MSG_NON_IMMEDIATE_COMPLETE:
+        # Wait for commands that take time to complete
+        if lc.mode != MODE_STATIC:
+            while self._device.read(MSG_SIZE, 100) != MSG_NON_IMMEDIATE_COMPLETE:
                 pass
-
-            if not pattern:
-                # The fading in won't hold unless we bombard the flag with requests to stay on
-                lc = LuxCmd(red, green, blue, pins)
-                past = time.time()
-                while (time.time() - past) < 1:
-                    self._device.write(lc.construct())
 
 
 def main():
@@ -316,61 +359,46 @@ def main():
     parser = argparse.ArgumentParser(prog='lux', description='Luxafor control script.')
     # Flag arguments
     parser.add_argument('--version', action='version', version=('%(prog)s ' + __version__))
-    parser.add_argument('--set', action='store', help="Set pins.")
-    parser.add_argument('--pins', action='store', default='all', help="Pins 1-6 or 'back', 'tab', or 'all'")
     group = parser.add_mutually_exclusive_group()
-    group.add_argument('--fade', action='store', type=int, default=0, help="Time to fade in.")
-    group.add_argument('--strobe', action='store_true', help="Time to fade in.")
-    group.add_argument('--wave', action='store', type=int, default=0, help="Wave.")
-    group.add_argument('--pattern', action='store', type=int, default=0, help="Pattern.")
-    parser.add_argument('--speed', action='store', type=int, default=1, help="Speed for strobe or wave.")
+    group.add_argument('--set', action='store', default='000000', help="Set pins.")
+    group.add_argument('--pattern', action='store', type=int, default=0, help="Patterns: 1-9")
+    parser.add_argument('--pins', action='store', default='all', help="Pins 1-6 or 'back', 'tab', or 'all'")
+    parser.add_argument('--mode', action='store', default='static', help="Mode: static, fade, strobe, wave, pattern")
+    parser.add_argument('--wave', action='store', type=int, default=1, help="Wave.")
+    parser.add_argument('--speed', action='store', type=int, default=1, help="Speed for strobe, wave, or fade.")
     parser.add_argument('--repeat', action='store', type=int, default=1, help="Repeat for strobe or wave.")
-    group.add_argument('--rainbow', action='store', type=int, default=0, help="Rainbow")
     args = parser.parse_args()
 
     with LuxFlag() as lf:
 
-        if args.rainbow:
-            pins = resolve_pins(args.pins)
-            lf.set_white(pins, args.rainbow)
-            lf.set_pink(pins, args.rainbow)
-            lf.set_red(pins, args.rainbow)
-            lf.set_orange(pins, args.rainbow)
-            lf.set_yellow(pins, args.rainbow)
-            lf.set_green(pins, args.rainbow)
-            lf.set_cyan(pins, args.rainbow)
-            lf.set_blue(pins, args.rainbow)
-            lf.set_purple(pins, args.rainbow)
-            lf.set_off(pins, args.rainbow)
-        else:
-            pins = resolve_pins(args.pins)
-            speed = args.speed
-            repeat = args.repeat
-            wave = args.wave
-            strobe = args.strobe
-            fade = args.fade
+        pins = resolve_pins(args.pins)
+        if args.pattern:
             pattern = args.pattern
-            color = args.set.lower() if args.set else '000000'
-            if color in COLOR_NAMES:
-                # Handle named colors
-                getattr(lf, 'set_{}'.format(color))(
-                    pins=pins, fade=fade, strobe=strobe, wave=wave, pattern=pattern, speed=speed, repeat=repeat
-                )
-            elif len(color) == COLOR_SIZE:
-                # Handle colors in the form RRGGBB
-                try:
-                    r = int(color[0:2], 16)
-                    g = int(color[2:4], 16)
-                    b = int(color[4: 6], 16)
-                except Exception:
-                    raise ValueError('Invalid color {}'.format(color))
-
-                lf.set_color(
-                    r, g, b,
-                    pins=pins, fade=fade, strobe=strobe, wave=wave, pattern=pattern, speed=speed, repeat=repeat
-                )
-            else:
+            mode = 0
+        elif args.mode:
+            mode = MODE_MAP.get(args.mode.lower(), MODE_STATIC)
+            pattern = 0
+        speed = args.speed
+        repeat = args.repeat
+        wave = args.wave
+        color = args.set.lower()
+        if pattern:
+            lf.set_pattern(pattern, repeat=repeat)
+        elif color in COLOR_NAMES:
+            # Handle named colors
+            getattr(lf, 'set_{}'.format(color))(pins=pins, mode=mode, speed=speed, repeat=repeat, wave=wave)
+        elif len(color) == COLOR_SIZE:
+            # Handle colors in the form RRGGBB
+            try:
+                r = int(color[0:2], 16)
+                g = int(color[2:4], 16)
+                b = int(color[4: 6], 16)
+            except Exception:
                 raise ValueError('Invalid color {}'.format(color))
+
+            lf.set_color(r, g, b, pins=pins, mode=mode, speed=speed, repeat=repeat, wave=wave)
+        else:
+            raise ValueError('Invalid color {}'.format(color))
 
     return 0
 
