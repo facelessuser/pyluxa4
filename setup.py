@@ -44,7 +44,7 @@ VER, DEVSTATUS = get_version()
 
 entry_points = {
     'console_scripts': [
-        'pylux=plux.__main__:main',
+        'pylux=pylux.__main__:main',
         'pylux%d.%d=pylux.__main__:main' % sys.version_info[:2]
     ]
 }
