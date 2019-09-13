@@ -10,7 +10,7 @@ import sys
 
 __version__ = '0.1'
 
-__all__ = ('LuxFlag',)
+__all__ = ('LuxFlag', 'LED_ALL', 'LED_BACK', 'LED_FRONT')
 
 LUXAFOR_VENDOR = 0x04d8
 LUXAFOR_PRODUCT = 0xf372
@@ -102,14 +102,14 @@ def validate_speed(speed):
 def validate_repeat(repeat):
     """Validate repeat."""
 
-    if not (1 <= repeat <= 255):
+    if not (0 <= repeat <= 255):
         raise ValueError('Repeat channel must be a positive integer between 1-255, {} was given'.format(repeat))
 
 
 def validate_pattern(pattern):
     """Validate pattern."""
 
-    if not (1 <= pattern <= 9):
+    if not (1 <= pattern <= 8):
         raise ValueError('Pattern must be a positive integer between 1-9, {} was given'.format(pattern))
 
 
@@ -288,24 +288,7 @@ class LuxFlag:
 
         validate_pattern(pattern)
         validate_repeat(repeat)
-        if pattern == PAT_RAINBOW:
-            self._pattern_rainbow(repeat=repeat)
-        else:
-            self._execute([CMD_REPORT_NUM, MODE_PATTERN, pattern, repeat, 0, 0, 0, 0, 0])
-
-    def _pattern_rainbow(self, *, repeat=1):
-        """Pattern rainbow."""
-
-        for x in range(repeat):
-            self.fade("magenta", speed=100)
-            self.fade("red", speed=100)
-            self.fade("orange", speed=100)
-            self.fade("yellow", speed=100)
-            self.fade("green", speed=100)
-            self.fade("cyan", speed=100)
-            self.fade("blue", speed=100)
-            self.fade("purple", speed=100)
-        self.fade("off", speed=100)
+        self._execute([CMD_REPORT_NUM, MODE_PATTERN, pattern, repeat, 0, 0, 0, 0, 0])
 
     def _execute(self, cmd):
         """Set color."""
@@ -313,6 +296,11 @@ class LuxFlag:
         self._device.write(bytes(cmd))
 
         # Wait for commands that take time to complete
-        if cmd[1] not in (MODE_STATIC, MODE_BASIC):
+        if (
+            cmd[1] not in (MODE_STATIC, MODE_BASIC) and
+            not (cmd[1] == MODE_STROBE and cmd[8] == 0) and
+            not (cmd[1] == MODE_WAVE and cmd[7] == 0) and
+            not (cmd[1] == MODE_PATTERN and cmd[3])
+        ):
             while self._device.read(MSG_SIZE, 100) != MSG_NON_IMMEDIATE_COMPLETE:
                 pass
