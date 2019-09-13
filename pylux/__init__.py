@@ -95,7 +95,7 @@ def validate_wave(wave):
 def validate_speed(speed):
     """Validate speed."""
 
-    if not (1 <= speed <= 255):
+    if not (0 <= speed <= 255):
         raise ValueError('Speed channel must be a positive integer between 1-255, {} was given'.format(speed))
 
 

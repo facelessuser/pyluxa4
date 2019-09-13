@@ -52,7 +52,7 @@ def fade(argv):
     parser = argparse.ArgumentParser(prog='pylux fade', description="Fade to color")
     parser.add_argument('color', action='store', help="Color value.")
     parser.add_argument('--led', action='store', default='all', help="LED: 1-6, back, tab, or all")
-    parser.add_argument('--speed', action='store', type=int, default=1, help="Speed for strobe, wave, or fade: 1-255")
+    parser.add_argument('--speed', action='store', type=int, default=0, help="Speed for strobe, wave, or fade: 1-255")
     args = parser.parse_args(argv)
 
     with pylux.LuxFlag() as lf:
@@ -69,7 +69,7 @@ def strobe(argv):
     parser = argparse.ArgumentParser(prog='pylux strobe', description="Strobe color")
     parser.add_argument('color', action='store', help="Color value.")
     parser.add_argument('--led', action='store', default='all', help="LED: 1-6, back, tab, or all")
-    parser.add_argument('--speed', action='store', type=int, default=1, help="Speed for strobe, wave, or fade: 1-255")
+    parser.add_argument('--speed', action='store', type=int, default=0, help="Speed for strobe, wave, or fade: 1-255")
     parser.add_argument('--repeat', action='store', type=int, default=1, help="Speed for strobe, wave, or fade: 1-255")
     args = parser.parse_args(argv)
 
@@ -89,7 +89,7 @@ def wave(argv):
     parser.add_argument('color', action='store', help="Color value.")
     parser.add_argument('--wave', action='store', type=int, default=1, help="Wave configuration: 1-5")
     parser.add_argument('--led', action='store', default='all', help="LED: 1-6, back, tab, or all")
-    parser.add_argument('--speed', action='store', type=int, default=1, help="Speed for strobe, wave, or fade: 1-255")
+    parser.add_argument('--speed', action='store', type=int, default=0, help="Speed for strobe, wave, or fade: 1-255")
     parser.add_argument('--repeat', action='store', type=int, default=1, help="Speed for strobe, wave, or fade: 1-255")
     args = parser.parse_args(argv)
 
