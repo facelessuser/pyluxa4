@@ -50,9 +50,6 @@ MSG_SIZE = 8
 
 CMD_REPORT_NUM = 0
 
-# Extra custom patterns
-PAT_RAINBOW = 9
-
 
 def clamp(value, mn=0, mx=255):
     """Clamp the value to the the given minimum and maximum."""

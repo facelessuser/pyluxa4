@@ -127,6 +127,28 @@ def off(argv):
         lf.off()
 
 
+def rainbow(argv):
+    """Show rainbow."""
+
+    parser = argparse.ArgumentParser(prog='pylux rainbow', description="Display rainbow")
+    parser.add_argument('--repeat', action='store', type=int, default=0, help="Repeat 0-255, 0 is treated as 1")
+    args = parser.parse_args(argv)
+
+    with pylux.LuxFlag() as lf:
+        repeat = 1 if args.repeat == 0 else args.repeat
+
+        for x in range(repeat):
+            lf.fade("magenta", speed=100)
+            lf.fade("red", speed=100)
+            lf.fade("orange", speed=100)
+            lf.fade("yellow", speed=100)
+            lf.fade("green", speed=100)
+            lf.fade("cyan", speed=100)
+            lf.fade("blue", speed=100)
+            lf.fade("purple", speed=100)
+        lf.fade("off", speed=100)
+
+
 def main(argv):
     """Main."""
     parser = argparse.ArgumentParser(prog='pylux', description='Luxafor control tool.')
@@ -152,6 +174,9 @@ def main(argv):
 
     elif args.command == 'pattern':
         pattern(argv[1:])
+
+    elif args.command == 'rainbow':
+        rainbow(argv[1:])
 
     else:
         raise ValueError('{} is not a recognized commad'.format(args.command))
