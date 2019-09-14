@@ -1,24 +1,24 @@
 """Luxafor server."""
-import argparse
-import sys
 import traceback
 from flask import Flask, jsonify, abort, make_response, request
 from gevent.pywsgi import WSGIServer
 from . import usb
-from .common import LED_ALL, LED_BACK, LED_FRONT
+from .common import LED_ALL
 from . import __meta__
 
 app = Flask(__name__)
-luxflag = None
+luxafor = None
 HOST = '0.0.0.0'
 PORT = 5000
 
 
 def get_api_ver_path():
-    return '/pylux/api/v%s.%s' % __meta__.__version_info__[:2]
+    """Get the API path."""
+
+    return '/pyluxa4/api/v%s.%s' % __meta__.__version_info__[:2]
 
 
-def set():
+def color():
     """Set colors."""
 
     try:
@@ -30,15 +30,15 @@ def set():
 
     if not error:
         try:
-            luxflag.color(color, led=led)
+            luxafor.color(color, led=led)
         except Exception:
             error = str(traceback.format_exc())
 
     return jsonify(
         {
-            'command': 'set',
+            'command': 'color',
             "status": 'success' if not error else 'fail',
-            "error":error
+            "error": error
         }
     )
 
@@ -57,7 +57,7 @@ def fade():
 
     if not error:
         try:
-            luxflag.fade(color, led=led, duration=duration, wait=wait)
+            luxafor.fade(color, led=led, duration=duration, wait=wait)
         except Exception:
             error = str(traceback.format_exc())
 
@@ -65,7 +65,7 @@ def fade():
         {
             'command': 'fade',
             "status": 'success' if not error else 'fail',
-            "error":error
+            "error": error
         }
     )
 
@@ -85,7 +85,7 @@ def strobe():
 
     if not error:
         try:
-            luxflag.strobe(color, led=led, speed=speed, repeat=repeat, wait=wait)
+            luxafor.strobe(color, led=led, speed=speed, repeat=repeat, wait=wait)
         except Exception:
             error = str(traceback.format_exc())
 
@@ -93,7 +93,7 @@ def strobe():
         {
             'command': 'strobe',
             "status": 'success' if not error else 'fail',
-            "error":error
+            "error": error
         }
     )
 
@@ -114,7 +114,7 @@ def wave():
 
     if not error:
         try:
-            luxflag.wave(color, led=led, wave=wv, duration=duration, repeat=repeat, wait=wait)
+            luxafor.wave(color, led=led, wave=wv, duration=duration, repeat=repeat, wait=wait)
         except Exception:
             error = str(traceback.format_exc())
 
@@ -122,7 +122,7 @@ def wave():
         {
             'command': 'wave',
             "status": 'success' if not error else 'fail',
-            "error":error
+            "error": error
         }
     )
 
@@ -140,7 +140,7 @@ def pattern():
 
     if not error:
         try:
-            luxflag.pattern(pat, repeat=repeat, wait=wait)
+            luxafor.pattern(pat, repeat=repeat, wait=wait)
         except Exception:
             error = str(traceback.format_exc())
 
@@ -148,7 +148,7 @@ def pattern():
         {
             'command': 'pattern',
             "status": 'success' if not error else 'fail',
-            "error":error
+            "error": error
         }
     )
 
@@ -158,7 +158,7 @@ def off():
 
     error = ''
     try:
-        luxflag.off()
+        luxafor.off()
     except Exception:
         error = str(traceback.format_exc())
 
@@ -166,16 +166,32 @@ def off():
         {
             'command': 'off',
             "status": 'success' if not error else 'fail',
-            "error":error
+            "error": error
         }
     )
+
+
+def kill():
+    """Kill."""
+
+    try:
+        http_server.close()
+        http_server.stop(timeout=10)
+    except Exception:
+        error = str(traceback.format_exc())
+    return {
+        'command': 'kill',
+        "status": 'success' if not error else 'fail',
+        "error": error
+    }
 
 
 @app.route('/')
 def index():
     """
-    Just print out a statement.
-    This is really only here so I
+    Print out some text for main page.
+
+    This is really only here so we
     can quickly, visually check if server
     is running.
     """
@@ -184,10 +200,10 @@ def index():
 
 @app.route('%s/command/<string:command>' % get_api_ver_path(), methods=['POST'])
 def execute_command(command):
-    """ Executes a given command GET or POST command. """
+    """Executes a given command GET or POST command."""
     if request.method == 'POST':
-        if command == 'set':
-            results = set()
+        if command == 'color':
+            results = color()
         elif command == 'fade':
             results = fade()
         elif command == 'strobe':
@@ -198,17 +214,18 @@ def execute_command(command):
             results = pattern()
         elif command == 'off':
             results = off()
+        elif command == 'kill':
+            # Results won't make it back if successful
+            results = kill()
         else:
             abort(404)
 
     return results
 
 
-@app.route('/pylux/api/version', methods=['GET'])
+@app.route('/pyluxa4/api/version', methods=['GET'])
 def version():
-    """
-    Return version.
-    """
+    """Return version."""
     return jsonify(
         {
             'status': 'success',
@@ -221,9 +238,7 @@ def version():
 
 @app.errorhandler(404)
 def not_found(error):
-    """
-    Return 404 error.
-    """
+    """Return 404 error."""
     return make_response(
         jsonify(
             {
@@ -237,10 +252,11 @@ def not_found(error):
 def run(host=HOST, port=PORT, debug=False):
     """Run server."""
 
-    global luxflag
+    global luxafor
+    global http_server
 
-    with usb.LuxFlag() as lf:
-        luxflag = lf
+    with usb.Luxafor() as lf:
+        luxafor = lf
 
         try:
             http_server = WSGIServer((host, port), app)

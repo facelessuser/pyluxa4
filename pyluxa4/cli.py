@@ -5,19 +5,21 @@ from . import __meta__
 from . import client
 
 
-def cmd_set(argv):
+def cmd_color(argv):
     """Set to color."""
 
-    parser = argparse.ArgumentParser(prog='pyluxa4 set', description="Set color")
+    parser = argparse.ArgumentParser(prog='pyluxa4 color', description="Set color")
     parser.add_argument('color', action='store', help="Color value.")
     parser.add_argument('--led', action='store', default='all', help="LED: 1-6, back, tab, or all")
     parser.add_argument('--host', action='store', default=client.HOST, help="Host.")
     parser.add_argument('--port', action='store', type=int, default=client.PORT, help="Port.")
+    parser.add_argument('--timeout', action='store', type=int, default=client.TIMEOUT, help="Timeout")
     args = parser.parse_args(argv)
 
-    return client.LuxRest(args.host, args.port).set(
+    return client.LuxRest(args.host, args.port).color(
         args.color,
-        led=resolve_led(args.led)
+        led=resolve_led(args.led),
+        timeout=args.timeout
     )
 
 
@@ -31,13 +33,15 @@ def cmd_fade(argv):
     parser.add_argument('--wait', action='store_true', help="Wait for sequence to complete")
     parser.add_argument('--host', action='store', default=client.HOST, help="Host.")
     parser.add_argument('--port', action='store', type=int, default=client.PORT, help="Port.")
+    parser.add_argument('--timeout', action='store', type=int, default=client.TIMEOUT, help="Timeout")
     args = parser.parse_args(argv)
 
     return client.LuxRest(args.host, args.port).fade(
         args.color,
         led=resolve_led(args.led),
         duration=args.duration,
-        wait=args.wait
+        wait=args.wait,
+        timeout=args.timeout
     )
 
 
@@ -52,6 +56,7 @@ def cmd_strobe(argv):
     parser.add_argument('--wait', action='store_true', help="Wait for sequence to complete")
     parser.add_argument('--host', action='store', default=client.HOST, help="Host.")
     parser.add_argument('--port', action='store', type=int, default=client.PORT, help="Port.")
+    parser.add_argument('--timeout', action='store', type=int, default=client.TIMEOUT, help="Timeout")
     args = parser.parse_args(argv)
 
     return client.LuxRest(args.host, args.port).strobe(
@@ -59,7 +64,8 @@ def cmd_strobe(argv):
         led=resolve_led(args.led),
         speed=args.speed,
         repeat=args.repeat,
-        wait=args.wait
+        wait=args.wait,
+        timeout=args.timeout
     )
 
 
@@ -75,6 +81,7 @@ def cmd_wave(argv):
     parser.add_argument('--wait', action='store_true', help="Wait for sequence to complete")
     parser.add_argument('--host', action='store', default=client.HOST, help="Host.")
     parser.add_argument('--port', action='store', type=int, default=client.PORT, help="Port.")
+    parser.add_argument('--timeout', action='store', type=int, default=client.TIMEOUT, help="Timeout")
     args = parser.parse_args(argv)
 
     return client.LuxRest(args.host, args.port).wave(
@@ -82,7 +89,8 @@ def cmd_wave(argv):
         led=resolve_led(args.led),
         duration=args.duration,
         repeat=args.repeat,
-        wait=args.wait
+        wait=args.wait,
+        timeout=args.timeout
     )
 
 
@@ -95,12 +103,14 @@ def cmd_pattern(argv):
     parser.add_argument('--wait', action='store_true', help="Wait for sequence to complete")
     parser.add_argument('--host', action='store', default=client.HOST, help="Host.")
     parser.add_argument('--port', action='store', type=int, default=client.PORT, help="Port.")
+    parser.add_argument('--timeout', action='store', type=int, default=client.TIMEOUT, help="Timeout")
     args = parser.parse_args(argv)
 
     return client.LuxRest(args.host, args.port).pattern(
         args.pattern,
         repeat=args.repeat,
-        wait=args.wait
+        wait=args.wait,
+        timeout=args.timeout
     )
 
 
@@ -110,9 +120,34 @@ def cmd_off(argv):
     parser = argparse.ArgumentParser(prog='pyluxa4 off', description="Turn off")
     parser.add_argument('--host', action='store', default=client.HOST, help="Host.")
     parser.add_argument('--port', action='store', type=int, default=client.PORT, help="Port.")
+    parser.add_argument('--timeout', action='store', type=int, default=client.TIMEOUT, help="Timeout")
     args = parser.parse_args(argv[1:])
 
-    return client.LuxRest(args.host, args.port).off()
+    return client.LuxRest(args.host, args.port).off(timeout=args.timeout)
+
+
+def cmd_version(argv):
+    """Get the server to respond with the version."""
+
+    parser = argparse.ArgumentParser(prog='pyluxa4 api', description="Request version")
+    parser.add_argument('--host', action='store', default=client.HOST, help="Host")
+    parser.add_argument('--port', action='store', type=int, default=client.PORT, help="Port")
+    parser.add_argument('--timeout', action='store', type=int, default=client.TIMEOUT, help="Timeout")
+    args = parser.parse_args(argv)
+
+    return client.LuxRest(args.host, args.port).version(timeout=args.timeout)
+
+
+def cmd_kill(argv):
+    """Kill the running server."""
+
+    parser = argparse.ArgumentParser(prog='pyluxa4 kill', description="Kill server")
+    parser.add_argument('--host', action='store', default=client.HOST, help="Host")
+    parser.add_argument('--port', action='store', type=int, default=client.PORT, help="Port")
+    parser.add_argument('--timeout', action='store', type=int, default=client.TIMEOUT, help="Timeout")
+    args = parser.parse_args(argv)
+
+    return client.LuxRest(args.host, args.port).kill(timeout=args.timeout)
 
 
 def cmd_server(argv):
@@ -135,15 +170,21 @@ def main(argv):
     # Flag arguments
     parser.add_argument('--version', action='version', version=('%(prog)s ' + __meta__.__version__))
     parser.add_argument(
-        'command', action='store', help="Command to send: set, off, fade, strobe, wave, and pattern"
+        'command', action='store', help="Command to send: color, off, fade, strobe, wave, and pattern"
     )
     args = parser.parse_args(argv[0:1])
 
     if args.command == 'server':
         cmd_server(argv[1:])
     else:
-        if args.command == 'set':
-            resp = cmd_set(argv[1:])
+        if args.command == 'api':
+            resp = cmd_version(argv[1:])
+
+        elif args.command == 'kill':
+            resp = cmd_kill(argv[1:])
+
+        elif args.command == 'color':
+            resp = cmd_color(argv[1:])
 
         elif args.command == 'off':
             resp = cmd_off(argv[1:])
@@ -163,8 +204,9 @@ def main(argv):
         else:
             raise ValueError('{} is not a recognized commad'.format(args.command))
 
+        print(resp)
+
         if resp['status'] == 'fail':
-            print(resp)
             status = 1
 
     return status

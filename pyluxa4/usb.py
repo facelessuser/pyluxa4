@@ -1,5 +1,5 @@
 """
-Luxafor usb controller via the Python hid wrapper around libusb/hidapi.
+Luxafor USB controller via the Python hid wrapper around libusb/hidapi.
 
 apmorton/pyhidapi: https://github.com/apmorton/pyhidapi
 libusb/hidapi: https://github.com/libusb/hidapi
@@ -11,7 +11,7 @@ from .csscolors import name2hex
 
 __version__ = '0.1'
 
-__all__ = ('LuxFlag', 'LED_ALL', 'LED_BACK', 'LED_FRONT')
+__all__ = ('Luxafor', 'LED_ALL', 'LED_BACK', 'LED_FRONT')
 
 LUXAFOR_VENDOR = 0x04d8
 LUXAFOR_PRODUCT = 0xf372
@@ -25,8 +25,8 @@ MODE_STROBE = 0x03
 MODE_WAVE = 0x04
 MODE_PATTERN = 0x6
 
-# Message that is sent when a command, that cannont be completed immediatey,
-# complets (such as fade).
+# Message that is sent when a command, that cannot be completed immediately,
+# completes (such as fade).
 MSG_NON_IMMEDIATE_COMPLETE = b'\x00\x01\x00\x00\x00\x00\x00\x00'
 MSG_NONE = b''
 MSG_SIZE = 8
@@ -111,17 +111,19 @@ def validate_simple_color(color):
         raise ValueError("Accepted color codes are R, G, B, C, M, Y, W, and O, {} was given".format(color))
 
 
-class LuxFlag:
+class Luxafor:
     """
-    Class to controll luxflag.
+    Class to control Luxafor device.
 
     This is not implemented.
 
     - Productivity
 
+      ```
       Byte 0: Report number: 0 (Luxafor flag only has 0)
       Byte 1: Command Mode: 10
       Byte 2: Command: E (enable), D (Disable), R, G, B, C, Y, M, W, O (colors)
+      ```
 
     """
 
@@ -141,7 +143,7 @@ class LuxFlag:
         return self.close()
 
     def close(self):
-        """Close luxafor device."""
+        """Close Luxafor device."""
 
         return self._device.close()
 
@@ -154,6 +156,7 @@ class LuxFlag:
         """
         Build basic color command.
 
+        ```
         Byte 0: Report number (Luxafor flag only has 0)
         Byte 1: Color: R, G, B, C, M, Y, W, O
         Byte 2: NA
@@ -163,6 +166,7 @@ class LuxFlag:
         Byte 6: NA
         Byte 7: NA
         Byte 8: NA
+        ```
 
         """
 
@@ -174,6 +178,7 @@ class LuxFlag:
         """
         Build static color command.
 
+        ```
         Byte 0: Report number: 0 (Luxafor flag only has 0)
         Byte 1: Command Mode: 1
         Byte 2: LED: 1-6, 0x42 (back), 0x41 (tab), 0xFF (all)
@@ -183,6 +188,7 @@ class LuxFlag:
         Byte 6: NA
         Byte 7: NA
         Byte 8: NA
+        ```
 
         """
 
@@ -197,6 +203,7 @@ class LuxFlag:
         """
         Build fade command.
 
+        ```
         Byte 0: Report number: 0 (Luxafor flag only has 0)
         Byte 1: Command Mode: 2
         Byte 2: LED: 1-6, 0x42 (back), 0x41 (tab), 0xFF (all)
@@ -206,6 +213,7 @@ class LuxFlag:
         Byte 6: Fade speed: 0-255
         Byte 7: NA
         Byte 8: NA
+        ```
 
         """
 
@@ -218,6 +226,7 @@ class LuxFlag:
         """
         Build wave command.
 
+        ```
         Byte 0: Report number: 0 (Luxafor flag only has 0)
         Byte 1: Command Mode: 4
         Byte 2: Wave type: 1-5
@@ -227,6 +236,7 @@ class LuxFlag:
         Byte 6: NA
         Byte 7: Repeat: 0-255
         Byte 8: Speed: 0-255
+        ```
 
         """
 
@@ -244,6 +254,7 @@ class LuxFlag:
         """
         Build strobe command.
 
+        ```
         Byte 0: Report number: 0 (Luxafor flag only has 0)
         Byte 1: Command Mode: 3
         Byte 2: LED: 1-6, 0x42 (back), 0x41 (tab), 0xFF (all)
@@ -253,6 +264,7 @@ class LuxFlag:
         Byte 6: Speed: 0-255
         Byte 7: NA
         Byte 8: Repeat: 0-255
+        ```
 
         """
 
@@ -269,10 +281,12 @@ class LuxFlag:
         """
         Build pattern command.
 
+        ```
         Byte 0: Report number: 0 (Luxafor flag only has 0)
         Byte 1: Command Mode: 6
         Byte 2: Pattern ID: 0-8
         Byte 3: Repeat: 0-255
+        ```
 
         """
 

@@ -1,6 +1,6 @@
 #!/usr/bin/env python
 # -*- coding: utf-8 -*-
-"""Setup pyluxa4."""
+"""Setup `pyluxa4`."""
 
 from setuptools import setup, find_packages
 import os
@@ -45,11 +45,7 @@ VER, DEVSTATUS = get_version()
 entry_points = {
     'console_scripts': [
         'pyluxa4=pylux.cli:main',
-        'pyluxa4%d.%d=pylux.cli:main' % sys.version_info[:2],
-        'pyluxa4-server=pylux.server:main',
-        'pyluxa4-server%d.%d=pylux.server:main' % sys.version_info[:2],
-        'pyluxa4-client=pylux.client:main',
-        'pyluxa4-client%d.%d=pylux.client:main' % sys.version_info[:2]
+        'pyluxa4%d.%d=pylux.cli:main' % sys.version_info[:2]
     ]
 }
 
