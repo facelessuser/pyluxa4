@@ -1,14 +1,14 @@
-#!flask/bin/python
+"""Luxafor server."""
 import argparse
 import sys
 import traceback
 from flask import Flask, jsonify, abort, make_response, request
-from . import controller
-from . import __meta__
 from gevent.pywsgi import WSGIServer
+from . import usb
+from .common import LED_ALL, LED_BACK, LED_FRONT
+from . import __meta__
 
 app = Flask(__name__)
-
 luxflag = None
 
 
@@ -46,7 +46,7 @@ def fade():
 
     try:
         error = ''
-        led = request.json.get("led", 'all')
+        led = request.json.get("led", LED_ALL)
         color = request.json['color'].lower()
         duration = request.json.get('duration', 0)
         wait = request.json.get('wait', False)
@@ -73,7 +73,7 @@ def strobe():
 
     try:
         error = ''
-        led = request.json.get("led", 'all')
+        led = request.json.get("led", LED_ALL)
         color = request.json['color'].lower()
         speed = request.json.get('speed', 0)
         repeat = request.json.get('repeat', 0)
@@ -101,7 +101,7 @@ def wave():
 
     try:
         error = ''
-        led = request.json.get("led", 'all')
+        led = request.json.get("led", LED_ALL)
         color = request.json['color'].lower()
         wv = request.json.get('wave', 1)
         duration = request.json.get('duration', 0)
@@ -237,7 +237,7 @@ def run(host='0.0.0.0', port=5000, debug=False):
 
     global luxflag
 
-    with controller.LuxFlag() as lf:
+    with usb.LuxFlag() as lf:
         luxflag = lf
 
         try:

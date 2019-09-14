@@ -1,12 +1,12 @@
 """Main."""
 import sys
 import argparse
-from . import controller
+from . import usb
 from .common import resolve_led
 from . import __meta__
 
 
-def set(argv):
+def cmd_set(argv):
     """Set to color."""
 
     parser = argparse.ArgumentParser(prog='pylux set', description="Set color")
@@ -14,14 +14,14 @@ def set(argv):
     parser.add_argument('--led', action='store', default='all', help="LED: 1-6, back, tab, or all")
     args = parser.parse_args(argv)
 
-    with controller.LuxFlag() as lf:
+    with usb.LuxFlag() as lf:
         lf.color(
             args.color.lower(),
             led=resolve_led(args.led)
         )
 
 
-def fade(argv):
+def cmd_fade(argv):
     """Fade to color."""
 
     parser = argparse.ArgumentParser(prog='pylux fade', description="Fade to color")
@@ -31,7 +31,7 @@ def fade(argv):
     parser.add_argument('--wait', action='store_true', help="Wait for sequence to complete")
     args = parser.parse_args(argv)
 
-    with controller.LuxFlag() as lf:
+    with usb.LuxFlag() as lf:
         lf.fade(
             args.color.lower(),
             led=resolve_led(args.led),
@@ -40,7 +40,7 @@ def fade(argv):
         )
 
 
-def strobe(argv):
+def cmd_strobe(argv):
     """Strobe color."""
 
     parser = argparse.ArgumentParser(prog='pylux strobe', description="Strobe color")
@@ -51,7 +51,7 @@ def strobe(argv):
     parser.add_argument('--wait', action='store_true', help="Wait for sequence to complete")
     args = parser.parse_args(argv)
 
-    with controller.LuxFlag() as lf:
+    with usb.LuxFlag() as lf:
         lf.strobe(
             args.color.lower(),
             led=resolve_led(args.led),
@@ -61,7 +61,7 @@ def strobe(argv):
         )
 
 
-def wave(argv):
+def cmd_wave(argv):
     """Show color with wave effect."""
 
     parser = argparse.ArgumentParser(prog='pylux wave', description="Wave effect")
@@ -73,7 +73,7 @@ def wave(argv):
     parser.add_argument('--wait', action='store_true', help="Wait for sequence to complete")
     args = parser.parse_args(argv)
 
-    with controller.LuxFlag() as lf:
+    with usb.LuxFlag() as lf:
         lf.wave(
             args.color.lower(),
             led=resolve_led(args.led),
@@ -84,7 +84,7 @@ def wave(argv):
         )
 
 
-def pattern(argv):
+def cmd_pattern(argv):
     """Show pattern."""
 
     parser = argparse.ArgumentParser(prog='pylux pattern', description="Display pattern")
@@ -93,7 +93,7 @@ def pattern(argv):
     parser.add_argument('--wait', action='store_true', help="Wait for sequence to complete")
     args = parser.parse_args(argv)
 
-    with controller.LuxFlag() as lf:
+    with usb.LuxFlag() as lf:
         lf.pattern(
             args.pattern,
             repeat=args.repeat,
@@ -101,35 +101,13 @@ def pattern(argv):
         )
 
 
-def off(argv):
+def cmd_off(argv):
     """Set off."""
 
     parser = argparse.ArgumentParser(prog='pylux off', description="Turn off")
     args = parser.parse_args(argv[1:])
-    with controller.LuxFlag() as lf:
+    with usb.LuxFlag() as lf:
         lf.off()
-
-
-def rainbow(argv):
-    """Show rainbow."""
-
-    parser = argparse.ArgumentParser(prog='pylux rainbow', description="Display rainbow")
-    parser.add_argument('--repeat', action='store', type=int, default=0, help="Repeat 0-255, 0 is treated as 1")
-    args = parser.parse_args(argv)
-
-    with controller.LuxFlag() as lf:
-        repeat = 1 if args.repeat == 0 else args.repeat
-
-        for x in range(repeat):
-            lf.fade("magenta", speed=100, wait=True)
-            lf.fade("red", speed=100, wait=True)
-            lf.fade("orange", speed=100, wait=True)
-            lf.fade("yellow", speed=100, wait=True)
-            lf.fade("green", speed=100, wait=True)
-            lf.fade("cyan", speed=100, wait=True)
-            lf.fade("blue", speed=100, wait=True)
-            lf.fade("purple", speed=100, wait=True)
-        lf.fade("off", speed=100)
 
 
 def main(argv):
@@ -143,25 +121,22 @@ def main(argv):
     args = parser.parse_args(argv[0:1])
 
     if args.command == 'set':
-        set(argv[1:])
+        cmd_set(argv[1:])
 
     elif args.command == 'off':
-        off(argv[1:])
+        cmd_off(argv[1:])
 
     elif args.command == 'fade':
-        fade(argv[1:])
+        cmd_fade(argv[1:])
 
     elif args.command == 'strobe':
-        strobe(argv[1:])
+        cmd_strobe(argv[1:])
 
     elif args.command == 'wave':
-        wave(argv[1:])
+        cmd_wave(argv[1:])
 
     elif args.command == 'pattern':
-        pattern(argv[1:])
-
-    elif args.command == 'rainbow':
-        rainbow(argv[1:])
+        cmd_pattern(argv[1:])
 
     else:
         raise ValueError('{} is not a recognized commad'.format(args.command))

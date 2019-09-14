@@ -1,5 +1,5 @@
 """
-Luxafor control via the Python hid wrapper around libusb/hidapi.
+Luxafor usb controller via the Python hid wrapper around libusb/hidapi.
 
 apmorton/pyhidapi: https://github.com/apmorton/pyhidapi
 libusb/hidapi: https://github.com/libusb/hidapi
@@ -55,24 +55,14 @@ def clamp(value, mn=0, mx=255):
 def resolve_color(color):
     """Resolve color."""
 
-    if isinstance(color, str):
-        if color.startswith('#') and len(color) == 7:
-            color = (
-                int(color[1:3], 16),
-                int(color[3:5], 16),
-                int(color[5:7], 16)
-            )
-        else:
-            color = COLOR_MAP[color.lower()]
+    if color.startswith('#') and len(color) == 7:
+        color = (
+            int(color[1:3], 16),
+            int(color[3:5], 16),
+            int(color[5:7], 16)
+        )
     else:
-        color = [int(x) for x in color]
-
-    if not (0 <= color[0] <= 255):
-        raise ValueError('Red channel must be a positive integer between 0-255, {} was given'.format(color[0]))
-    elif not (0 <= color[1] <= 255):
-        raise ValueError('Green channel must be a positive integer between 0-255, {} was given'.format(color[1]))
-    elif not (0 <= color[2] <= 255):
-        raise ValueError('Blue channel must be a positive integer between 0-255, {} was given'.format(color[2]))
+        color = COLOR_MAP[color.lower()]
 
     return color
 
@@ -222,7 +212,7 @@ class LuxFlag:
         validate_speed(duration)
         self._execute([CMD_REPORT_NUM, MODE_FADE, led, red, green, blue, duration, 0, 0], wait=wait)
 
-    def wave(self, color, wave, *, led=LED_ALL, duration=1, repeat=0, wait=False):
+    def wave(self, color, *, led=LED_ALL, wave=1, duration=0, repeat=0, wait=False):
         """
         Build wave command.
 
@@ -248,7 +238,7 @@ class LuxFlag:
         validate_repeat(repeat)
         self._execute([CMD_REPORT_NUM, MODE_WAVE, wave, red, green, blue, 0, repeat, duration], wait=wait)
 
-    def strobe(self, color, *, led=LED_ALL, speed=1, repeat=0, wait=False):
+    def strobe(self, color, *, led=LED_ALL, speed=0, repeat=0, wait=False):
         """
         Build strobe command.
 

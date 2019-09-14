@@ -1,6 +1,6 @@
 #!/usr/bin/env python
 # -*- coding: utf-8 -*-
-"""Setup pylux."""
+"""Setup pyluxa4."""
 
 from setuptools import setup, find_packages
 import os
@@ -11,7 +11,7 @@ import sys
 def get_version():
     """Get version and version_info without importing the entire module."""
 
-    path = os.path.join(os.path.dirname(__file__), 'pylux')
+    path = os.path.join(os.path.dirname(__file__), 'pyluxa4')
     fp, pathname, desc = imp.find_module('__meta__', [path])
     try:
         meta = imp.load_module('__meta__', fp, pathname, desc)
@@ -44,17 +44,17 @@ VER, DEVSTATUS = get_version()
 
 entry_points = {
     'console_scripts': [
-        'pylux=pylux.cli:main',
-        'pylux%d.%d=pylux.cli:main' % sys.version_info[:2],
-        'pylux-server=pylux.server:main',
-        'pylux-server%d.%d=pylux.server:main' % sys.version_info[:2],
-        'pylux-client=pylux.client:main',
-        'pylux-client%d.%d=pylux.client:main' % sys.version_info[:2]
+        'pyluxa4=pylux.cli:main',
+        'pyluxa4%d.%d=pylux.cli:main' % sys.version_info[:2],
+        'pyluxa4-server=pylux.server:main',
+        'pyluxa4-server%d.%d=pylux.server:main' % sys.version_info[:2],
+        'pyluxa4-client=pylux.client:main',
+        'pyluxa4-client%d.%d=pylux.client:main' % sys.version_info[:2]
     ]
 }
 
 setup(
-    name='pylux',
+    name='pyluxa4',
     version=VER,
     keywords='luxafor',
     description='Luxafor flag controll library/tool.',
@@ -62,7 +62,7 @@ setup(
     long_description_content_type='text/markdown',
     author='Isaac Muse',
     author_email='Isaac.Muse@gmail.com',
-    url='https://github.com/facelessuser/pylux',
+    url='https://github.com/facelessuser/pyluxa4',
     packages=find_packages(exclude=['tests', 'tools']),
     entry_points=entry_points,
     install_requires=get_requirements(),

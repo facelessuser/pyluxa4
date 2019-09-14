@@ -1,4 +1,4 @@
-recursive-include pylux *.py
+recursive-include pyluxa4 *.py
 recursive-include tests *.py
 recursive-include requirements *.txt
 include setup.py
