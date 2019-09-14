@@ -150,11 +150,11 @@ def cmd_kill(argv):
     return client.LuxRest(args.host, args.port).kill(timeout=args.timeout)
 
 
-def cmd_server(argv):
+def cmd_serve(argv):
     """Start the server."""
     from . import server
 
-    parser = argparse.ArgumentParser(prog='pyluxa4 server', description="Run server")
+    parser = argparse.ArgumentParser(prog='pyluxa4 serve', description="Run server")
     parser.add_argument('--host', action='store', default=server.HOST, help="Host")
     parser.add_argument('--port', action='store', type=int, default=server.PORT, help="Port")
     args = parser.parse_args(argv)
@@ -170,12 +170,12 @@ def main(argv):
     # Flag arguments
     parser.add_argument('--version', action='version', version=('%(prog)s ' + __meta__.__version__))
     parser.add_argument(
-        'command', action='store', help="Command to send: color, off, fade, strobe, wave, and pattern"
+        'command', action='store', help="Command to send: color, off, fade, strobe, wave, pattern, api, serve, and kill"
     )
     args = parser.parse_args(argv[0:1])
 
-    if args.command == 'server':
-        cmd_server(argv[1:])
+    if args.command == 'serve':
+        cmd_serve(argv[1:])
     else:
         if args.command == 'api':
             resp = cmd_version(argv[1:])

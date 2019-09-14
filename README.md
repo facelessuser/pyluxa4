@@ -29,7 +29,7 @@ allow easy scripting in Python for all operating systems: Linux, macOS, and Wind
 
     - Install via the provided package manager for your distro, or build from source.
 
-2. Install `pyluxa4`.
+2. Lastly, install `pyluxa4`.
 
 ## License
 

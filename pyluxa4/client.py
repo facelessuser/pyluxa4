@@ -3,7 +3,6 @@ import requests
 import json
 from .common import LED_ALL, LED_BACK, LED_FRONT
 from . import __meta__
-import traceback
 
 __all__ = ('LuxRest', 'LED_ALL', 'LED_BACK', 'LED_FRONT')
 
@@ -47,9 +46,9 @@ class LuxRest:
                 timeout=timeout
             )
         except requests.exceptions.ConnectionError:
-            return {"status": "fail", "error": "Server does not appear to be running"}
-        except Exception:
-            return {"status": "fail", "error": traceback.format_exc()}
+            return {"status": "fail", "code": 0, "error": "Server does not appear to be running"}
+        except Exception as e:
+            return {"status": "fail", "code": 0, "error": str(e)}
 
         if resp.status_code != 200:
             return {"status": "fail", "code": resp.status_code, "error": resp.text}
@@ -71,9 +70,9 @@ class LuxRest:
                 timeout=timeout
             )
         except requests.exceptions.ConnectionError:
-            return {"status": "fail", "error": "Server does not appear to be running"}
-        except Exception:
-            return {"status": "fail", "error": traceback.format_exc()}
+            return {"status": "fail", "code": 0, "error": "Server does not appear to be running"}
+        except Exception as e:
+            return {"status": "fail", "code": 0, "error": str(e)}
 
         if resp.status_code != 200:
             return {"status": "fail", "code": resp.status_code, "error": resp.text}

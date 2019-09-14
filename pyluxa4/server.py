@@ -1,5 +1,4 @@
 """Luxafor server."""
-import traceback
 from flask import Flask, jsonify, abort, make_response, request
 from gevent.pywsgi import WSGIServer
 from . import usb
@@ -18,26 +17,53 @@ def get_api_ver_path():
     return '/pyluxa4/api/v%s.%s' % __meta__.__version_info__[:2]
 
 
+def is_bool(name, value):
+    """Check if bool."""
+
+    if not isinstance(value, bool):
+        raise TypeError("'{}' must be a boolean".format(name))
+
+
+def is_str(name, value):
+    """Check if bool."""
+
+    if not isinstance(value, str):
+        raise TypeError("'{}' must be a string".format(name))
+
+
+def is_int(name, value):
+    """Check if bool."""
+
+    if not isinstance(value, int):
+        raise TypeError("'{}' must be a integer".format(name))
+
+
 def color():
     """Set colors."""
 
     try:
         error = ''
-        led = request.json.get("led", 'all')
-        color = request.json['color']
-    except Exception:
-        error = str(traceback.format_exc())
+        led = request.json.get("led", LED_ALL)
+        is_int('led', led)
+        color = request.json.get('color', '')
+        is_str('color', color)
+    except Exception as e:
+        error = str(e)
 
     if not error:
         try:
             luxafor.color(color, led=led)
-        except Exception:
-            error = str(traceback.format_exc())
+        except Exception as e:
+            error = str(e)
+
+    if error:
+        abort(400, error)
 
     return jsonify(
         {
-            'command': 'color',
+            "path": request.path,
             "status": 'success' if not error else 'fail',
+            "code": 200,
             "error": error
         }
     )
@@ -49,22 +75,30 @@ def fade():
     try:
         error = ''
         led = request.json.get("led", LED_ALL)
-        color = request.json['color'].lower()
+        is_int('led', led)
+        color = request.json.get('color', '')
+        is_str('color', color)
         duration = request.json.get('duration', 0)
+        is_int('duration', duration)
         wait = request.json.get('wait', False)
-    except Exception:
-        error = str(traceback.format_exc())
+        is_bool('wait', wait)
+    except Exception as e:
+        error = str(e)
 
     if not error:
         try:
             luxafor.fade(color, led=led, duration=duration, wait=wait)
-        except Exception:
-            error = str(traceback.format_exc())
+        except Exception as e:
+            error = str(e)
+
+    if error:
+        abort(400, error)
 
     return jsonify(
         {
-            'command': 'fade',
+            "path": request.path,
             "status": 'success' if not error else 'fail',
+            "code": 200,
             "error": error
         }
     )
@@ -76,23 +110,32 @@ def strobe():
     try:
         error = ''
         led = request.json.get("led", LED_ALL)
-        color = request.json['color'].lower()
+        is_int('led', led)
+        color = request.json.get('color', '')
+        is_str('color', color)
         speed = request.json.get('speed', 0)
+        is_int('speed', speed)
         repeat = request.json.get('repeat', 0)
+        is_int('repeat', repeat)
         wait = request.json.get('wait', False)
-    except Exception:
-        error = str(traceback.format_exc())
+        is_bool('wait', wait)
+    except Exception as e:
+        error = str(e)
 
     if not error:
         try:
             luxafor.strobe(color, led=led, speed=speed, repeat=repeat, wait=wait)
-        except Exception:
-            error = str(traceback.format_exc())
+        except Exception as e:
+            error = str(e)
+
+    if error:
+        abort(400, error)
 
     return jsonify(
         {
-            'command': 'strobe',
+            "path": request.path,
             "status": 'success' if not error else 'fail',
+            "code": 200,
             "error": error
         }
     )
@@ -104,24 +147,34 @@ def wave():
     try:
         error = ''
         led = request.json.get("led", LED_ALL)
-        color = request.json['color'].lower()
-        wv = request.json.get('wave', 1)
+        is_int('led', led)
+        color = request.json.get('color', '')
+        is_str('color', color)
+        wave = request.json.get('wave', 1)
+        is_int('wave', wave)
         duration = request.json.get('duration', 0)
+        is_int('duration', duration)
         repeat = request.json.get('repeat', 0)
+        is_int('repeat', repeat)
         wait = request.json.get('wait', False)
-    except Exception:
-        error = str(traceback.format_exc())
+        is_bool('wait', wait)
+    except Exception as e:
+        error = str(e)
 
     if not error:
         try:
-            luxafor.wave(color, led=led, wave=wv, duration=duration, repeat=repeat, wait=wait)
-        except Exception:
-            error = str(traceback.format_exc())
+            luxafor.wave(color, led=led, wave=wave, duration=duration, repeat=repeat, wait=wait)
+        except Exception as e:
+            error = str(e)
+
+    if error:
+        abort(400, error)
 
     return jsonify(
         {
-            'command': 'wave',
+            "path": request.path,
             "status": 'success' if not error else 'fail',
+            "code": 200,
             "error": error
         }
     )
@@ -132,22 +185,29 @@ def pattern():
 
     try:
         error = ''
-        pat = request.json['pattern']
+        pattern = request.json.get('pattern', 0)
+        is_int('pattern', pattern)
         repeat = request.json.get('repeat', 0)
+        is_int('repeat', repeat)
         wait = request.json.get('wait', False)
-    except Exception:
-        error = str(traceback.format_exc())
+        is_bool('wait', wait)
+    except Exception as e:
+        error = str(e)
 
     if not error:
         try:
-            luxafor.pattern(pat, repeat=repeat, wait=wait)
-        except Exception:
-            error = str(traceback.format_exc())
+            luxafor.pattern(pattern, repeat=repeat, wait=wait)
+        except Exception as e:
+            error = str(e)
+
+    if error:
+        abort(400, error)
 
     return jsonify(
         {
-            'command': 'pattern',
+            "path": request.path,
             "status": 'success' if not error else 'fail',
+            "code": 200,
             "error": error
         }
     )
@@ -159,13 +219,17 @@ def off():
     error = ''
     try:
         luxafor.off()
-    except Exception:
-        error = str(traceback.format_exc())
+    except Exception as e:
+        error = str(e)
+
+    if error:
+        abort(400, error)
 
     return jsonify(
         {
-            'command': 'off',
+            "path": request.path,
             "status": 'success' if not error else 'fail',
+            "code": 200,
             "error": error
         }
     )
@@ -177,11 +241,16 @@ def kill():
     try:
         http_server.close()
         http_server.stop(timeout=10)
-    except Exception:
-        error = str(traceback.format_exc())
+    except Exception as e:
+        error = str(e)
+
+    if error:
+        abort(400, error)
+
     return {
-        'command': 'kill',
+        "path": request.path,
         "status": 'success' if not error else 'fail',
+        "code": 200,
         "error": error
     }
 
@@ -228,11 +297,29 @@ def version():
     """Return version."""
     return jsonify(
         {
+            "path": request.path,
             'status': 'success',
             'error': '',
             'version': __meta__.__version__,
             'version_path': get_api_ver_path()
         }
+    )
+
+
+@app.errorhandler(400)
+def bad_request(error):
+    """Return 400 error."""
+
+    return make_response(
+        jsonify(
+            {
+                "path": request.path,
+                "status": "fail",
+                "code": 400,
+                "error": str(error)
+            }
+        ),
+        400
     )
 
 
@@ -242,7 +329,10 @@ def not_found(error):
     return make_response(
         jsonify(
             {
-                'status': 'fail', 'error': 'Not found'
+                "path": request.path,
+                "status": "fail",
+                "code": 404,
+                "error": 'Request not found'
             }
         ),
         404
