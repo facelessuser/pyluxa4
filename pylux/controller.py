@@ -6,7 +6,7 @@ libusb/hidapi: https://github.com/libusb/hidapi
 
 """
 import hid
-from .common import LED_ALL, LED_BACK, LED_FRONT
+from .common import LED_ALL, LED_BACK, LED_FRONT, LED_VALID
 
 __version__ = '0.1'
 

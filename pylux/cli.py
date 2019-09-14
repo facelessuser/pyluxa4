@@ -14,7 +14,7 @@ def set(argv):
     parser.add_argument('--led', action='store', default='all', help="LED: 1-6, back, tab, or all")
     args = parser.parse_args(argv)
 
-    with controler.LuxFlag() as lf:
+    with controller.LuxFlag() as lf:
         lf.color(
             args.color.lower(),
             led=resolve_led(args.led)
@@ -31,7 +31,7 @@ def fade(argv):
     parser.add_argument('--wait', action='store_true', help="Wait for sequence to complete")
     args = parser.parse_args(argv)
 
-    with controler.LuxFlag() as lf:
+    with controller.LuxFlag() as lf:
         lf.fade(
             args.color.lower(),
             led=resolve_led(args.led),
@@ -51,7 +51,7 @@ def strobe(argv):
     parser.add_argument('--wait', action='store_true', help="Wait for sequence to complete")
     args = parser.parse_args(argv)
 
-    with controler.LuxFlag() as lf:
+    with controller.LuxFlag() as lf:
         lf.strobe(
             args.color.lower(),
             led=resolve_led(args.led),
@@ -73,7 +73,7 @@ def wave(argv):
     parser.add_argument('--wait', action='store_true', help="Wait for sequence to complete")
     args = parser.parse_args(argv)
 
-    with controler.LuxFlag() as lf:
+    with controller.LuxFlag() as lf:
         lf.wave(
             args.color.lower(),
             led=resolve_led(args.led),
@@ -93,7 +93,7 @@ def pattern(argv):
     parser.add_argument('--wait', action='store_true', help="Wait for sequence to complete")
     args = parser.parse_args(argv)
 
-    with controler.LuxFlag() as lf:
+    with controller.LuxFlag() as lf:
         lf.pattern(
             args.pattern,
             repeat=args.repeat,
@@ -106,7 +106,7 @@ def off(argv):
 
     parser = argparse.ArgumentParser(prog='pylux off', description="Turn off")
     args = parser.parse_args(argv[1:])
-    with controler.LuxFlag() as lf:
+    with controller.LuxFlag() as lf:
         lf.off()
 
 
@@ -117,7 +117,7 @@ def rainbow(argv):
     parser.add_argument('--repeat', action='store', type=int, default=0, help="Repeat 0-255, 0 is treated as 1")
     args = parser.parse_args(argv)
 
-    with controler.LuxFlag() as lf:
+    with controller.LuxFlag() as lf:
         repeat = 1 if args.repeat == 0 else args.repeat
 
         for x in range(repeat):

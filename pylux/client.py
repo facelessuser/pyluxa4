@@ -5,7 +5,7 @@ import requests
 import json
 from .common import resolve_led
 from . import __meta__
-
+import traceback
 
 def post(host, port, command, payload):
     """Post a REST command."""
@@ -15,15 +15,16 @@ def post(host, port, command, payload):
             '%s:%d/pylux/api/v%s.%s/command/%s' % (
                 host,
                 port,
-                __meta__.__version_info__[:2],
-                command,
+                __meta__.__version_info__[0],
+                __meta__.__version_info__[1],
+                command
             ),
             data=json.dumps(payload),
             headers={'content-type': 'application/json'},
             timeout=1000
         )
-    except:
-        return {"status": "fail", "error": "connection"}
+    except Exception:
+        return {"status": "fail", "error": traceback.format_exc()}
 
     return json.loads(resp.text)
 
@@ -34,11 +35,11 @@ def set(argv):
     parser = argparse.ArgumentParser(prog='pylux set', description="Set color")
     parser.add_argument('color', action='store', help="Color value.")
     parser.add_argument('--led', action='store', default='all', help="LED: 1-6, back, tab, or all")
-    parser.add_argument('--host', action='store', default="127.0.0.1", help="Host.")
+    parser.add_argument('--host', action='store', default="http://127.0.0.1", help="Host.")
     parser.add_argument('--port', action='store', type=int, default=5000, help="Port.")
     args = parser.parse_args(argv)
 
-    post(
+    return post(
         args.host, args.port,
         'set',
         {
@@ -56,11 +57,11 @@ def fade(argv):
     parser.add_argument('--led', action='store', default='all', help="LED: 1-6, back, tab, or all")
     parser.add_argument('--duration', action='store', type=int, default=0, help="Duration of fade: 0-255")
     parser.add_argument('--wait', action='store_true', help="Wait for sequence to complete")
-    parser.add_argument('--host', action='store', default="127.0.0.1", help="Host.")
+    parser.add_argument('--host', action='store', default="http://127.0.0.1", help="Host.")
     parser.add_argument('--port', action='store', type=int, default=5000, help="Port.")
     args = parser.parse_args(argv)
 
-    post(
+    return post(
         args.host, args.port,
         'fade',
         {
@@ -81,11 +82,11 @@ def strobe(argv):
     parser.add_argument('--speed', action='store', type=int, default=0, help="Speed of strobe: 0-255")
     parser.add_argument('--repeat', action='store', type=int, default=0, help="Number of times to repeat: 0-255")
     parser.add_argument('--wait', action='store_true', help="Wait for sequence to complete")
-    parser.add_argument('--host', action='store', default="127.0.0.1", help="Host.")
+    parser.add_argument('--host', action='store', default="http://127.0.0.1", help="Host.")
     parser.add_argument('--port', action='store', type=int, default=5000, help="Port.")
     args = parser.parse_args(argv)
 
-    post(
+    return post(
         args.host, args.port,
         'strobe',
         {
@@ -108,11 +109,11 @@ def wave(argv):
     parser.add_argument('--duration', action='store', type=int, default=0, help="Duration of wave effect: 0-255")
     parser.add_argument('--repeat', action='store', type=int, default=0, help="Number of times to repeat: 0-255")
     parser.add_argument('--wait', action='store_true', help="Wait for sequence to complete")
-    parser.add_argument('--host', action='store', default="127.0.0.1", help="Host.")
+    parser.add_argument('--host', action='store', default="http://127.0.0.1", help="Host.")
     parser.add_argument('--port', action='store', type=int, default=5000, help="Port.")
     args = parser.parse_args(argv)
 
-    post(
+    return post(
         args.host, args.port,
         'strobe',
         {
@@ -133,11 +134,11 @@ def pattern(argv):
     parser.add_argument('pattern', action='store', type=int, help="Color value.")
     parser.add_argument('--repeat', action='store', type=int, default=0, help="Speed for strobe, wave, or fade: 0-255")
     parser.add_argument('--wait', action='store_true', help="Wait for sequence to complete")
-    parser.add_argument('--host', action='store', default="127.0.0.1", help="Host.")
+    parser.add_argument('--host', action='store', default="http://127.0.0.1", help="Host.")
     parser.add_argument('--port', action='store', type=int, default=5000, help="Port.")
     args = parser.parse_args(argv)
 
-    post(
+    return post(
         args.host, args.port,
         'strobe',
         {
@@ -152,11 +153,11 @@ def off(argv):
     """Set off."""
 
     parser = argparse.ArgumentParser(prog='pylux off', description="Turn off")
-    parser.add_argument('--host', action='store', default="127.0.0.1", help="Host.")
+    parser.add_argument('--host', action='store', default="http://127.0.0.1", help="Host.")
     parser.add_argument('--port', action='store', type=int, default=5000, help="Port.")
     args = parser.parse_args(argv[1:])
 
-    post(
+    return post(
         args.host, args.port,
         'off'
     )
@@ -173,22 +174,22 @@ def main(argv):
     args = parser.parse_args(argv[0:1])
 
     if args.command == 'set':
-        set(argv[1:])
+        resp = set(argv[1:])
 
     elif args.command == 'off':
-        off(argv[1:])
+        resp = off(argv[1:])
 
     elif args.command == 'fade':
-        fade(argv[1:])
+        resp = fade(argv[1:])
 
     elif args.command == 'strobe':
-        strobe(argv[1:])
+        resp = strobe(argv[1:])
 
     elif args.command == 'wave':
-        wave(argv[1:])
+        resp = wave(argv[1:])
 
     elif args.command == 'pattern':
-        pattern(argv[1:])
+        resp = pattern(argv[1:])
 
     else:
         raise ValueError('{} is not a recognized commad'.format(args.command))
