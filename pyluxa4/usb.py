@@ -78,14 +78,14 @@ def validate_speed(speed):
     """Validate speed."""
 
     if not (0 <= speed <= 255):
-        raise ValueError('Speed channel must be a positive integer between 1-255, {} was given'.format(speed))
+        raise ValueError('Speed channel must be a positive integer between 0-255, {} was given'.format(speed))
 
 
 def validate_repeat(repeat):
     """Validate repeat."""
 
     if not (0 <= repeat <= 255):
-        raise ValueError('Repeat channel must be a positive integer between 1-255, {} was given'.format(repeat))
+        raise ValueError('Repeat channel must be a positive integer between 0-255, {} was given'.format(repeat))
 
 
 def validate_pattern(pattern):
