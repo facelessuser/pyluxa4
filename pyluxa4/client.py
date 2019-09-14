@@ -20,9 +20,9 @@ class LuxRest:
         """Initialize."""
 
         self.host = host
-        self.post = post
+        self.port = port
 
-    def _post(self, command, payload):
+    def _post(self, command, payload=None):
         """Post a REST command."""
 
         try:
@@ -34,8 +34,8 @@ class LuxRest:
                     __meta__.__version_info__[1],
                     command
                 ),
-                data=json.dumps(payload),
-                headers={'content-type': 'application/json'},
+                data=json.dumps(payload) if payload is not None else None,
+                headers={'content-type': 'application/json'} if payload is not None else None,
                 timeout=1000
             )
         except Exception:
@@ -44,9 +44,9 @@ class LuxRest:
         return json.loads(resp.text)
 
     def set(self, color, *, led=LED_ALL):
-    """Create command to set colors."""
+        """Create command to set colors."""
 
-        return _post(
+        return self._post(
             "set",
             {
                 "color": color,
@@ -57,7 +57,7 @@ class LuxRest:
     def fade(self, color, *, led=LED_ALL, duration=0, wait=False):
         """Create command to fade colors."""
 
-        return _post(
+        return self._post(
             "fade",
             {
                 "color": color,
@@ -67,15 +67,16 @@ class LuxRest:
             }
         )
 
-    def strobe(self, color, *, led=LED_ALL, speed=0, wait=False):
+    def strobe(self, color, *, led=LED_ALL, speed=0, repeat=0, wait=False):
         """Create command to strobe colors."""
 
-        return _post(
+        return self._post(
             "strobe",
             {
                 "color": color,
                 "led": led,
                 "speed": speed,
+                "repeat": repeat,
                 "wait": wait
             }
         )
@@ -83,7 +84,7 @@ class LuxRest:
     def wave(self, color, *, led=LED_ALL, wave=1, duration=0, repeat=0, wait=False):
         """Create command to use the wave effect."""
 
-        return _post(
+        return self._post(
             "wave",
             {
                 "color": color,
@@ -98,8 +99,8 @@ class LuxRest:
     def pattern(self, pattern, *, led=LED_ALL, repeat=0, wait=False):
         """Create command to use the wave effect."""
 
-        return _post(
-            "wave",
+        return self._post(
+            "pattern",
             {
                 "pattern": pattern,
                 "repeat": repeat,
@@ -110,7 +111,7 @@ class LuxRest:
     def off(self):
         """Turn off all lights."""
 
-        return _post(
+        return self._post(
             "off",
             {}
         )
@@ -192,7 +193,7 @@ def cmd_wave(argv):
         args.color,
         led=resolve_led(args.led),
         duration=args.duration,
-        repeat=repeat,
+        repeat=args.repeat,
         wait=args.wait
     )
 
@@ -209,7 +210,7 @@ def cmd_pattern(argv):
     args = parser.parse_args(argv)
 
     return LuxRest(args.host, args.port).pattern(
-        args.color,
+        args.pattern,
         repeat=args.repeat,
         wait=args.wait
     )
@@ -223,9 +224,7 @@ def cmd_off(argv):
     parser.add_argument('--port', action='store', type=int, default=5000, help="Port.")
     args = parser.parse_args(argv[1:])
 
-    return LuxRest(args.host, args.port).off(
-        args.color
-    )
+    return LuxRest(args.host, args.port).off()
 
 
 def main(argv):

@@ -10,6 +10,8 @@ from . import __meta__
 
 app = Flask(__name__)
 luxflag = None
+HOST = '0.0.0.0'
+PORT = 5000
 
 
 def get_api_ver_path():
@@ -151,8 +153,8 @@ def pattern():
     )
 
 
-def pattern():
-    """Set pattern."""
+def off():
+    """Set off."""
 
     error = ''
     try:
@@ -162,7 +164,7 @@ def pattern():
 
     return jsonify(
         {
-            'command': 'pattern',
+            'command': 'off',
             "status": 'success' if not error else 'fail',
             "error":error
         }
@@ -232,7 +234,7 @@ def not_found(error):
     )
 
 
-def run(host='0.0.0.0', port=5000, debug=False):
+def run(host=HOST, port=PORT, debug=False):
     """Run server."""
 
     global luxflag
@@ -245,19 +247,3 @@ def run(host='0.0.0.0', port=5000, debug=False):
             http_server.serve_forever()
         except KeyboardInterrupt:
             pass
-
-
-def main(argv):
-    """Main."""
-
-    parser = argparse.ArgumentParser(prog='pylux server', description="Run server")
-    parser.add_argument('--version', action='version', version=('%(prog)s ' + __meta__.__version__))
-    parser.add_argument('--host', action='store', default='0.0.0.0', help="Host")
-    parser.add_argument('--port', action='store', type=int, default=5000, help="Port")
-    args = parser.parse_args(argv)
-
-    run(args.host, args.port)
-
-
-if __name__ == '__main__':
-    sys.exit(main(sys.argv[1:]))
