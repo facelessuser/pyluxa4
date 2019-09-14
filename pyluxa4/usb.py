@@ -7,6 +7,7 @@ libusb/hidapi: https://github.com/libusb/hidapi
 """
 import hid
 from .common import LED_ALL, LED_BACK, LED_FRONT, LED_VALID
+from .csscolors import name2hex
 
 __version__ = '0.1'
 
@@ -14,19 +15,6 @@ __all__ = ('LuxFlag', 'LED_ALL', 'LED_BACK', 'LED_FRONT')
 
 LUXAFOR_VENDOR = 0x04d8
 LUXAFOR_PRODUCT = 0xf372
-
-COLOR_MAP = {
-    "red": (255, 0, 0),
-    "orange": (255, 69, 0),
-    "yellow": (255, 255, 0),
-    "green": (0, 255, 0),
-    "blue": (0, 0, 255),
-    "magenta": (255, 0, 255),
-    "indigo": (75, 0, 130),
-    "cyan": (0, 255, 255),
-    "white": (255, 255, 255),
-    "off": (0, 0, 0)
-}
 
 COLOR_SIMPLE = {"R", "G", "B", "C", "M", "Y", "W", "O"}
 
@@ -55,14 +43,28 @@ def clamp(value, mn=0, mx=255):
 def resolve_color(color):
     """Resolve color."""
 
-    if color.startswith('#') and len(color) == 7:
+    orig = color = color.lower()
+    if color == 'off':
+        color = 'black'
+    if not color.startswith('#'):
+        color = name2hex(color)
+        if color is None:
+            raise ValueError('{} is not a valid color name'.format(orig))
+
+    if len(color) == 7:
         color = (
             int(color[1:3], 16),
             int(color[3:5], 16),
             int(color[5:7], 16)
         )
+    elif len(color) == 4:
+        color = (
+            int(color[1:2] * 2, 16),
+            int(color[2:3] * 2, 16),
+            int(color[3:4] * 2, 16)
+        )
     else:
-        color = COLOR_MAP[color.lower()]
+        raise ValueError('{} is not a valid color code'.format(orig))
 
     return color
 
