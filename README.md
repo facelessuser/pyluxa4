@@ -27,7 +27,7 @@ allow easy scripting in Python for all operating systems: Linux, macOS, and Wind
     - Windows: simply download the [pre-built binaries](https://github.com/libusb/hidapi/releases) and make them
       available in your path.
 
-    - Linux: TBD
+    - Install via the provided package manager for your distro, or build from source.
 
 2. Install `pyluxa4`.
 
