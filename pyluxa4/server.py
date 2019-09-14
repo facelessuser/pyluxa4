@@ -339,6 +339,22 @@ def not_found(error):
     )
 
 
+@app.errorhandler(500)
+def server_error(error):
+    """Return 500 error."""
+    return make_response(
+        jsonify(
+            {
+                "path": request.path,
+                "status": "fail",
+                "code": 500,
+                "error": 'Dead!'
+            }
+        ),
+        500
+    )
+
+
 def run(host=HOST, port=PORT, debug=False):
     """Run server."""
 

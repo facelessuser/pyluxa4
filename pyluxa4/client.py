@@ -20,6 +20,15 @@ class LuxRest:
         self.host = host
         self.port = port
 
+    def _format_respose(self, resp):
+        """Format the response."""
+
+        try:
+            r = json.loads(resp.text)
+        except Exception:
+            r = {"status": "fail", "code": resp.status_code, "error": resp.text}
+        return r
+
     def _post(self, command, payload, timeout, no_response=False):
         """Post a REST command."""
 
@@ -50,10 +59,7 @@ class LuxRest:
         except Exception as e:
             return {"status": "fail", "code": 0, "error": str(e)}
 
-        if resp.status_code != 200:
-            return {"status": "fail", "code": resp.status_code, "error": resp.text}
-
-        return json.loads(resp.text)
+        return self._format_respose(resp)
 
     def _get_version(self, timeout):
         """Perform a GET request."""
@@ -74,10 +80,7 @@ class LuxRest:
         except Exception as e:
             return {"status": "fail", "code": 0, "error": str(e)}
 
-        if resp.status_code != 200:
-            return {"status": "fail", "code": resp.status_code, "error": resp.text}
-
-        return json.loads(resp.text)
+        return self._format_respose(resp)
 
     def color(self, color, *, led=LED_ALL, timeout=TIMEOUT):
         """Create command to set colors."""
@@ -161,16 +164,11 @@ class LuxRest:
     def kill(self, timeout=TIMEOUT):
         """Kill the server."""
 
-        resp = self._post(
+        return self._post(
             "kill",
             None,
             timeout
         )
-
-        if resp.get('code', 0) == 500:
-            # We are likely dead:
-            resp['error'] = "Dead!"
-        return resp
 
     def version(self, timeout=TIMEOUT):
         """Request the version from the running server."""
