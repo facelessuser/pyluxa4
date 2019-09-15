@@ -1,6 +1,6 @@
 """Command line."""
 import argparse
-from .common import resolve_led
+from .common import resolve_led, WAVE_SHORT
 from . import __meta__
 from . import client
 
@@ -74,7 +74,7 @@ def cmd_wave(argv):
 
     parser = argparse.ArgumentParser(prog='pyluxa4 wave', description="Wave effect")
     parser.add_argument('color', action='store', help="Color value.")
-    parser.add_argument('--wave', action='store', type=int, default=1, help="Wave configuration: 1-5")
+    parser.add_argument('--wave', action='store', type=int, default=WAVE_SHORT, help="Wave configuration: 1-5")
     parser.add_argument('--duration', action='store', type=int, default=0, help="Duration of wave effect: 0-255")
     parser.add_argument('--repeat', action='store', type=int, default=0, help="Number of times to repeat: 0-255")
     parser.add_argument('--wait', action='store_true', help="Wait for sequence to complete")
@@ -153,11 +153,26 @@ def cmd_serve(argv):
     from . import server
 
     parser = argparse.ArgumentParser(prog='pyluxa4 serve', description="Run server")
+    parser.add_argument('--device-path', action='store', default=None, help="Luxafor device path")
+    parser.add_argument('--device-index', action='store', type=int, default=0, help="Luxafor device index")
     parser.add_argument('--host', action='store', default=server.HOST, help="Host")
     parser.add_argument('--port', action='store', type=int, default=server.PORT, help="Port")
     args = parser.parse_args(argv)
 
-    server.run(args.host, args.port)
+    path = args.device_path
+    index = args.device_index
+
+    server.run(args.host, args.port, index, path)
+
+
+def cmd_list(argv):
+    """List Luxafor devices."""
+
+    from . import usb
+
+    devices = usb.enumerate_luxafor()
+    for index, device in enumerate(devices):
+        print('{:d}. {}'.format(index, device['path']))
 
 
 def main(argv):
@@ -174,6 +189,8 @@ def main(argv):
 
     if args.command == 'serve':
         cmd_serve(argv[1:])
+    elif args.command == 'list':
+        cmd_list(argv[1:])
     else:
         if args.command == 'api':
             resp = cmd_version(argv[1:])

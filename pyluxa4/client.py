@@ -1,10 +1,19 @@
 """Luxafor client API."""
 import requests
 import json
-from .common import LED_ALL, LED_BACK, LED_FRONT
+from .common import LED_ALL, LED_BACK, LED_FRONT, LED_VALID, LED_1, LED_2, LED_3, LED_4, LED_5, LED_6
+from .common import WAVE_SHORT, WAVE_LONG, WAVE_OVERLAPPING_SHORT, WAVE_OVERLAPPING_LONG
+from .common import PATTERN_LUXAFOR, PATTERN_RANDOM1, PATTERN_RANDOM2, PATTERN_RANDOM3
+from .common import PATTERN_POLICE, PATTERN_RANDOM4, PATTERN_RANDOM5, PATTERN_RAINBOW
 from . import __meta__
 
-__all__ = ('LuxRest', 'LED_ALL', 'LED_BACK', 'LED_FRONT')
+__all__ = (
+    'LuxRest',
+    'LED_ALL', 'LED_BACK', 'LED_FRONT', 'LED_1', 'LED_2', 'LED_3', 'LED_4', 'LED_5', 'LED_6',
+    'WAVE_SHORT', 'WAVE_LONG', 'WAVE_OVERLAPPING_SHORT', 'WAVE_OVERLAPPING_LONG',
+    'PATTERN_LUXAFOR', 'PATTERN_RANDOM1', 'PATTERN_RANDOM2', 'PATTERN_RANDOM3',
+    'PATTERN_POLICE', 'PATTERN_RANDOM4', 'PATTERN_RANDOM5', 'PATTERN_RAINBOW'
+)
 
 HOST = "127.0.0.1"
 PORT = 5000
@@ -123,7 +132,7 @@ class LuxRest:
             timeout
         )
 
-    def wave(self, color, *, wave=1, duration=0, repeat=0, wait=False, timeout=TIMEOUT):
+    def wave(self, color, *, wave=WAVE_SHORT, duration=0, repeat=0, wait=False, timeout=TIMEOUT):
         """Create command to use the wave effect."""
 
         return self._post(

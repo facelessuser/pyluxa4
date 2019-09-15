@@ -2,7 +2,7 @@
 from flask import Flask, jsonify, abort, make_response, request
 from gevent.pywsgi import WSGIServer
 from . import usb
-from .common import LED_ALL
+from .common import LED_ALL, WAVE_SHORT
 from . import __meta__
 
 app = Flask(__name__)
@@ -148,7 +148,7 @@ def wave():
         error = ''
         color = request.json.get('color', '')
         is_str('color', color)
-        wave = request.json.get('wave', 1)
+        wave = request.json.get('wave', WAVE_SHORT)
         is_int('wave', wave)
         duration = request.json.get('duration', 0)
         is_int('duration', duration)
@@ -237,6 +237,7 @@ def kill():
     """Kill."""
 
     try:
+        error = ''
         http_server.close()
         http_server.stop(timeout=10)
     except Exception as e:
@@ -353,13 +354,13 @@ def server_error(error):
     )
 
 
-def run(host=HOST, port=PORT, debug=False):
+def run(host=HOST, port=PORT, device_index=0, device_path=None, debug=False):
     """Run server."""
 
     global luxafor
     global http_server
 
-    with usb.Luxafor() as lf:
+    with usb.Luxafor(device_index, device_path) as lf:
         luxafor = lf
 
         try:

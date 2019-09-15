@@ -6,12 +6,21 @@ libusb/hidapi: https://github.com/libusb/hidapi
 
 """
 import hid
-from .common import LED_ALL, LED_BACK, LED_FRONT, LED_VALID
+from .common import LED_ALL, LED_BACK, LED_FRONT, LED_VALID, LED_1, LED_2, LED_3, LED_4, LED_5, LED_6
+from .common import WAVE_SHORT, WAVE_LONG, WAVE_OVERLAPPING_SHORT, WAVE_OVERLAPPING_LONG
+from .common import PATTERN_LUXAFOR, PATTERN_RANDOM1, PATTERN_RANDOM2, PATTERN_RANDOM3
+from .common import PATTERN_POLICE, PATTERN_RANDOM4, PATTERN_RANDOM5, PATTERN_RAINBOW
 from .csscolors import name2hex
 
 __version__ = '0.1'
 
-__all__ = ('Luxafor', 'LED_ALL', 'LED_BACK', 'LED_FRONT')
+__all__ = (
+    'Luxafor', 'enumerate_luxafor',
+    'LED_ALL', 'LED_BACK', 'LED_FRONT', 'LED_1', 'LED_2', 'LED_3', 'LED_4', 'LED_5', 'LED_6',
+    'WAVE_SHORT', 'WAVE_LONG', 'WAVE_OVERLAPPING_SHORT', 'WAVE_OVERLAPPING_LONG',
+    'PATTERN_LUXAFOR', 'PATTERN_RANDOM1', 'PATTERN_RANDOM2', 'PATTERN_RANDOM3',
+    'PATTERN_POLICE', 'PATTERN_RANDOM4', 'PATTERN_RANDOM5', 'PATTERN_RAINBOW'
+)
 
 LUXAFOR_VENDOR = 0x04d8
 LUXAFOR_PRODUCT = 0xf372
@@ -111,6 +120,12 @@ def validate_simple_color(color):
         raise ValueError("Accepted color codes are R, G, B, C, M, Y, W, and O, {} was given".format(color))
 
 
+def enumerate_luxafor():
+    """Enumerate all Luxafor devices."""
+
+    return hid.enumerate(vid=LUXAFOR_VENDOR, pid=LUXAFOR_PRODUCT)
+
+
 class Luxafor:
     """
     Class to control Luxafor device.
@@ -127,10 +142,23 @@ class Luxafor:
 
     """
 
-    def __init__(self):
+    def __init__(self, index=0, path=None):
         """Initialize."""
 
-        self._device = hid.Device(vid=LUXAFOR_VENDOR, pid=LUXAFOR_PRODUCT)
+        device = None
+        devices = enumerate_luxafor()
+        if not devices:
+            raise RutimeError('Cannot find a valid connected Luxafor device')
+        if path is not None:
+            for d in devices:
+                if d['path'] == path:
+                    device = d
+                    break
+        if device is None:
+            if index < 0 or index >= len(devices):
+                raise RuntimeError('The Luxafor device at index {} cannot be found'.format(index))
+            device = devices[index]['path']
+        self._device = hid.Device(path=device)
 
     def __enter__(self):
         """Enter."""
@@ -222,7 +250,7 @@ class Luxafor:
         validate_speed(duration)
         self._execute([CMD_REPORT_NUM, MODE_FADE, led, red, green, blue, duration, 0, 0], wait=wait)
 
-    def wave(self, color, *, wave=1, duration=0, repeat=0, wait=False):
+    def wave(self, color, *, wave=WAVE_SHORT, duration=0, repeat=0, wait=False):
         """
         Build wave command.
 
