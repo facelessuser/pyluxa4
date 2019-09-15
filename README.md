@@ -52,10 +52,14 @@ The `serve` connects with your device and starts a server. By default, the first
 the server will connect to, but you can specify a specific device by either using `--device-path` or `--device-index`.
 `--device-path` take precedence over `--device-index`.
 
+If you wish to restrict those making requests via the API, you can assign an ID with the `--api-id` option, and only
+requests that provide the matching ID will be accepted.
+
 ```
 $ pyluxa4 serve --help
 usage: pyluxa4 serve [-h] [--device-path DEVICE_PATH]
                      [--device-index DEVICE_INDEX] [--host HOST] [--port PORT]
+                     [--api-id API_ID]
 
 Run server
 
@@ -67,6 +71,7 @@ optional arguments:
                         Luxafor device index
   --host HOST           Host
   --port PORT           Port
+  --api-id API_ID       Assign an ID that must be used when sending commands
 ```
 
 ### Color
@@ -92,7 +97,7 @@ single LED resolution.
 ```
 $ pyluxa4 color --help
 usage: pyluxa4 color [-h] [--led LED] [--host HOST] [--port PORT]
-                     [--timeout TIMEOUT]
+                     [--api-id API_ID] [--timeout TIMEOUT]
                      color
 
 Set color
@@ -105,6 +110,7 @@ optional arguments:
   --led LED          LED: 1-6, back, front, or all
   --host HOST        Host
   --port PORT        Port
+  --api-id API_ID    Send API ID
   --timeout TIMEOUT  Timeout
 ```
 
@@ -120,7 +126,8 @@ single LED resolution.
 ```
 $ pyluxa4 fade --help
 usage: pyluxa4 fade [-h] [--led LED] [--duration DURATION] [--wait]
-                    [--host HOST] [--port PORT] [--timeout TIMEOUT]
+                    [--host HOST] [--port PORT] [--api-id API_ID]
+                    [--timeout TIMEOUT]
                     color
 
 Fade to color
@@ -130,11 +137,12 @@ positional arguments:
 
 optional arguments:
   -h, --help           show this help message and exit
-  --led LED            LED: 1-6, back, front, or all
+  --led LED            LED: 1-6, back, tab, or all
   --duration DURATION  Duration of fade: 0-255
   --wait               Wait for sequence to complete
   --host HOST          Host
   --port PORT          Port
+  --api-id API_ID      Send API ID
   --timeout TIMEOUT    Timeout
 ```
 
@@ -149,7 +157,8 @@ single LED resolution.
 ```
 $ pyluxa4 strobe --help
 usage: pyluxa4 strobe [-h] [--led LED] [--speed SPEED] [--repeat REPEAT]
-                      [--wait] [--host HOST] [--port PORT] [--timeout TIMEOUT]
+                      [--wait] [--host HOST] [--port PORT] [--api-id API_ID]
+                      [--timeout TIMEOUT]
                       color
 
 Strobe color
@@ -165,6 +174,7 @@ optional arguments:
   --wait             Wait for sequence to complete
   --host HOST        Host
   --port PORT        Port
+  --api-id API_ID    Send API ID
   --timeout TIMEOUT  Timeout
 ```
 
@@ -178,7 +188,8 @@ You cannot control individual LEDs with the wave command as all the LEDs are nee
 ```
 $ pyluxa4 wave --help
 usage: pyluxa4 wave [-h] [--wave WAVE] [--duration DURATION] [--repeat REPEAT]
-                    [--wait] [--host HOST] [--port PORT] [--timeout TIMEOUT]
+                    [--wait] [--host HOST] [--port PORT] [--api-id API_ID]
+                    [--timeout TIMEOUT]
                     color
 
 Wave effect
@@ -194,6 +205,7 @@ optional arguments:
   --wait               Wait for sequence to complete
   --host HOST          Host
   --port PORT          Port
+  --api-id API_ID      Send API ID
   --timeout TIMEOUT    Timeout
 ```
 
@@ -207,7 +219,7 @@ You cannot control individual LEDs with the pattern command as all the LEDs are 
 ```
 $ pyluxa4 pattern --help
 usage: pyluxa4 pattern [-h] [--repeat REPEAT] [--wait] [--host HOST]
-                       [--port PORT] [--timeout TIMEOUT]
+                       [--port PORT] [--api-id API_ID] [--timeout TIMEOUT]
                        pattern
 
 Display pattern
@@ -221,6 +233,7 @@ optional arguments:
   --wait             Wait for sequence to complete
   --host HOST        Host
   --port PORT        Port
+  --api-id API_ID    Send API ID
   --timeout TIMEOUT  Timeout
 ```
 
@@ -250,14 +263,16 @@ The `kill` command is used to kill an already running server.
 
 ```
 $ pyluxa4 kill --help
-usage: pyluxa4 kill [-h] [--host HOST] [--port PORT] [--timeout TIMEOUT]
+usage: pyluxa4 off [-h] [--host HOST] [--port PORT] [--api-id API_ID]
+                   [--timeout TIMEOUT]
 
-Kill server
+Turn off
 
 optional arguments:
   -h, --help         show this help message and exit
   --host HOST        Host
   --port PORT        Port
+  --api-id API_ID    Send API ID
   --timeout TIMEOUT  Timeout
 ```
 

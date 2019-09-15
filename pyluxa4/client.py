@@ -1,9 +1,9 @@
 """Luxafor client API."""
 import requests
 import json
-from .common import LED_ALL, LED_BACK, LED_FRONT, LED_VALID, LED_1, LED_2, LED_3, LED_4, LED_5, LED_6
+from .common import LED_ALL, LED_BACK, LED_FRONT, LED_1, LED_2, LED_3, LED_4, LED_5, LED_6
 from .common import WAVE_SHORT, WAVE_LONG, WAVE_OVERLAPPING_SHORT, WAVE_OVERLAPPING_LONG
-from .common import PATTERN_LUXAFOR, PATTERN_RANDOM1, PATTERN_RANDOM2, PATTERN_RANDOM3
+from .common import PATTERN_TRAFFIC_LIGHT, PATTERN_RANDOM1, PATTERN_RANDOM2, PATTERN_RANDOM3
 from .common import PATTERN_POLICE, PATTERN_RANDOM4, PATTERN_RANDOM5, PATTERN_RAINBOW
 from . import __meta__
 
@@ -11,7 +11,7 @@ __all__ = (
     'LuxRest',
     'LED_ALL', 'LED_BACK', 'LED_FRONT', 'LED_1', 'LED_2', 'LED_3', 'LED_4', 'LED_5', 'LED_6',
     'WAVE_SHORT', 'WAVE_LONG', 'WAVE_OVERLAPPING_SHORT', 'WAVE_OVERLAPPING_LONG',
-    'PATTERN_LUXAFOR', 'PATTERN_RANDOM1', 'PATTERN_RANDOM2', 'PATTERN_RANDOM3',
+    'PATTERN_TRAFFIC_LIGHT', 'PATTERN_RANDOM1', 'PATTERN_RANDOM2', 'PATTERN_RANDOM3',
     'PATTERN_POLICE', 'PATTERN_RANDOM4', 'PATTERN_RANDOM5', 'PATTERN_RAINBOW'
 )
 
@@ -91,19 +91,20 @@ class LuxRest:
 
         return self._format_respose(resp)
 
-    def color(self, color, *, led=LED_ALL, timeout=TIMEOUT):
+    def color(self, color, *, led=LED_ALL, api_id=None, timeout=TIMEOUT):
         """Create command to set colors."""
 
         return self._post(
             "color",
             {
                 "color": color,
-                "led": led
+                "led": led,
+                "api_id": api_id
             },
             timeout
         )
 
-    def fade(self, color, *, led=LED_ALL, duration=0, wait=False, timeout=TIMEOUT):
+    def fade(self, color, *, led=LED_ALL, duration=0, wait=False, api_id=None, timeout=TIMEOUT):
         """Create command to fade colors."""
 
         return self._post(
@@ -112,12 +113,13 @@ class LuxRest:
                 "color": color,
                 "led": led,
                 "duration": duration,
-                "wait": wait
+                "wait": wait,
+                "api_id": api_id
             },
             timeout
         )
 
-    def strobe(self, color, *, led=LED_ALL, speed=0, repeat=0, wait=False, timeout=TIMEOUT):
+    def strobe(self, color, *, led=LED_ALL, speed=0, repeat=0, wait=False, api_id=None, timeout=TIMEOUT):
         """Create command to strobe colors."""
 
         return self._post(
@@ -127,12 +129,13 @@ class LuxRest:
                 "led": led,
                 "speed": speed,
                 "repeat": repeat,
-                "wait": wait
+                "wait": wait,
+                "api_id": api_id
             },
             timeout
         )
 
-    def wave(self, color, *, wave=WAVE_SHORT, duration=0, repeat=0, wait=False, timeout=TIMEOUT):
+    def wave(self, color, *, wave=WAVE_SHORT, duration=0, repeat=0, wait=False, api_id=None, timeout=TIMEOUT):
         """Create command to use the wave effect."""
 
         return self._post(
@@ -142,12 +145,13 @@ class LuxRest:
                 "wave": wave,
                 "duration": duration,
                 "repeat": repeat,
-                "wait": wait
+                "wait": wait,
+                "api_id": api_id
             },
             timeout
         )
 
-    def pattern(self, pattern, *, led=LED_ALL, repeat=0, wait=False, timeout=TIMEOUT):
+    def pattern(self, pattern, *, led=LED_ALL, repeat=0, wait=False, api_id=None, timeout=TIMEOUT):
         """Create command to use the wave effect."""
 
         return self._post(
@@ -155,26 +159,31 @@ class LuxRest:
             {
                 "pattern": pattern,
                 "repeat": repeat,
-                "wait": wait
+                "wait": wait,
+                "api_id": api_id
             },
             timeout
         )
 
-    def off(self, timeout=TIMEOUT):
+    def off(self, api_id=None, timeout=TIMEOUT):
         """Turn off all lights."""
 
         return self._post(
             "off",
-            None,
+            {
+                "api_id": api_id
+            },
             timeout
         )
 
-    def kill(self, timeout=TIMEOUT):
+    def kill(self, api_id=None, timeout=TIMEOUT):
         """Kill the server."""
 
         return self._post(
             "kill",
-            None,
+            {
+                "api_id": api_id
+            },
             timeout
         )
 

@@ -9,7 +9,7 @@ import hid
 import os
 from .common import LED_ALL, LED_BACK, LED_FRONT, LED_VALID, LED_1, LED_2, LED_3, LED_4, LED_5, LED_6
 from .common import WAVE_SHORT, WAVE_LONG, WAVE_OVERLAPPING_SHORT, WAVE_OVERLAPPING_LONG
-from .common import PATTERN_LUXAFOR, PATTERN_RANDOM1, PATTERN_RANDOM2, PATTERN_RANDOM3
+from .common import PATTERN_TRAFFIC_LIGHT, PATTERN_RANDOM1, PATTERN_RANDOM2, PATTERN_RANDOM3
 from .common import PATTERN_POLICE, PATTERN_RANDOM4, PATTERN_RANDOM5, PATTERN_RAINBOW
 from .csscolors import name2hex
 
@@ -19,7 +19,7 @@ __all__ = (
     'Luxafor', 'enumerate_luxafor',
     'LED_ALL', 'LED_BACK', 'LED_FRONT', 'LED_1', 'LED_2', 'LED_3', 'LED_4', 'LED_5', 'LED_6',
     'WAVE_SHORT', 'WAVE_LONG', 'WAVE_OVERLAPPING_SHORT', 'WAVE_OVERLAPPING_LONG',
-    'PATTERN_LUXAFOR', 'PATTERN_RANDOM1', 'PATTERN_RANDOM2', 'PATTERN_RANDOM3',
+    'PATTERN_TRAFFIC_LIGHT', 'PATTERN_RANDOM1', 'PATTERN_RANDOM2', 'PATTERN_RANDOM3',
     'PATTERN_POLICE', 'PATTERN_RANDOM4', 'PATTERN_RANDOM5', 'PATTERN_RAINBOW'
 )
 
@@ -143,13 +143,13 @@ class Luxafor:
 
     """
 
-    def __init__(self, index=0, path=None):
+    def __init__(self, index=0, path=None, api_id=None):
         """Initialize."""
 
         device = None
         devices = enumerate_luxafor()
         if not devices:
-            raise RutimeError('Cannot find a valid connected Luxafor device')
+            raise RuntimeError('Cannot find a valid connected Luxafor device')
         if path is not None:
             target = os.fsencode(path)
             for d in devices:
@@ -162,6 +162,7 @@ class Luxafor:
             if index < 0 or index >= len(devices):
                 raise RuntimeError('The Luxafor device at index {} cannot be found'.format(index))
             device = devices[index]['path']
+        self._api_id = api_id
         self._device = hid.Device(path=device)
 
     def __enter__(self):
@@ -178,6 +179,11 @@ class Luxafor:
         """Close Luxafor device."""
 
         return self._device.close()
+
+    def get_api_id(self):
+        """Get the API ID."""
+
+        return self._api_id
 
     def off(self):
         """Set all LEDs to off."""

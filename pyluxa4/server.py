@@ -270,6 +270,8 @@ def index():
 def execute_command(command):
     """Executes a given command GET or POST command."""
     if request.method == 'POST':
+        if request.json.get('api_id', None) != luxafor.get_api_id():
+            abort(404)
         if command == 'color':
             results = color()
         elif command == 'fade':
@@ -354,13 +356,13 @@ def server_error(error):
     )
 
 
-def run(host=HOST, port=PORT, device_index=0, device_path=None, debug=False):
+def run(host=HOST, port=PORT, device_index=0, device_path=None, api_id=None, debug=False):
     """Run server."""
 
     global luxafor
     global http_server
 
-    with usb.Luxafor(device_index, device_path) as lf:
+    with usb.Luxafor(device_index, device_path, api_id) as lf:
         luxafor = lf
 
         try:

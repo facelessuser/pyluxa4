@@ -14,12 +14,14 @@ def cmd_color(argv):
     parser.add_argument('--led', action='store', default='all', help="LED: 1-6, back, front, or all")
     parser.add_argument('--host', action='store', default=client.HOST, help="Host")
     parser.add_argument('--port', action='store', type=int, default=client.PORT, help="Port")
+    parser.add_argument('--api-id', action='store', default=None, help="Send API ID")
     parser.add_argument('--timeout', action='store', type=int, default=client.TIMEOUT, help="Timeout")
     args = parser.parse_args(argv)
 
     return client.LuxRest(args.host, args.port).color(
         args.color,
         led=resolve_led(args.led),
+        api_id=args.api_id,
         timeout=args.timeout
     )
 
@@ -34,6 +36,7 @@ def cmd_fade(argv):
     parser.add_argument('--wait', action='store_true', help="Wait for sequence to complete")
     parser.add_argument('--host', action='store', default=client.HOST, help="Host")
     parser.add_argument('--port', action='store', type=int, default=client.PORT, help="Port")
+    parser.add_argument('--api-id', action='store', default=None, help="Send API ID")
     parser.add_argument('--timeout', action='store', type=int, default=client.TIMEOUT, help="Timeout")
     args = parser.parse_args(argv)
 
@@ -42,6 +45,7 @@ def cmd_fade(argv):
         led=resolve_led(args.led),
         duration=args.duration,
         wait=args.wait,
+        api_id=args.api_id,
         timeout=args.timeout
     )
 
@@ -57,6 +61,7 @@ def cmd_strobe(argv):
     parser.add_argument('--wait', action='store_true', help="Wait for sequence to complete")
     parser.add_argument('--host', action='store', default=client.HOST, help="Host")
     parser.add_argument('--port', action='store', type=int, default=client.PORT, help="Port")
+    parser.add_argument('--api-id', action='store', default=None, help="Send API ID")
     parser.add_argument('--timeout', action='store', type=int, default=client.TIMEOUT, help="Timeout")
     args = parser.parse_args(argv)
 
@@ -66,6 +71,7 @@ def cmd_strobe(argv):
         speed=args.speed,
         repeat=args.repeat,
         wait=args.wait,
+        api_id=args.api_id,
         timeout=args.timeout
     )
 
@@ -81,6 +87,7 @@ def cmd_wave(argv):
     parser.add_argument('--wait', action='store_true', help="Wait for sequence to complete")
     parser.add_argument('--host', action='store', default=client.HOST, help="Host")
     parser.add_argument('--port', action='store', type=int, default=client.PORT, help="Port")
+    parser.add_argument('--api-id', action='store', default=None, help="Send API ID")
     parser.add_argument('--timeout', action='store', type=int, default=client.TIMEOUT, help="Timeout")
     args = parser.parse_args(argv)
 
@@ -89,6 +96,7 @@ def cmd_wave(argv):
         duration=args.duration,
         repeat=args.repeat,
         wait=args.wait,
+        api_id=args.api_id,
         timeout=args.timeout
     )
 
@@ -102,6 +110,7 @@ def cmd_pattern(argv):
     parser.add_argument('--wait', action='store_true', help="Wait for sequence to complete")
     parser.add_argument('--host', action='store', default=client.HOST, help="Host")
     parser.add_argument('--port', action='store', type=int, default=client.PORT, help="Port")
+    parser.add_argument('--api-id', action='store', default=None, help="Send API ID")
     parser.add_argument('--timeout', action='store', type=int, default=client.TIMEOUT, help="Timeout")
     args = parser.parse_args(argv)
 
@@ -109,6 +118,7 @@ def cmd_pattern(argv):
         args.pattern,
         repeat=args.repeat,
         wait=args.wait,
+        api_id=args.api_id,
         timeout=args.timeout
     )
 
@@ -119,10 +129,14 @@ def cmd_off(argv):
     parser = argparse.ArgumentParser(prog='pyluxa4 off', description="Turn off")
     parser.add_argument('--host', action='store', default=client.HOST, help="Host")
     parser.add_argument('--port', action='store', type=int, default=client.PORT, help="Port")
+    parser.add_argument('--api-id', action='store', default=None, help="Send API ID")
     parser.add_argument('--timeout', action='store', type=int, default=client.TIMEOUT, help="Timeout")
     args = parser.parse_args(argv)
 
-    return client.LuxRest(args.host, args.port).off(timeout=args.timeout)
+    return client.LuxRest(args.host, args.port).off(
+        api_id=args.api_id,
+        timeout=args.timeout
+    )
 
 
 def cmd_version(argv):
@@ -143,10 +157,14 @@ def cmd_kill(argv):
     parser = argparse.ArgumentParser(prog='pyluxa4 kill', description="Kill server")
     parser.add_argument('--host', action='store', default=client.HOST, help="Host")
     parser.add_argument('--port', action='store', type=int, default=client.PORT, help="Port")
+    parser.add_argument('--api-id', action='store', default=None, help="Send API ID")
     parser.add_argument('--timeout', action='store', type=int, default=client.TIMEOUT, help="Timeout")
     args = parser.parse_args(argv)
 
-    return client.LuxRest(args.host, args.port).kill(timeout=args.timeout)
+    return client.LuxRest(args.host, args.port).kill(
+        api_id=args.api_id,
+        timeout=args.timeout
+    )
 
 
 def cmd_serve(argv):
@@ -158,12 +176,15 @@ def cmd_serve(argv):
     parser.add_argument('--device-index', action='store', type=int, default=0, help="Luxafor device index")
     parser.add_argument('--host', action='store', default=server.HOST, help="Host")
     parser.add_argument('--port', action='store', type=int, default=server.PORT, help="Port")
+    parser.add_argument(
+        '--api-id', action='store', default=None, help="Assign an ID that must be used when sending commands"
+    )
     args = parser.parse_args(argv)
 
     path = args.device_path
     index = args.device_index
 
-    server.run(args.host, args.port, index, path)
+    server.run(args.host, args.port, index, path, args.api_id)
 
 
 def cmd_list(argv):
@@ -172,7 +193,7 @@ def cmd_list(argv):
     from . import usb
 
     parser = argparse.ArgumentParser(prog='pyluxa4 serve', description="List available Luxafor devices")
-    args = parser.parse_args(argv)
+    parser.parse_args(argv)
 
     devices = usb.enumerate_luxafor()
     for index, device in enumerate(devices):
