@@ -6,6 +6,7 @@ libusb/hidapi: https://github.com/libusb/hidapi
 
 """
 import hid
+import os
 from .common import LED_ALL, LED_BACK, LED_FRONT, LED_VALID, LED_1, LED_2, LED_3, LED_4, LED_5, LED_6
 from .common import WAVE_SHORT, WAVE_LONG, WAVE_OVERLAPPING_SHORT, WAVE_OVERLAPPING_LONG
 from .common import PATTERN_LUXAFOR, PATTERN_RANDOM1, PATTERN_RANDOM2, PATTERN_RANDOM3
@@ -150,10 +151,13 @@ class Luxafor:
         if not devices:
             raise RutimeError('Cannot find a valid connected Luxafor device')
         if path is not None:
+            target = os.fsencode(path)
             for d in devices:
-                if d['path'] == path:
-                    device = d
+                if d['path'] == target:
+                    device = d['path']
                     break
+            if device is None:
+                raise RuntimeError('The Luxfor device with path {} could not be found'.format(path))
         if device is None:
             if index < 0 or index >= len(devices):
                 raise RuntimeError('The Luxafor device at index {} cannot be found'.format(index))

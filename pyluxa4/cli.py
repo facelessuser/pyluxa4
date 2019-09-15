@@ -1,5 +1,6 @@
 """Command line."""
 import argparse
+import os
 from .common import resolve_led, WAVE_SHORT
 from . import __meta__
 from . import client
@@ -170,9 +171,12 @@ def cmd_list(argv):
 
     from . import usb
 
+    parser = argparse.ArgumentParser(prog='pyluxa4 serve', description="List available Luxafor devices")
+    args = parser.parse_args(argv)
+
     devices = usb.enumerate_luxafor()
     for index, device in enumerate(devices):
-        print('{:d}. {}'.format(index, device['path']))
+        print('{:d}> {}'.format(index, os.fsdecode(device['path'])))
 
 
 def main(argv):

@@ -30,20 +30,43 @@ through the server.
 
 ## CLI Usage
 
-### Serve
+### List
 
-The `serve` connects with your device and starts a server.
+The `list` command lists all the available Luxafor devices connected to the machine. It provides the index in the list
+and the path at which it is found. Either the index or path can be used in the `serve` command to specify which device
+to connect to.
 
 ```
-$ python3.7 -m pyluxa4 serve --help
-usage: pyluxa4 serve [-h] [--host HOST] [--port PORT]
+$ pyluxa4 list --help
+usage: pyluxa4 serve [-h]
+
+List available Luxafor devices
+
+optional arguments:
+  -h, --help  show this help message and exit
+```
+
+### Serve
+
+The `serve` connects with your device and starts a server. By default, the first Luxafor device found is the one that
+the server will connect to, but you can specify a specific device by either using `--device-path` or `--device-index`.
+`--device-path` take precedence over `--device-index`.
+
+```
+$ pyluxa4 serve --help
+usage: pyluxa4 serve [-h] [--device-path DEVICE_PATH]
+                     [--device-index DEVICE_INDEX] [--host HOST] [--port PORT]
 
 Run server
 
 optional arguments:
-  -h, --help   show this help message and exit
-  --host HOST  Host
-  --port PORT  Port
+  -h, --help            show this help message and exit
+  --device-path DEVICE_PATH
+                        Luxafor device path
+  --device-index DEVICE_INDEX
+                        Luxafor device index
+  --host HOST           Host
+  --port PORT           Port
 ```
 
 ### Color
