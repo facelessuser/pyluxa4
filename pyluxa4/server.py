@@ -347,7 +347,7 @@ def server_error(error):
                 "path": request.path,
                 "status": "fail",
                 "code": 500,
-                "error": 'Dead!'
+                "error": 'Internal server error'
             }
         ),
         500
