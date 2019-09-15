@@ -1,8 +1,10 @@
 Accessors
+CLI
 CSS
 LED
 LEDs
 Luxafor
+Luxafor's
 USB
 accessor
 apmorton
