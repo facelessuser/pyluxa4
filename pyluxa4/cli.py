@@ -10,9 +10,9 @@ def cmd_color(argv):
 
     parser = argparse.ArgumentParser(prog='pyluxa4 color', description="Set color")
     parser.add_argument('color', action='store', help="Color value.")
-    parser.add_argument('--led', action='store', default='all', help="LED: 1-6, back, tab, or all")
-    parser.add_argument('--host', action='store', default=client.HOST, help="Host.")
-    parser.add_argument('--port', action='store', type=int, default=client.PORT, help="Port.")
+    parser.add_argument('--led', action='store', default='all', help="LED: 1-6, back, front, or all")
+    parser.add_argument('--host', action='store', default=client.HOST, help="Host")
+    parser.add_argument('--port', action='store', type=int, default=client.PORT, help="Port")
     parser.add_argument('--timeout', action='store', type=int, default=client.TIMEOUT, help="Timeout")
     args = parser.parse_args(argv)
 
@@ -31,8 +31,8 @@ def cmd_fade(argv):
     parser.add_argument('--led', action='store', default='all', help="LED: 1-6, back, tab, or all")
     parser.add_argument('--duration', action='store', type=int, default=0, help="Duration of fade: 0-255")
     parser.add_argument('--wait', action='store_true', help="Wait for sequence to complete")
-    parser.add_argument('--host', action='store', default=client.HOST, help="Host.")
-    parser.add_argument('--port', action='store', type=int, default=client.PORT, help="Port.")
+    parser.add_argument('--host', action='store', default=client.HOST, help="Host")
+    parser.add_argument('--port', action='store', type=int, default=client.PORT, help="Port")
     parser.add_argument('--timeout', action='store', type=int, default=client.TIMEOUT, help="Timeout")
     args = parser.parse_args(argv)
 
@@ -50,12 +50,12 @@ def cmd_strobe(argv):
 
     parser = argparse.ArgumentParser(prog='pyluxa4 strobe', description="Strobe color")
     parser.add_argument('color', action='store', help="Color value.")
-    parser.add_argument('--led', action='store', default='all', help="LED: 1-6, back, tab, or all")
+    parser.add_argument('--led', action='store', default='all', help="LED: 1-6, back, front, or all")
     parser.add_argument('--speed', action='store', type=int, default=0, help="Speed of strobe: 0-255")
     parser.add_argument('--repeat', action='store', type=int, default=0, help="Number of times to repeat: 0-255")
     parser.add_argument('--wait', action='store_true', help="Wait for sequence to complete")
-    parser.add_argument('--host', action='store', default=client.HOST, help="Host.")
-    parser.add_argument('--port', action='store', type=int, default=client.PORT, help="Port.")
+    parser.add_argument('--host', action='store', default=client.HOST, help="Host")
+    parser.add_argument('--port', action='store', type=int, default=client.PORT, help="Port")
     parser.add_argument('--timeout', action='store', type=int, default=client.TIMEOUT, help="Timeout")
     args = parser.parse_args(argv)
 
@@ -75,18 +75,16 @@ def cmd_wave(argv):
     parser = argparse.ArgumentParser(prog='pyluxa4 wave', description="Wave effect")
     parser.add_argument('color', action='store', help="Color value.")
     parser.add_argument('--wave', action='store', type=int, default=1, help="Wave configuration: 1-5")
-    parser.add_argument('--led', action='store', default='all', help="LED: 1-6, back, tab, or all")
     parser.add_argument('--duration', action='store', type=int, default=0, help="Duration of wave effect: 0-255")
     parser.add_argument('--repeat', action='store', type=int, default=0, help="Number of times to repeat: 0-255")
     parser.add_argument('--wait', action='store_true', help="Wait for sequence to complete")
-    parser.add_argument('--host', action='store', default=client.HOST, help="Host.")
-    parser.add_argument('--port', action='store', type=int, default=client.PORT, help="Port.")
+    parser.add_argument('--host', action='store', default=client.HOST, help="Host")
+    parser.add_argument('--port', action='store', type=int, default=client.PORT, help="Port")
     parser.add_argument('--timeout', action='store', type=int, default=client.TIMEOUT, help="Timeout")
     args = parser.parse_args(argv)
 
     return client.LuxRest(args.host, args.port).wave(
         args.color,
-        led=resolve_led(args.led),
         duration=args.duration,
         repeat=args.repeat,
         wait=args.wait,
@@ -101,8 +99,8 @@ def cmd_pattern(argv):
     parser.add_argument('pattern', action='store', type=int, help="Color value.")
     parser.add_argument('--repeat', action='store', type=int, default=0, help="Speed for strobe, wave, or fade: 0-255")
     parser.add_argument('--wait', action='store_true', help="Wait for sequence to complete")
-    parser.add_argument('--host', action='store', default=client.HOST, help="Host.")
-    parser.add_argument('--port', action='store', type=int, default=client.PORT, help="Port.")
+    parser.add_argument('--host', action='store', default=client.HOST, help="Host")
+    parser.add_argument('--port', action='store', type=int, default=client.PORT, help="Port")
     parser.add_argument('--timeout', action='store', type=int, default=client.TIMEOUT, help="Timeout")
     args = parser.parse_args(argv)
 
@@ -118,10 +116,10 @@ def cmd_off(argv):
     """Set off."""
 
     parser = argparse.ArgumentParser(prog='pyluxa4 off', description="Turn off")
-    parser.add_argument('--host', action='store', default=client.HOST, help="Host.")
-    parser.add_argument('--port', action='store', type=int, default=client.PORT, help="Port.")
+    parser.add_argument('--host', action='store', default=client.HOST, help="Host")
+    parser.add_argument('--port', action='store', type=int, default=client.PORT, help="Port")
     parser.add_argument('--timeout', action='store', type=int, default=client.TIMEOUT, help="Timeout")
-    args = parser.parse_args(argv[1:])
+    args = parser.parse_args(argv)
 
     return client.LuxRest(args.host, args.port).off(timeout=args.timeout)
 

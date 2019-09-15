@@ -123,14 +123,13 @@ class LuxRest:
             timeout
         )
 
-    def wave(self, color, *, led=LED_ALL, wave=1, duration=0, repeat=0, wait=False, timeout=TIMEOUT):
+    def wave(self, color, *, wave=1, duration=0, repeat=0, wait=False, timeout=TIMEOUT):
         """Create command to use the wave effect."""
 
         return self._post(
             "wave",
             {
                 "color": color,
-                "led": led,
                 "wave": wave,
                 "duration": duration,
                 "repeat": repeat,

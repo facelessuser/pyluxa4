@@ -146,8 +146,6 @@ def wave():
 
     try:
         error = ''
-        led = request.json.get("led", LED_ALL)
-        is_int('led', led)
         color = request.json.get('color', '')
         is_str('color', color)
         wave = request.json.get('wave', 1)
@@ -163,7 +161,7 @@ def wave():
 
     if not error:
         try:
-            luxafor.wave(color, led=led, wave=wave, duration=duration, repeat=repeat, wait=wait)
+            luxafor.wave(color, wave=wave, duration=duration, repeat=repeat, wait=wait)
         except Exception as e:
             error = str(e)
 

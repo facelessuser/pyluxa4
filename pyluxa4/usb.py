@@ -222,7 +222,7 @@ class Luxafor:
         validate_speed(duration)
         self._execute([CMD_REPORT_NUM, MODE_FADE, led, red, green, blue, duration, 0, 0], wait=wait)
 
-    def wave(self, color, *, led=LED_ALL, wave=1, duration=0, repeat=0, wait=False):
+    def wave(self, color, *, wave=1, duration=0, repeat=0, wait=False):
         """
         Build wave command.
 
@@ -244,7 +244,6 @@ class Luxafor:
         if repeat == 0:
             wait = False
         red, green, blue = resolve_color(color)
-        validate_led(led)
         validate_wave(wave)
         validate_speed(duration)
         validate_repeat(repeat)
