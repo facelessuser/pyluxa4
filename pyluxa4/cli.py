@@ -1,6 +1,7 @@
 """Command line."""
 import argparse
 import os
+import sys
 from . import common as cmn
 from . import __meta__
 from . import client
