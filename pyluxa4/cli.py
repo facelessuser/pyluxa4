@@ -51,18 +51,6 @@ class WaveAction(argparse.Action):
         setattr(namespace, self.dest, values)
 
 
-class DurationAction(argparse.Action):
-    """Check duration options."""
-
-    def __call__(self, parser, namespace, values, option_string=None):
-        """Handle the action call."""
-
-        if not (0 <= values <= 255):
-            raise ValueError('Duration value must be an integer between 0-255, not {}'.format(values))
-
-        setattr(namespace, self.dest, values)
-
-
 class SpeedAction(argparse.Action):
     """Check speed options."""
 
@@ -122,7 +110,7 @@ def cmd_fade(argv):
     parser = argparse.ArgumentParser(prog='pyluxa4 fade', description="Fade to color")
     parser.add_argument('color', action='store', help="Color value.")
     parser.add_argument('--led', action=LedAction, default=cmn.LED_ALL, help="LED: 1-6, back, tab, or all")
-    parser.add_argument('--duration', action=DurationAction, type=int, default=0, help="Duration of fade: 0-255")
+    parser.add_argument('--speed', action=SpeedAction, type=int, default=0, help="Speed of fade: 0-255")
     parser.add_argument('--wait', action='store_true', help="Wait for sequence to complete")
     parser.add_argument('--token', action='store', default='', help="Send API token")
     connection_args(parser)
@@ -131,7 +119,7 @@ def cmd_fade(argv):
     return client.LuxRest(args.host, args.port, args.secure, args.token).fade(
         args.color,
         led=args.led,
-        duration=args.duration,
+        speed=args.speed,
         wait=args.wait,
         timeout=args.timeout
     )
@@ -166,7 +154,7 @@ def cmd_wave(argv):
     parser = argparse.ArgumentParser(prog='pyluxa4 wave', description="Wave effect")
     parser.add_argument('color', action='store', help="Color value.")
     parser.add_argument('--wave', action=WaveAction, type=int, default=cmn.WAVE_SHORT, help="Wave configuration: 1-5")
-    parser.add_argument('--duration', action=DurationAction, type=int, default=0, help="Duration of wave effect: 0-255")
+    parser.add_argument('--speed', action=SpeedAction, type=int, default=0, help="Speed of wave effect: 0-255")
     parser.add_argument('--repeat', action=RepeatAction, type=int, default=0, help="Number of times to repeat: 0-255")
     parser.add_argument('--wait', action='store_true', help="Wait for sequence to complete")
     parser.add_argument('--token', action='store', default='', help="Send API token")
@@ -175,7 +163,7 @@ def cmd_wave(argv):
 
     return client.LuxRest(args.host, args.port, args.secure, args.token).wave(
         args.color,
-        duration=args.duration,
+        speed=args.speed,
         repeat=args.repeat,
         wait=args.wait,
         timeout=args.timeout

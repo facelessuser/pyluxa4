@@ -116,7 +116,7 @@ class LuxRest:
             timeout
         )
 
-    def fade(self, color, *, led=LED_ALL, duration=0, wait=False, timeout=TIMEOUT):
+    def fade(self, color, *, led=LED_ALL, speed=0, wait=False, timeout=TIMEOUT):
         """Create command to fade colors."""
 
         return self._post(
@@ -124,7 +124,7 @@ class LuxRest:
             {
                 "color": color,
                 "led": led,
-                "duration": duration,
+                "speed": speed,
                 "wait": wait
             },
             timeout
@@ -145,7 +145,7 @@ class LuxRest:
             timeout
         )
 
-    def wave(self, color, *, wave=WAVE_SHORT, duration=0, repeat=0, wait=False, timeout=TIMEOUT):
+    def wave(self, color, *, wave=WAVE_SHORT, speed=0, repeat=0, wait=False, timeout=TIMEOUT):
         """Create command to use the wave effect."""
 
         return self._post(
@@ -153,7 +153,7 @@ class LuxRest:
             {
                 "color": color,
                 "wave": wave,
-                "duration": duration,
+                "speed": speed,
                 "repeat": repeat,
                 "wait": wait
             },

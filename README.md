@@ -126,7 +126,7 @@ optional arguments:
 
 ### Fade
 
-The `fade` command will fade a color in, or in the case of `off`, out. You can specify the duration of the fade which
+The `fade` command will fade a color in, or in the case of `off`, out. You can specify the speed of the fade which
 to increase how long it takes to fade the color.
 
 If needed, you can also control each LED individually, or by the groups front and back. Though, the `--led` option will
@@ -135,7 +135,7 @@ single LED resolution.
 
 ```
 $ pyluxa4 fade --help
-usage: pyluxa4 fade [-h] [--led LED] [--duration DURATION] [--wait]
+usage: pyluxa4 fade [-h] [--led LED] [--speed SPEED] [--wait]
                     [--token TOKEN] [--host HOST] [--port PORT]
                     [--secure SECURE] [--timeout TIMEOUT]
                     color
@@ -148,7 +148,7 @@ positional arguments:
 optional arguments:
   -h, --help           show this help message and exit
   --led LED            LED: 1-6, back, tab, or all
-  --duration DURATION  Duration of fade: 0-255
+  --speed SPEED        Speed of fade: 0-255
   --wait               Wait for sequence to complete
   --token TOKEN        Send API token
   --host HOST          Host
@@ -194,14 +194,14 @@ optional arguments:
 
 ### Wave
 
-The `wave` command provides a way to have a color perform a wave effect. The type of wave, duration of the wave, and
-how many times it repeats can all be controlled.
+The `wave` command provides a way to have a color perform a wave effect. The type of wave, speed of the wave, and how
+many times it repeats can all be controlled.
 
 You cannot control individual LEDs with the wave command as all the LEDs are needed to perform the wave effect.
 
 ```
 $ pyluxa4 wave --help
-usage: pyluxa4 wave [-h] [--wave WAVE] [--duration DURATION] [--repeat REPEAT]
+usage: pyluxa4 wave [-h] [--wave WAVE] [--speed SPEED] [--repeat REPEAT]
                     [--wait] [--token TOKEN] [--host HOST] [--port PORT]
                     [--secure SECURE] [--timeout TIMEOUT]
                     color
@@ -214,7 +214,7 @@ positional arguments:
 optional arguments:
   -h, --help           show this help message and exit
   --wave WAVE          Wave configuration: 1-5
-  --duration DURATION  Duration of wave effect: 0-255
+  --speed SPEED        Speed of wave effect: 0-255
   --repeat REPEAT      Number of times to repeat: 0-255
   --wait               Wait for sequence to complete
   --token TOKEN        Send API token

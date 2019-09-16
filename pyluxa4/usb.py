@@ -237,7 +237,7 @@ class Luxafor:
             validate_led(led)
             self._execute([CMD_REPORT_NUM, MODE_STATIC, led, red, green, blue, 0, 0, 0])
 
-    def fade(self, color, *, led=LED_ALL, duration=1, wait=False):
+    def fade(self, color, *, led=LED_ALL, speed=1, wait=False):
         """
         Build fade command.
 
@@ -257,10 +257,10 @@ class Luxafor:
 
         red, green, blue = resolve_color(color)
         validate_led(led)
-        validate_speed(duration)
-        self._execute([CMD_REPORT_NUM, MODE_FADE, led, red, green, blue, duration, 0, 0], wait=wait)
+        validate_speed(speed)
+        self._execute([CMD_REPORT_NUM, MODE_FADE, led, red, green, blue, speed, 0, 0], wait=wait)
 
-    def wave(self, color, *, wave=WAVE_SHORT, duration=0, repeat=0, wait=False):
+    def wave(self, color, *, wave=WAVE_SHORT, speed=0, repeat=0, wait=False):
         """
         Build wave command.
 
@@ -283,9 +283,9 @@ class Luxafor:
             wait = False
         red, green, blue = resolve_color(color)
         validate_wave(wave)
-        validate_speed(duration)
+        validate_speed(speed)
         validate_repeat(repeat)
-        self._execute([CMD_REPORT_NUM, MODE_WAVE, wave, red, green, blue, 0, repeat, duration], wait=wait)
+        self._execute([CMD_REPORT_NUM, MODE_WAVE, wave, red, green, blue, 0, repeat, speed], wait=wait)
 
     def strobe(self, color, *, led=LED_ALL, speed=0, repeat=0, wait=False):
         """

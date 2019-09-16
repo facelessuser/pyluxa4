@@ -90,8 +90,8 @@ def fade():
         is_int('led', led)
         color = request.json.get('color', '')
         is_str('color', color)
-        duration = request.json.get('duration', 0)
-        is_int('duration', duration)
+        speed = request.json.get('speed', 0)
+        is_int('speed', speed)
         wait = request.json.get('wait', False)
         is_bool('wait', wait)
     except Exception as e:
@@ -99,7 +99,7 @@ def fade():
 
     if not error:
         try:
-            luxafor.fade(color, led=led, duration=duration, wait=wait)
+            luxafor.fade(color, led=led, speed=speed, wait=wait)
         except Exception as e:
             error = str(e)
 
@@ -162,8 +162,8 @@ def wave():
         is_str('color', color)
         wave = request.json.get('wave', cmn.WAVE_SHORT)
         is_int('wave', wave)
-        duration = request.json.get('duration', 0)
-        is_int('duration', duration)
+        speed = request.json.get('speed', 0)
+        is_int('speed', speed)
         repeat = request.json.get('repeat', 0)
         is_int('repeat', repeat)
         wait = request.json.get('wait', False)
@@ -173,7 +173,7 @@ def wave():
 
     if not error:
         try:
-            luxafor.wave(color, wave=wave, duration=duration, repeat=repeat, wait=wait)
+            luxafor.wave(color, wave=wave, speed=speed, repeat=repeat, wait=wait)
         except Exception as e:
             error = str(e)
 
