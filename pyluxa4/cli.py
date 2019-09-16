@@ -6,22 +6,31 @@ from . import __meta__
 from . import client
 
 
+def connection_args(parser):
+    """Connection arguments to controll the request."""
+
+    parser.add_argument('--host', action='store', default=client.HOST, help="Host")
+    parser.add_argument('--port', action='store', type=int, default=client.PORT, help="Port")
+    parser.add_argument(
+        '--secure', action='store', default=None,
+        help="Enable https requests: enable verification (1), disable verification(0), or specify a certificate."
+    )
+    parser.add_argument('--timeout', action='store', type=int, default=client.TIMEOUT, help="Timeout")
+
+
 def cmd_color(argv):
     """Set to color."""
 
     parser = argparse.ArgumentParser(prog='pyluxa4 color', description="Set color")
     parser.add_argument('color', action='store', help="Color value.")
     parser.add_argument('--led', action='store', default='all', help="LED: 1-6, back, front, or all")
-    parser.add_argument('--host', action='store', default=client.HOST, help="Host")
-    parser.add_argument('--port', action='store', type=int, default=client.PORT, help="Port")
-    parser.add_argument('--api-id', action='store', default=None, help="Send API ID")
-    parser.add_argument('--timeout', action='store', type=int, default=client.TIMEOUT, help="Timeout")
+    parser.add_argument('--token', action='store', default='', help="Send API token")
+    connection_args(parser)
     args = parser.parse_args(argv)
 
-    return client.LuxRest(args.host, args.port).color(
+    return client.LuxRest(args.host, args.port, args.secure, args.token).color(
         args.color,
         led=resolve_led(args.led),
-        api_id=args.api_id,
         timeout=args.timeout
     )
 
@@ -34,18 +43,15 @@ def cmd_fade(argv):
     parser.add_argument('--led', action='store', default='all', help="LED: 1-6, back, tab, or all")
     parser.add_argument('--duration', action='store', type=int, default=0, help="Duration of fade: 0-255")
     parser.add_argument('--wait', action='store_true', help="Wait for sequence to complete")
-    parser.add_argument('--host', action='store', default=client.HOST, help="Host")
-    parser.add_argument('--port', action='store', type=int, default=client.PORT, help="Port")
-    parser.add_argument('--api-id', action='store', default=None, help="Send API ID")
-    parser.add_argument('--timeout', action='store', type=int, default=client.TIMEOUT, help="Timeout")
+    parser.add_argument('--token', action='store', default='', help="Send API token")
+    connection_args(parser)
     args = parser.parse_args(argv)
 
-    return client.LuxRest(args.host, args.port).fade(
+    return client.LuxRest(args.host, args.port, args.secure, args.token).fade(
         args.color,
         led=resolve_led(args.led),
         duration=args.duration,
         wait=args.wait,
-        api_id=args.api_id,
         timeout=args.timeout
     )
 
@@ -59,19 +65,16 @@ def cmd_strobe(argv):
     parser.add_argument('--speed', action='store', type=int, default=0, help="Speed of strobe: 0-255")
     parser.add_argument('--repeat', action='store', type=int, default=0, help="Number of times to repeat: 0-255")
     parser.add_argument('--wait', action='store_true', help="Wait for sequence to complete")
-    parser.add_argument('--host', action='store', default=client.HOST, help="Host")
-    parser.add_argument('--port', action='store', type=int, default=client.PORT, help="Port")
-    parser.add_argument('--api-id', action='store', default=None, help="Send API ID")
-    parser.add_argument('--timeout', action='store', type=int, default=client.TIMEOUT, help="Timeout")
+    parser.add_argument('--token', action='store', default='', help="Send API token")
+    connection_args(parser)
     args = parser.parse_args(argv)
 
-    return client.LuxRest(args.host, args.port).strobe(
+    return client.LuxRest(args.host, args.port, args.secure, args.token).strobe(
         args.color,
         led=resolve_led(args.led),
         speed=args.speed,
         repeat=args.repeat,
         wait=args.wait,
-        api_id=args.api_id,
         timeout=args.timeout
     )
 
@@ -85,18 +88,15 @@ def cmd_wave(argv):
     parser.add_argument('--duration', action='store', type=int, default=0, help="Duration of wave effect: 0-255")
     parser.add_argument('--repeat', action='store', type=int, default=0, help="Number of times to repeat: 0-255")
     parser.add_argument('--wait', action='store_true', help="Wait for sequence to complete")
-    parser.add_argument('--host', action='store', default=client.HOST, help="Host")
-    parser.add_argument('--port', action='store', type=int, default=client.PORT, help="Port")
-    parser.add_argument('--api-id', action='store', default=None, help="Send API ID")
-    parser.add_argument('--timeout', action='store', type=int, default=client.TIMEOUT, help="Timeout")
+    parser.add_argument('--token', action='store', default='', help="Send API token")
+    connection_args(parser)
     args = parser.parse_args(argv)
 
-    return client.LuxRest(args.host, args.port).wave(
+    return client.LuxRest(args.host, args.port, args.secure, args.token).wave(
         args.color,
         duration=args.duration,
         repeat=args.repeat,
         wait=args.wait,
-        api_id=args.api_id,
         timeout=args.timeout
     )
 
@@ -108,17 +108,14 @@ def cmd_pattern(argv):
     parser.add_argument('pattern', action='store', type=int, help="Color value.")
     parser.add_argument('--repeat', action='store', type=int, default=0, help="Speed for strobe, wave, or fade: 0-255")
     parser.add_argument('--wait', action='store_true', help="Wait for sequence to complete")
-    parser.add_argument('--host', action='store', default=client.HOST, help="Host")
-    parser.add_argument('--port', action='store', type=int, default=client.PORT, help="Port")
-    parser.add_argument('--api-id', action='store', default=None, help="Send API ID")
-    parser.add_argument('--timeout', action='store', type=int, default=client.TIMEOUT, help="Timeout")
+    parser.add_argument('--token', action='store', default='', help="Send API token")
+    connection_args(parser)
     args = parser.parse_args(argv)
 
-    return client.LuxRest(args.host, args.port).pattern(
+    return client.LuxRest(args.host, args.port, args.secure, args.token).pattern(
         args.pattern,
         repeat=args.repeat,
         wait=args.wait,
-        api_id=args.api_id,
         timeout=args.timeout
     )
 
@@ -127,14 +124,11 @@ def cmd_off(argv):
     """Set off."""
 
     parser = argparse.ArgumentParser(prog='pyluxa4 off', description="Turn off")
-    parser.add_argument('--host', action='store', default=client.HOST, help="Host")
-    parser.add_argument('--port', action='store', type=int, default=client.PORT, help="Port")
-    parser.add_argument('--api-id', action='store', default=None, help="Send API ID")
-    parser.add_argument('--timeout', action='store', type=int, default=client.TIMEOUT, help="Timeout")
+    parser.add_argument('--token', action='store', default='', help="Send API token")
+    connection_args(parser)
     args = parser.parse_args(argv)
 
-    return client.LuxRest(args.host, args.port).off(
-        api_id=args.api_id,
+    return client.LuxRest(args.host, args.port, args.secure, args.token).off(
         timeout=args.timeout
     )
 
@@ -143,26 +137,21 @@ def cmd_version(argv):
     """Get the server to respond with the version."""
 
     parser = argparse.ArgumentParser(prog='pyluxa4 api', description="Request version")
-    parser.add_argument('--host', action='store', default=client.HOST, help="Host")
-    parser.add_argument('--port', action='store', type=int, default=client.PORT, help="Port")
-    parser.add_argument('--timeout', action='store', type=int, default=client.TIMEOUT, help="Timeout")
+    connection_args(parser)
     args = parser.parse_args(argv)
 
-    return client.LuxRest(args.host, args.port).version(timeout=args.timeout)
+    return client.LuxRest(args.host, args.port, args.secure).version(timeout=args.timeout)
 
 
 def cmd_kill(argv):
     """Kill the running server."""
 
     parser = argparse.ArgumentParser(prog='pyluxa4 kill', description="Kill server")
-    parser.add_argument('--host', action='store', default=client.HOST, help="Host")
-    parser.add_argument('--port', action='store', type=int, default=client.PORT, help="Port")
-    parser.add_argument('--api-id', action='store', default=None, help="Send API ID")
-    parser.add_argument('--timeout', action='store', type=int, default=client.TIMEOUT, help="Timeout")
+    parser.add_argument('--token', action='store', default='', help="Send API token")
+    connection_args(parser)
     args = parser.parse_args(argv)
 
-    return client.LuxRest(args.host, args.port).kill(
-        api_id=args.api_id,
+    return client.LuxRest(args.host, args.port, args.secure, args.token).kill(
         timeout=args.timeout
     )
 
@@ -176,15 +165,22 @@ def cmd_serve(argv):
     parser.add_argument('--device-index', action='store', type=int, default=0, help="Luxafor device index")
     parser.add_argument('--host', action='store', default=server.HOST, help="Host")
     parser.add_argument('--port', action='store', type=int, default=server.PORT, help="Port")
+    parser.add_argument('--ssl-key', action='store', default=None, help="SSL key file (for https://)")
+    parser.add_argument('--ssl-cert', action='store', default=None, help="SSL cert file (for https://)")
     parser.add_argument(
-        '--api-id', action='store', default=None, help="Assign an ID that must be used when sending commands"
+        '--token', action='store', default='', help="Assign a token that must be used when sending commands"
     )
     args = parser.parse_args(argv)
 
     path = args.device_path
     index = args.device_index
+    kwargs = {}
+    if args.ssl_key:
+        kwargs['keyfile'] = args.ssl_key
+    if args.ssl_cert:
+        kwargs['certfile'] = args.ssl_cert
 
-    server.run(args.host, args.port, index, path, args.api_id)
+    server.run(args.host, args.port, index, path, args.token, **kwargs)
 
 
 def cmd_list(argv):

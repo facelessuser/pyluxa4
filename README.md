@@ -52,14 +52,20 @@ The `serve` connects with your device and starts a server. By default, the first
 the server will connect to, but you can specify a specific device by either using `--device-path` or `--device-index`.
 `--device-path` take precedence over `--device-index`.
 
-If you wish to restrict those making requests via the API, you can assign an ID with the `--api-id` option, and only
-requests that provide the matching ID will be accepted.
+If you wish to restrict those making requests via the API, you can assign an ID with the `--token` option, and only
+requests that provide the matching ID will be accepted. `--token` should really only be used over SSL.
+
+You can also ensure the server only takes HTTPS requests by using `--ssl-key` and `--ssl-cert`. Support is limited.
+`pyluxa4` is only really intended to be used on a local network, and probably with only self signed certificates.
+Commands sent via the client should use the `--secure <option>` option to either send requests with verification (1),
+requests with no verification (0), or to specify a certificate to validate against.
 
 ```
 $ pyluxa4 serve --help
 usage: pyluxa4 serve [-h] [--device-path DEVICE_PATH]
                      [--device-index DEVICE_INDEX] [--host HOST] [--port PORT]
-                     [--api-id API_ID]
+                     [--ssl-key SSL_KEY] [--ssl-cert SSL_CERT]
+                     [--token TOKEN]
 
 Run server
 
@@ -71,7 +77,9 @@ optional arguments:
                         Luxafor device index
   --host HOST           Host
   --port PORT           Port
-  --api-id API_ID       Assign an ID that must be used when sending commands
+  --ssl-key SSL_KEY     SSL key file (for https://)
+  --ssl-cert SSL_CERT   SSL cert file (for https://)
+  --token TOKEN         Assign an token that must be used when sending commands
 ```
 
 ### Color
@@ -96,8 +104,8 @@ single LED resolution.
 
 ```
 $ pyluxa4 color --help
-usage: pyluxa4 color [-h] [--led LED] [--host HOST] [--port PORT]
-                     [--api-id API_ID] [--timeout TIMEOUT]
+usage: pyluxa4 color [-h] [--led LED] [--token TOKEN] [--host HOST]
+                     [--port PORT] [--secure SECURE] [--timeout TIMEOUT]
                      color
 
 Set color
@@ -108,9 +116,11 @@ positional arguments:
 optional arguments:
   -h, --help         show this help message and exit
   --led LED          LED: 1-6, back, front, or all
+  --token TOKEN      Send API token
   --host HOST        Host
   --port PORT        Port
-  --api-id API_ID    Send API ID
+  --secure SECURE    Enable https requests: enable verification (1), disable
+                     verification(0), or specify a certificate.
   --timeout TIMEOUT  Timeout
 ```
 
@@ -126,8 +136,8 @@ single LED resolution.
 ```
 $ pyluxa4 fade --help
 usage: pyluxa4 fade [-h] [--led LED] [--duration DURATION] [--wait]
-                    [--host HOST] [--port PORT] [--api-id API_ID]
-                    [--timeout TIMEOUT]
+                    [--token TOKEN] [--host HOST] [--port PORT]
+                    [--secure SECURE] [--timeout TIMEOUT]
                     color
 
 Fade to color
@@ -140,9 +150,11 @@ optional arguments:
   --led LED            LED: 1-6, back, tab, or all
   --duration DURATION  Duration of fade: 0-255
   --wait               Wait for sequence to complete
+  --token TOKEN        Send API token
   --host HOST          Host
   --port PORT          Port
-  --api-id API_ID      Send API ID
+  --secure SECURE      Enable https requests: enable verification (1), disable
+                       verification(0), or specify a certificate.
   --timeout TIMEOUT    Timeout
 ```
 
@@ -157,8 +169,8 @@ single LED resolution.
 ```
 $ pyluxa4 strobe --help
 usage: pyluxa4 strobe [-h] [--led LED] [--speed SPEED] [--repeat REPEAT]
-                      [--wait] [--host HOST] [--port PORT] [--api-id API_ID]
-                      [--timeout TIMEOUT]
+                      [--wait] [--token TOKEN] [--host HOST] [--port PORT]
+                      [--secure SECURE] [--timeout TIMEOUT]
                       color
 
 Strobe color
@@ -172,9 +184,11 @@ optional arguments:
   --speed SPEED      Speed of strobe: 0-255
   --repeat REPEAT    Number of times to repeat: 0-255
   --wait             Wait for sequence to complete
+  --token TOKEN      Send API token
   --host HOST        Host
   --port PORT        Port
-  --api-id API_ID    Send API ID
+  --secure SECURE    Enable https requests: enable verification (1), disable
+                     verification(0), or specify a certificate.
   --timeout TIMEOUT  Timeout
 ```
 
@@ -188,8 +202,8 @@ You cannot control individual LEDs with the wave command as all the LEDs are nee
 ```
 $ pyluxa4 wave --help
 usage: pyluxa4 wave [-h] [--wave WAVE] [--duration DURATION] [--repeat REPEAT]
-                    [--wait] [--host HOST] [--port PORT] [--api-id API_ID]
-                    [--timeout TIMEOUT]
+                    [--wait] [--token TOKEN] [--host HOST] [--port PORT]
+                    [--secure SECURE] [--timeout TIMEOUT]
                     color
 
 Wave effect
@@ -203,9 +217,11 @@ optional arguments:
   --duration DURATION  Duration of wave effect: 0-255
   --repeat REPEAT      Number of times to repeat: 0-255
   --wait               Wait for sequence to complete
+  --token TOKEN        Send API token
   --host HOST          Host
   --port PORT          Port
-  --api-id API_ID      Send API ID
+  --secure SECURE      Enable https requests: enable verification (1), disable
+                       verification(0), or specify a certificate.
   --timeout TIMEOUT    Timeout
 ```
 
@@ -218,8 +234,9 @@ You cannot control individual LEDs with the pattern command as all the LEDs are 
 
 ```
 $ pyluxa4 pattern --help
-usage: pyluxa4 pattern [-h] [--repeat REPEAT] [--wait] [--host HOST]
-                       [--port PORT] [--api-id API_ID] [--timeout TIMEOUT]
+usage: pyluxa4 pattern [-h] [--repeat REPEAT] [--wait] [--token TOKEN]
+                       [--host HOST] [--port PORT] [--secure SECURE]
+                       [--timeout TIMEOUT]
                        pattern
 
 Display pattern
@@ -231,9 +248,11 @@ optional arguments:
   -h, --help         show this help message and exit
   --repeat REPEAT    Speed for strobe, wave, or fade: 0-255
   --wait             Wait for sequence to complete
+  --token TOKEN      Send API token
   --host HOST        Host
   --port PORT        Port
-  --api-id API_ID    Send API ID
+  --secure SECURE    Enable https requests: enable verification (1), disable
+                     verification(0), or specify a certificate.
   --timeout TIMEOUT  Timeout
 ```
 
@@ -246,14 +265,18 @@ off --led <led>` to control individual LEDs.
 
 ```
 $ pyluxa4 off --help
-usage: pyluxa4 off [-h] [--host HOST] [--port PORT] [--timeout TIMEOUT]
+usage: pyluxa4 off [-h] [--token TOKEN] [--host HOST] [--port PORT]
+                   [--secure SECURE] [--timeout TIMEOUT]
 
 Turn off
 
 optional arguments:
   -h, --help         show this help message and exit
+  --token TOKEN      Send API token
   --host HOST        Host
   --port PORT        Port
+  --secure SECURE    Enable https requests: enable verification (1), disable
+                     verification(0), or specify a certificate.
   --timeout TIMEOUT  Timeout
 ```
 
@@ -263,16 +286,18 @@ The `kill` command is used to kill an already running server.
 
 ```
 $ pyluxa4 kill --help
-usage: pyluxa4 off [-h] [--host HOST] [--port PORT] [--api-id API_ID]
-                   [--timeout TIMEOUT]
+usage: pyluxa4 kill [-h] [--token TOKEN] [--host HOST] [--port PORT]
+                    [--secure SECURE] [--timeout TIMEOUT]
 
-Turn off
+Kill server
 
 optional arguments:
   -h, --help         show this help message and exit
+  --token TOKEN      Send API token
   --host HOST        Host
   --port PORT        Port
-  --api-id API_ID    Send API ID
+  --secure SECURE    Enable https requests: enable verification (1), disable
+                     verification(0), or specify a certificate.
   --timeout TIMEOUT  Timeout
 ```
 
@@ -282,7 +307,8 @@ The `api` command simply returns the API for the current running server.
 
 ```
 $ pyluxa4 api --help
-usage: pyluxa4 api [-h] [--host HOST] [--port PORT] [--timeout TIMEOUT]
+usage: pyluxa4 api [-h] [--host HOST] [--port PORT] [--secure SECURE]
+                   [--timeout TIMEOUT]
 
 Request version
 
@@ -290,6 +316,8 @@ optional arguments:
   -h, --help         show this help message and exit
   --host HOST        Host
   --port PORT        Port
+  --secure SECURE    Enable https requests: enable verification (1), disable
+                     verification(0), or specify a certificate.
   --timeout TIMEOUT  Timeout
 ```
 

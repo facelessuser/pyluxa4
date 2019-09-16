@@ -23,11 +23,20 @@ TIMEOUT = 5
 class LuxRest:
     """Class to post commands to the REST API."""
 
-    def __init__(self, host=HOST, port=PORT):
+    def __init__(self, host=HOST, port=PORT, verify=None, token=''):
         """Initialize."""
 
         self.host = host
         self.port = port
+        self.http = 'http'
+        self.verify = True
+        self.token = token
+        if verify:
+            self.http = 'https'
+            if verify == '0':
+                self.verify = False
+            elif verify != '1':
+                self.verify = verify
 
     def _format_respose(self, resp):
         """Format the response."""
@@ -44,15 +53,16 @@ class LuxRest:
         if timeout == 0:
             timeout = None
 
+        headers = {'Authorization': 'Bearer {}'.format(self.token)}
+
         if payload is not None:
             payload = json.dumps(payload)
-            headers = {'content-type': 'application/json'}
-        else:
-            headers = None
+            headers['content-type'] = 'application/json'
 
         try:
             resp = requests.post(
-                'http://%s:%d/pyluxa4/api/v%s.%s/command/%s' % (
+                '%s://%s:%d/pyluxa4/api/v%s.%s/command/%s' % (
+                    self.http,
                     self.host,
                     self.port,
                     __meta__.__version_info__[0],
@@ -61,7 +71,8 @@ class LuxRest:
                 ),
                 data=payload,
                 headers=headers,
-                timeout=timeout
+                timeout=timeout,
+                verify=self.verify
             )
         except requests.exceptions.ConnectionError:
             return {"status": "fail", "code": 0, "error": "Server does not appear to be running"}
@@ -78,10 +89,12 @@ class LuxRest:
 
         try:
             resp = requests.get(
-                'http://%s:%d/pyluxa4/api/version' % (
+                '%s://%s:%d/pyluxa4/api/version' % (
+                    self.http,
                     self.host,
                     self.port
                 ),
+                verify=self.verify,
                 timeout=timeout
             )
         except requests.exceptions.ConnectionError:
@@ -91,20 +104,19 @@ class LuxRest:
 
         return self._format_respose(resp)
 
-    def color(self, color, *, led=LED_ALL, api_id=None, timeout=TIMEOUT):
+    def color(self, color, *, led=LED_ALL, timeout=TIMEOUT):
         """Create command to set colors."""
 
         return self._post(
             "color",
             {
                 "color": color,
-                "led": led,
-                "api_id": api_id
+                "led": led
             },
             timeout
         )
 
-    def fade(self, color, *, led=LED_ALL, duration=0, wait=False, api_id=None, timeout=TIMEOUT):
+    def fade(self, color, *, led=LED_ALL, duration=0, wait=False, timeout=TIMEOUT):
         """Create command to fade colors."""
 
         return self._post(
@@ -113,13 +125,12 @@ class LuxRest:
                 "color": color,
                 "led": led,
                 "duration": duration,
-                "wait": wait,
-                "api_id": api_id
+                "wait": wait
             },
             timeout
         )
 
-    def strobe(self, color, *, led=LED_ALL, speed=0, repeat=0, wait=False, api_id=None, timeout=TIMEOUT):
+    def strobe(self, color, *, led=LED_ALL, speed=0, repeat=0, wait=False, timeout=TIMEOUT):
         """Create command to strobe colors."""
 
         return self._post(
@@ -129,13 +140,12 @@ class LuxRest:
                 "led": led,
                 "speed": speed,
                 "repeat": repeat,
-                "wait": wait,
-                "api_id": api_id
+                "wait": wait
             },
             timeout
         )
 
-    def wave(self, color, *, wave=WAVE_SHORT, duration=0, repeat=0, wait=False, api_id=None, timeout=TIMEOUT):
+    def wave(self, color, *, wave=WAVE_SHORT, duration=0, repeat=0, wait=False, timeout=TIMEOUT):
         """Create command to use the wave effect."""
 
         return self._post(
@@ -145,13 +155,12 @@ class LuxRest:
                 "wave": wave,
                 "duration": duration,
                 "repeat": repeat,
-                "wait": wait,
-                "api_id": api_id
+                "wait": wait
             },
             timeout
         )
 
-    def pattern(self, pattern, *, led=LED_ALL, repeat=0, wait=False, api_id=None, timeout=TIMEOUT):
+    def pattern(self, pattern, *, led=LED_ALL, repeat=0, wait=False, timeout=TIMEOUT):
         """Create command to use the wave effect."""
 
         return self._post(
@@ -159,31 +168,26 @@ class LuxRest:
             {
                 "pattern": pattern,
                 "repeat": repeat,
-                "wait": wait,
-                "api_id": api_id
+                "wait": wait
             },
             timeout
         )
 
-    def off(self, api_id=None, timeout=TIMEOUT):
+    def off(self, timeout=TIMEOUT):
         """Turn off all lights."""
 
         return self._post(
             "off",
-            {
-                "api_id": api_id
-            },
+            None,
             timeout
         )
 
-    def kill(self, api_id=None, timeout=TIMEOUT):
+    def kill(self, timeout=TIMEOUT):
         """Kill the server."""
 
         return self._post(
             "kill",
-            {
-                "api_id": api_id
-            },
+            None,
             timeout
         )
 

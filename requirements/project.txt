@@ -1,3 +1,5 @@
 hid
+requests
 flask
 gevent
+Flask-HTTPAuth

@@ -1,11 +1,14 @@
 """Luxafor server."""
 from flask import Flask, jsonify, abort, make_response, request
+from flask_httpauth import HTTPTokenAuth
 from gevent.pywsgi import WSGIServer
 from . import usb
 from .common import LED_ALL, WAVE_SHORT
 from . import __meta__
 
 app = Flask(__name__)
+auth = HTTPTokenAuth('Bearer')
+tokens = set()
 luxafor = None
 HOST = '0.0.0.0'
 PORT = 5000
@@ -36,6 +39,15 @@ def is_int(name, value):
 
     if not isinstance(value, int):
         raise TypeError("'{}' must be a integer".format(name))
+
+
+@auth.verify_token
+def verify_token(token):
+    """Verify incoming token."""
+
+    if token in tokens:
+        return True
+    return False
 
 
 def color():
@@ -267,11 +279,10 @@ def index():
 
 
 @app.route('%s/command/<string:command>' % get_api_ver_path(), methods=['POST'])
+@auth.login_required
 def execute_command(command):
     """Executes a given command GET or POST command."""
     if request.method == 'POST':
-        if request.json.get('api_id', None) != luxafor.get_api_id():
-            abort(404)
         if command == 'color':
             results = color()
         elif command == 'fade':
@@ -356,17 +367,19 @@ def server_error(error):
     )
 
 
-def run(host=HOST, port=PORT, device_index=0, device_path=None, api_id=None, debug=False):
+def run(host=HOST, port=PORT, device_index=0, device_path=None, token=None, ssl=None, debug=False, **kwargs):
     """Run server."""
 
     global luxafor
     global http_server
+    global tokens
 
-    with usb.Luxafor(device_index, device_path, api_id) as lf:
+    with usb.Luxafor(device_index, device_path, token) as lf:
         luxafor = lf
+        tokens = set([token])
 
         try:
-            http_server = WSGIServer((host, port), app)
+            http_server = WSGIServer((host, port), app, **kwargs)
             http_server.serve_forever()
         except KeyboardInterrupt:
             pass
