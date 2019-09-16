@@ -76,7 +76,7 @@ class RepeatAction(argparse.Action):
 
 
 def connection_args(parser):
-    """Connection arguments to controll the request."""
+    """Connection arguments to control the request."""
 
     parser.add_argument('--host', action='store', default=client.HOST, help="Host")
     parser.add_argument('--port', action='store', type=int, default=client.PORT, help="Port")
