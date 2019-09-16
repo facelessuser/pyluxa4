@@ -13,6 +13,7 @@ apmorton
 bool
 distro
 hidapi
+https
 libusb
 macOS
 pre

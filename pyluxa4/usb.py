@@ -339,7 +339,10 @@ class Luxafor:
 
         self._device.write(bytes(cmd))
 
-        # Wait for commands that take time to complete
+        # Wait for commands that take time to complete.
+        # When the `hid` is released on Windows, the current
+        # command may not complete. Using wait before the
+        # script exits will help ensure the command completes.
         if wait:
             while self._device.read(MSG_SIZE, 100) != MSG_NON_IMMEDIATE_COMPLETE:
                 pass
