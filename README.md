@@ -246,7 +246,7 @@ positional arguments:
 
 optional arguments:
   -h, --help         show this help message and exit
-  --repeat REPEAT    Speed for strobe, wave, or fade: 0-255
+  --repeat REPEAT    Number of times to repeat: 0-255
   --wait             Wait for sequence to complete
   --token TOKEN      Send API token
   --host HOST        Host

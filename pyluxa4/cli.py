@@ -19,11 +19,72 @@ class LedAction(argparse.Action):
             led = cmn.LED_BACK
         elif led == 'front':
             led = cmn.LED_FRONT
-        elif led in (cmn.LED_1, cmn.LED_2, cmn.LED_3, cmn.LED_4, cmn.LED_5, cmn.LED_6):
-            led = int(led)
         else:
-            raise ValueError('Invalid LED value of {}'.format(led))
+            try:
+                led = int(led)
+            except Exception:
+                raise ValueError('Invalid LED value of {}'.format(led))
         setattr(namespace, self.dest, led)
+
+
+class PatternAction(argparse.Action):
+    """Check pattern options."""
+
+    def __call__(self, parser, namespace, values, option_string=None):
+        """Handle the action call."""
+
+        if not (1 <= values <= 8):
+            raise ValueError('Pattern value must be an integer between 1-8, not {}'.format(values))
+
+        setattr(namespace, self.dest, values)
+
+
+class WaveAction(argparse.Action):
+    """Check wave options."""
+
+    def __call__(self, parser, namespace, values, option_string=None):
+        """Handle the action call."""
+
+        if not (1 <= values <= 5):
+            raise ValueError('Wave value must be an integer between 1-5, not {}'.format(values))
+
+        setattr(namespace, self.dest, values)
+
+
+class DurationAction(argparse.Action):
+    """Check duration options."""
+
+    def __call__(self, parser, namespace, values, option_string=None):
+        """Handle the action call."""
+
+        if not (0 <= values <= 255):
+            raise ValueError('Duration value must be an integer between 0-255, not {}'.format(values))
+
+        setattr(namespace, self.dest, values)
+
+
+class SpeedAction(argparse.Action):
+    """Check speed options."""
+
+    def __call__(self, parser, namespace, values, option_string=None):
+        """Handle the action call."""
+
+        if not (0 <= values <= 255):
+            raise ValueError('Speed value must be an integer between 0-255, not {}'.format(values))
+
+        setattr(namespace, self.dest, values)
+
+
+class RepeatAction(argparse.Action):
+    """Check repeat options."""
+
+    def __call__(self, parser, namespace, values, option_string=None):
+        """Handle the action call."""
+
+        if not (0 <= values <= 255):
+            raise ValueError('Repeat value must be an integer between 0-255, not {}'.format(values))
+
+        setattr(namespace, self.dest, values)
 
 
 def connection_args(parser):
@@ -60,8 +121,8 @@ def cmd_fade(argv):
 
     parser = argparse.ArgumentParser(prog='pyluxa4 fade', description="Fade to color")
     parser.add_argument('color', action='store', help="Color value.")
-    parser.add_argument('--led', action='store', default=cmn.LED_ALL, help="LED: 1-6, back, tab, or all")
-    parser.add_argument('--duration', action='store', type=int, default=0, help="Duration of fade: 0-255")
+    parser.add_argument('--led', action=LedAction, default=cmn.LED_ALL, help="LED: 1-6, back, tab, or all")
+    parser.add_argument('--duration', action=DurationAction, type=int, default=0, help="Duration of fade: 0-255")
     parser.add_argument('--wait', action='store_true', help="Wait for sequence to complete")
     parser.add_argument('--token', action='store', default='', help="Send API token")
     connection_args(parser)
@@ -81,9 +142,9 @@ def cmd_strobe(argv):
 
     parser = argparse.ArgumentParser(prog='pyluxa4 strobe', description="Strobe color")
     parser.add_argument('color', action='store', help="Color value.")
-    parser.add_argument('--led', action='store', default=cmn.LED_ALL, help="LED: 1-6, back, front, or all")
-    parser.add_argument('--speed', action='store', type=int, default=0, help="Speed of strobe: 0-255")
-    parser.add_argument('--repeat', action='store', type=int, default=0, help="Number of times to repeat: 0-255")
+    parser.add_argument('--led', action=LedAction, default=cmn.LED_ALL, help="LED: 1-6, back, front, or all")
+    parser.add_argument('--speed', action=SpeedAction, type=int, default=0, help="Speed of strobe: 0-255")
+    parser.add_argument('--repeat', action=RepeatAction, type=int, default=0, help="Number of times to repeat: 0-255")
     parser.add_argument('--wait', action='store_true', help="Wait for sequence to complete")
     parser.add_argument('--token', action='store', default='', help="Send API token")
     connection_args(parser)
@@ -104,9 +165,9 @@ def cmd_wave(argv):
 
     parser = argparse.ArgumentParser(prog='pyluxa4 wave', description="Wave effect")
     parser.add_argument('color', action='store', help="Color value.")
-    parser.add_argument('--wave', action='store', type=int, default=cmn.WAVE_SHORT, help="Wave configuration: 1-5")
-    parser.add_argument('--duration', action='store', type=int, default=0, help="Duration of wave effect: 0-255")
-    parser.add_argument('--repeat', action='store', type=int, default=0, help="Number of times to repeat: 0-255")
+    parser.add_argument('--wave', action=WaveAction, type=int, default=cmn.WAVE_SHORT, help="Wave configuration: 1-5")
+    parser.add_argument('--duration', action=DurationAction, type=int, default=0, help="Duration of wave effect: 0-255")
+    parser.add_argument('--repeat', action=RepeatAction, type=int, default=0, help="Number of times to repeat: 0-255")
     parser.add_argument('--wait', action='store_true', help="Wait for sequence to complete")
     parser.add_argument('--token', action='store', default='', help="Send API token")
     connection_args(parser)
@@ -125,8 +186,8 @@ def cmd_pattern(argv):
     """Show pattern."""
 
     parser = argparse.ArgumentParser(prog='pyluxa4 pattern', description="Display pattern")
-    parser.add_argument('pattern', action='store', type=int, help="Color value.")
-    parser.add_argument('--repeat', action='store', type=int, default=0, help="Speed for strobe, wave, or fade: 0-255")
+    parser.add_argument('pattern', action=PatternAction, type=int, help="Color value.")
+    parser.add_argument('--repeat', action=RepeatAction, type=int, default=0, help="Number of times to repeat: 0-255")
     parser.add_argument('--wait', action='store_true', help="Wait for sequence to complete")
     parser.add_argument('--token', action='store', default='', help="Send API token")
     connection_args(parser)

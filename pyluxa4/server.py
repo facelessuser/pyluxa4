@@ -3,7 +3,7 @@ from flask import Flask, jsonify, abort, make_response, request
 from flask_httpauth import HTTPTokenAuth
 from gevent.pywsgi import WSGIServer
 from . import usb
-from .common import LED_ALL, WAVE_SHORT
+from . import common as cmn
 from . import __meta__
 
 app = Flask(__name__)
@@ -55,7 +55,7 @@ def color():
 
     try:
         error = ''
-        led = request.json.get("led", LED_ALL)
+        led = request.json.get("led", cmn.LED_ALL)
         is_int('led', led)
         color = request.json.get('color', '')
         is_str('color', color)
@@ -86,7 +86,7 @@ def fade():
 
     try:
         error = ''
-        led = request.json.get("led", LED_ALL)
+        led = request.json.get("led", cmn.LED_ALL)
         is_int('led', led)
         color = request.json.get('color', '')
         is_str('color', color)
@@ -121,7 +121,7 @@ def strobe():
 
     try:
         error = ''
-        led = request.json.get("led", LED_ALL)
+        led = request.json.get("led", cmn.LED_ALL)
         is_int('led', led)
         color = request.json.get('color', '')
         is_str('color', color)
@@ -160,7 +160,7 @@ def wave():
         error = ''
         color = request.json.get('color', '')
         is_str('color', color)
-        wave = request.json.get('wave', WAVE_SHORT)
+        wave = request.json.get('wave', cmn.WAVE_SHORT)
         is_int('wave', wave)
         duration = request.json.get('duration', 0)
         is_int('duration', duration)
