@@ -24,21 +24,3 @@ PATTERN_POLICE = 5
 PATTERN_RANDOM4 = 6,
 PATTERN_RANDOM5 = 7,
 PATTERN_RAINBOW = 8
-
-
-def resolve_led(option):
-    """Resolve the LED option to the actual required value."""
-
-    led = option.lower()
-    if led == 'all':
-        led = LED_ALL
-    elif led == 'back':
-        led = LED_BACK
-    elif led == 'front':
-        led = LED_FRONT
-    else:
-        try:
-            led = int(led)
-        except Exception:
-            raise ValueError('Invalid LED value of {}'.format(led))
-    return led
