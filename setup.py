@@ -44,8 +44,8 @@ VER, DEVSTATUS = get_version()
 
 entry_points = {
     'console_scripts': [
-        'pyluxa4=pylux.cli:main',
-        'pyluxa4%d.%d=pylux.cli:main' % sys.version_info[:2]
+        'pyluxa4=pyluxa4.cli:main',
+        'pyluxa4%d.%d=pyluxa4.cli:main' % sys.version_info[:2]
     ]
 }
 
