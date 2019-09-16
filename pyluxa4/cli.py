@@ -60,7 +60,7 @@ def cmd_fade(argv):
 
     parser = argparse.ArgumentParser(prog='pyluxa4 fade', description="Fade to color")
     parser.add_argument('color', action='store', help="Color value.")
-    parser.add_argument('--led', action='store', default=cmd.LED_ALL, help="LED: 1-6, back, tab, or all")
+    parser.add_argument('--led', action='store', default=cmn.LED_ALL, help="LED: 1-6, back, tab, or all")
     parser.add_argument('--duration', action='store', type=int, default=0, help="Duration of fade: 0-255")
     parser.add_argument('--wait', action='store_true', help="Wait for sequence to complete")
     parser.add_argument('--token', action='store', default='', help="Send API token")
@@ -81,7 +81,7 @@ def cmd_strobe(argv):
 
     parser = argparse.ArgumentParser(prog='pyluxa4 strobe', description="Strobe color")
     parser.add_argument('color', action='store', help="Color value.")
-    parser.add_argument('--led', action='store', default=cmd.LED_ALL, help="LED: 1-6, back, front, or all")
+    parser.add_argument('--led', action='store', default=cmn.LED_ALL, help="LED: 1-6, back, front, or all")
     parser.add_argument('--speed', action='store', type=int, default=0, help="Speed of strobe: 0-255")
     parser.add_argument('--repeat', action='store', type=int, default=0, help="Number of times to repeat: 0-255")
     parser.add_argument('--wait', action='store_true', help="Wait for sequence to complete")
