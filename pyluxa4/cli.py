@@ -265,9 +265,10 @@ def cmd_list(argv):
         print('{:d}> {}'.format(index, os.fsdecode(device['path'])))
 
 
-def main(argv):
+def main():
     """Main."""
     status = 0
+    argv = sys.argv[1:]
 
     parser = argparse.ArgumentParser(prog='pyluxa4', description='Luxafor control tool.')
     # Flag arguments
