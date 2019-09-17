@@ -7,10 +7,15 @@ libusb/hidapi: https://github.com/libusb/hidapi
 """
 import hid
 import os
-from .common import LED_ALL, LED_BACK, LED_FRONT, LED_VALID, LED_1, LED_2, LED_3, LED_4, LED_5, LED_6
-from .common import WAVE_SHORT, WAVE_LONG, WAVE_OVERLAPPING_SHORT, WAVE_OVERLAPPING_LONG
-from .common import PATTERN_TRAFFIC_LIGHT, PATTERN_RANDOM1, PATTERN_RANDOM2, PATTERN_RANDOM3
-from .common import PATTERN_POLICE, PATTERN_RANDOM4, PATTERN_RANDOM5, PATTERN_RAINBOW
+from .common import (
+    LED_ALL, LED_BACK, LED_FRONT, LED_1, LED_2, LED_3, LED_4, LED_5, LED_6,
+    WAVE_SHORT, WAVE_LONG, WAVE_OVERLAPPING_SHORT, WAVE_OVERLAPPING_LONG,
+    WAVE_1, WAVE_2, WAVE_3, WAVE_4, WAVE_5,
+    PATTERN_TRAFFIC_LIGHT, PATTERN_RANDOM1, PATTERN_RANDOM2, PATTERN_RANDOM3,
+    PATTERN_POLICE, PATTERN_RANDOM4, PATTERN_RANDOM5, PATTERN_RAINBOW,
+    PATTERN_1, PATTERN_2, PATTERN_3, PATTERN_4, PATTERN_5, PATTERN_6, PATTERN_7, PATTERN_8
+)
+from .import common as cmn
 from .csscolors import name2hex
 
 __version__ = '0.1'
@@ -19,14 +24,14 @@ __all__ = (
     'Luxafor', 'enumerate_luxafor',
     'LED_ALL', 'LED_BACK', 'LED_FRONT', 'LED_1', 'LED_2', 'LED_3', 'LED_4', 'LED_5', 'LED_6',
     'WAVE_SHORT', 'WAVE_LONG', 'WAVE_OVERLAPPING_SHORT', 'WAVE_OVERLAPPING_LONG',
+    'WAVE_1', 'WAVE_2', 'WAVE_3', 'WAVE_4', 'WAVE_5',
     'PATTERN_TRAFFIC_LIGHT', 'PATTERN_RANDOM1', 'PATTERN_RANDOM2', 'PATTERN_RANDOM3',
-    'PATTERN_POLICE', 'PATTERN_RANDOM4', 'PATTERN_RANDOM5', 'PATTERN_RAINBOW'
+    'PATTERN_POLICE', 'PATTERN_RANDOM4', 'PATTERN_RANDOM5', 'PATTERN_RAINBOW',
+    'PATTERN_1', 'PATTERN_2', 'PATTERN_3', 'PATTERN_4', 'PATTERN_5', 'PATTERN_6', 'PATTERN_7', 'PATTERN_8'
 )
 
 LUXAFOR_VENDOR = 0x04d8
 LUXAFOR_PRODUCT = 0xf372
-
-COLOR_SIMPLE = {"R", "G", "B", "C", "M", "Y", "W", "O"}
 
 MODE_BASIC = 0x00
 MODE_STATIC = 0x01
@@ -77,48 +82,6 @@ def resolve_color(color):
         raise ValueError('{} is not a valid color code'.format(orig))
 
     return color
-
-
-def validate_wave(wave):
-    """Validate wave."""
-
-    if not (1 <= wave <= 5):
-        raise ValueError('Wave must be a positive integer between 1-5, {} was given'.format(wave))
-
-
-def validate_speed(speed):
-    """Validate speed."""
-
-    if not (0 <= speed <= 255):
-        raise ValueError('Speed channel must be a positive integer between 0-255, {} was given'.format(speed))
-
-
-def validate_repeat(repeat):
-    """Validate repeat."""
-
-    if not (0 <= repeat <= 255):
-        raise ValueError('Repeat channel must be a positive integer between 0-255, {} was given'.format(repeat))
-
-
-def validate_pattern(pattern):
-    """Validate pattern."""
-
-    if not (1 <= pattern <= 8):
-        raise ValueError('Pattern must be a positive integer between 1-9, {} was given'.format(pattern))
-
-
-def validate_led(led):
-    """Validate led."""
-
-    if led not in LED_VALID:
-        raise ValueError("LED must either be an integer 1-6, 0x41, 0x42, or 0xFF, {} was given".format(led))
-
-
-def validate_simple_color(color):
-    """Validate simple color code."""
-
-    if color not in COLOR_SIMPLE:
-        raise ValueError("Accepted color codes are R, G, B, C, M, Y, W, and O, {} was given".format(color))
 
 
 def enumerate_luxafor():
@@ -208,9 +171,9 @@ class Luxafor:
 
         """
 
-        color = color.upper()
-        validate_simple_color(color)
-        self._execute([CMD_REPORT_NUM, MODE_BASIC, ord(color)])
+        color = ord(color.upper())
+        cmn.validate_simple_color(color)
+        self._execute([CMD_REPORT_NUM, MODE_BASIC, color])
 
     def color(self, color, *, led=LED_ALL):
         """
@@ -234,7 +197,7 @@ class Luxafor:
             self.basic_color(color)
         else:
             red, green, blue = resolve_color(color)
-            validate_led(led)
+            cmn.validate_led(led)
             self._execute([CMD_REPORT_NUM, MODE_STATIC, led, red, green, blue, 0, 0, 0])
 
     def fade(self, color, *, led=LED_ALL, speed=1, wait=False):
@@ -256,8 +219,8 @@ class Luxafor:
         """
 
         red, green, blue = resolve_color(color)
-        validate_led(led)
-        validate_speed(speed)
+        cmn.validate_led(led)
+        cmn.validate_speed(speed)
         self._execute([CMD_REPORT_NUM, MODE_FADE, led, red, green, blue, speed, 0, 0], wait=wait)
 
     def wave(self, color, *, wave=WAVE_SHORT, speed=0, repeat=0, wait=False):
@@ -282,9 +245,9 @@ class Luxafor:
         if repeat == 0:
             wait = False
         red, green, blue = resolve_color(color)
-        validate_wave(wave)
-        validate_speed(speed)
-        validate_repeat(repeat)
+        cmn.validate_wave(wave)
+        cmn.validate_speed(speed)
+        cmn.validate_repeat(repeat)
         self._execute([CMD_REPORT_NUM, MODE_WAVE, wave, red, green, blue, 0, repeat, speed], wait=wait)
 
     def strobe(self, color, *, led=LED_ALL, speed=0, repeat=0, wait=False):
@@ -309,9 +272,9 @@ class Luxafor:
         if repeat == 0:
             wait = False
         red, green, blue = resolve_color(color)
-        validate_led(led)
-        validate_speed(speed)
-        validate_repeat(repeat)
+        cmn.validate_led(led)
+        cmn.validate_speed(speed)
+        cmn.validate_repeat(repeat)
         self._execute([CMD_REPORT_NUM, MODE_STROBE, led, red, green, blue, speed, 0, repeat], wait=wait)
 
     def pattern(self, pattern, *, repeat=0, wait=False):
@@ -330,8 +293,8 @@ class Luxafor:
         # We cannot wait when repeat is set to go on forever.
         if repeat == 0:
             wait = False
-        validate_pattern(pattern)
-        validate_repeat(repeat)
+        cmn.validate_pattern(pattern)
+        cmn.validate_repeat(repeat)
         self._execute([CMD_REPORT_NUM, MODE_PATTERN, pattern, repeat, 0, 0, 0, 0, 0], wait=wait)
 
     def _execute(self, cmd, wait=False):

@@ -6,6 +6,30 @@ from . import common as cmn
 from . import __meta__
 from . import client
 
+LED_MAP = {
+    "all": cmn.LED_ALL,
+    "back": cmn.LED_BACK,
+    "front": cmn.LED_FRONT
+}
+
+PATTERN_MAP = {
+    'traffic-light': cmn.PATTERN_TRAFFIC_LIGHT,
+    'police': cmn.PATTERN_POLICE,
+    'rainbow': cmn.PATTERN_RAINBOW,
+    'random1': cmn.PATTERN_RANDOM1,
+    'random2': cmn.PATTERN_RANDOM2,
+    'random3': cmn.PATTERN_RANDOM3,
+    'random4': cmn.PATTERN_RANDOM4,
+    'random5': cmn.PATTERN_RANDOM5
+}
+
+WAVE_MAP = {
+    "short": cmn.WAVE_SHORT,
+    "long": cmn.WAVE_LONG,
+    "overlapping-short": cmn.WAVE_OVERLAPPING_SHORT,
+    "overlapping-long": cmn.WAVE_OVERLAPPING_LONG
+}
+
 
 class LedAction(argparse.Action):
     """Resolve LED options."""
@@ -14,17 +38,15 @@ class LedAction(argparse.Action):
         """Handle the action call."""
 
         led = values.lower()
-        if led == 'all':
-            led = cmn.LED_ALL
-        elif led == 'back':
-            led = cmn.LED_BACK
-        elif led == 'front':
-            led = cmn.LED_FRONT
+        if led in LED_MAP:
+            led = LED_MAP[led]
         else:
             try:
                 led = int(led)
+                cmn.validate_led(led)
             except Exception:
                 raise ValueError('Invalid LED value of {}'.format(led))
+
         setattr(namespace, self.dest, led)
 
 
@@ -34,10 +56,17 @@ class PatternAction(argparse.Action):
     def __call__(self, parser, namespace, values, option_string=None):
         """Handle the action call."""
 
-        if not (1 <= values <= 8):
-            raise ValueError('Pattern value must be an integer between 1-8, not {}'.format(values))
+        p = values.lower()
+        if p in PATTERN_MAP:
+            p = PATTERN_MAP[p]
+        else:
+            try:
+                p = int(p)
+                cmn.validate_pattern(p)
+            except Exception:
+                raise ValueError('Invalid pattern value of {}'.format(p))
 
-        setattr(namespace, self.dest, values)
+        setattr(namespace, self.dest, p)
 
 
 class WaveAction(argparse.Action):
@@ -46,10 +75,18 @@ class WaveAction(argparse.Action):
     def __call__(self, parser, namespace, values, option_string=None):
         """Handle the action call."""
 
-        if not (1 <= values <= 5):
-            raise ValueError('Wave value must be an integer between 1-5, not {}'.format(values))
+        w = values.lower()
+        if w in WAVE_MAP:
+            w = WAVE_MAP[w]
+        else:
+            try:
+                w = int(w)
+                cmn.validate_wave(w)
+            except Exception as e:
+                print(e)
+                raise ValueError('Invalid wave value of {}'.format(w))
 
-        setattr(namespace, self.dest, values)
+        setattr(namespace, self.dest, w)
 
 
 class SpeedAction(argparse.Action):
@@ -58,9 +95,7 @@ class SpeedAction(argparse.Action):
     def __call__(self, parser, namespace, values, option_string=None):
         """Handle the action call."""
 
-        if not (0 <= values <= 255):
-            raise ValueError('Speed value must be an integer between 0-255, not {}'.format(values))
-
+        cmn.validate_speed(values)
         setattr(namespace, self.dest, values)
 
 
@@ -70,9 +105,7 @@ class RepeatAction(argparse.Action):
     def __call__(self, parser, namespace, values, option_string=None):
         """Handle the action call."""
 
-        if not (0 <= values <= 255):
-            raise ValueError('Repeat value must be an integer between 0-255, not {}'.format(values))
-
+        cmn.validate_repeat(values)
         setattr(namespace, self.dest, values)
 
 
@@ -154,7 +187,7 @@ def cmd_wave(argv):
 
     parser = argparse.ArgumentParser(prog='pyluxa4 wave', description="Wave effect")
     parser.add_argument('color', action='store', help="Color value.")
-    parser.add_argument('--wave', action=WaveAction, type=int, default=cmn.WAVE_SHORT, help="Wave configuration: 1-5")
+    parser.add_argument('--wave', action=WaveAction, default=cmn.WAVE_SHORT, help="Wave configuration: 1-5")
     parser.add_argument('--speed', action=SpeedAction, type=int, default=0, help="Speed of wave effect: 0-255")
     parser.add_argument('--repeat', action=RepeatAction, type=int, default=0, help="Number of times to repeat: 0-255")
     parser.add_argument('--wait', action='store_true', help="Wait for sequence to complete")
@@ -164,6 +197,7 @@ def cmd_wave(argv):
 
     return client.LuxRest(args.host, args.port, args.secure, args.token).wave(
         args.color,
+        wave=args.wave,
         speed=args.speed,
         repeat=args.repeat,
         wait=args.wait,
@@ -175,7 +209,7 @@ def cmd_pattern(argv):
     """Show pattern."""
 
     parser = argparse.ArgumentParser(prog='pyluxa4 pattern', description="Display pattern")
-    parser.add_argument('pattern', action=PatternAction, type=int, help="Color value.")
+    parser.add_argument('pattern', action=PatternAction, help="Pattern value.")
     parser.add_argument('--repeat', action=RepeatAction, type=int, default=0, help="Number of times to repeat: 0-255")
     parser.add_argument('--wait', action='store_true', help="Wait for sequence to complete")
     parser.add_argument('--token', action='store', default='', help="Send API token")
