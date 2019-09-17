@@ -11,8 +11,8 @@ If desired, you can import the `pyluxa4.usb` library in a script and control the
 server. Or you could import `pyluxa4.client` and write your own application that uses the REST API to control the device
 through the server.
 
-`pyluxa4` requires [libusb/hidapi][hidapi] to be installed in order for the controller portion of the library to be
-functional.
+`pyluxa4` requires [libusb/hidapi](https://github.com/libusb/hidapi) to be installed in order for the controller portion
+of the library to be functional.
 
 ## Documentation
 
