@@ -1,0 +1,66 @@
+language: python
+dist: xenial
+sudo: true
+
+# Limit git depth to speed up build
+git:
+  depth: 5
+
+matrix:
+  include:
+  # - python: 3.5
+  #   env:
+  #   - TOXENV=py35
+  # - python: 3.6
+  #   env:
+  #   - TOXENV=py36
+  # - python: 3.7
+  #   env:
+  #   - TOXENV=py37
+  # - python: 3.8-dev
+  #   env:
+  #   - TOXENV=py38
+  - python: 3.7
+    env: TOXENV=lint
+  - python: 3.7
+    env: TOXENV=documents
+  allow_failures:
+  - python: 3.8-dev
+
+addons:
+  apt:
+    packages:
+    - aspell
+    - aspell-en
+
+install:
+- pip install tox
+# - pip install codecov
+
+script:
+- tox
+
+# after_success:
+# - codecov
+
+# deploy:
+#   - provider: pypi
+#     user: facelessuser
+#     server: https://upload.pypi.org/legacy/
+#     password:
+#       secure: ''
+#     skip_upload_docs: true
+#     on:
+#       tags: true
+#       repo: facelessuser/pyluxa4
+#       condition: "$TOXENV = documents"
+#   - provider: pages
+#     github_token: $GITHUB_TOKEN
+#     name: $GITHUB_USER
+#     email: $GITHUB_EMAIL
+#     skip_cleanup: true
+#     local_dir: site
+#     on:
+#       tags: true
+#       repo: facelessuser/pyluxa4
+#       condition: "$TOXENV = documents"
