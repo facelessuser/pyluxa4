@@ -30,6 +30,10 @@ You can also ensure the server only takes HTTPS requests by using `--ssl-key` an
 Commands sent via the client should use the `--secure <option>` option to either send requests with verification (`1`),
 requests with no verification (`0`), or to specify a certificate to validate against.
 
+!!! warning "Linux"
+    You may need to run the server as `sudo` in order to connect to the Luxafor device. If you get errors about not
+    being able to connect, try `sudo`.
+
 ```
 $ pyluxa4 serve --help
 usage: pyluxa4 serve [-h] [--device-path DEVICE_PATH]
