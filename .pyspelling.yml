@@ -1,6 +1,28 @@
 spellchecker: aspell
 
 matrix:
+- name: mkdocs
+  sources:
+  - site/**/*.html
+  hunspell:
+    d: en_US
+  aspell:
+    lang: en
+  dictionary:
+    wordlists:
+    - docs/src/dictionary/en-custom.txt
+    output: build/dictionary/mkdocs.dic
+  pipeline:
+  - pyspelling.filters.html:
+      comments: false
+      attributes:
+      - title
+      - alt
+      ignores:
+      - ':is(code, pre, a.magiclink, span.keys)'
+      - ':is(.MathJax_Preview, .md-nav__link, .md-footer-custom-text, .md-source__repository, .headerlink, .md-icon)'
+  - pyspelling.filters.url:
+
 - name: markdown
   sources:
   - README.md

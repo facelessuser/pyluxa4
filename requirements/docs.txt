@@ -1,2 +1,2 @@
 pyspelling
-pymdown-extensions
+mkdocs-material

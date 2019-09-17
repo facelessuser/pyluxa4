@@ -1,8 +1,15 @@
 recursive-include pyluxa4 *.py
 recursive-include tests *.py
 recursive-include requirements *.txt
+recursive-include docs/src/markdown *.md *.png *.gif *.html
+recursive-include docs/theme *.js *.css *.html
+recursive-include docs/src/dictionary *.txt
+recursive-exclude site *
 include setup.py
 include setup.cfg
 include LICENSE.md
 include README.md
 include MANIFEST.in
+include tox.ini
+include .pyspelling.yml
+include mkdocs.yml
