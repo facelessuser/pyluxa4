@@ -9,18 +9,78 @@ LED_3 = 3
 LED_4 = 4
 LED_5 = 5
 LED_6 = 6
-LED_VALID = (LED_1, LED_2, LED_3, LED_4, LED_5, LED_6, LED_FRONT, LED_BACK, LED_ALL)
+LED_VALID = frozenset([LED_1, LED_2, LED_3, LED_4, LED_5, LED_6, LED_FRONT, LED_BACK, LED_ALL])
 
-WAVE_SHORT = 1
-WAVE_LONG = 2
-WAVE_OVERLAPPING_SHORT = 3
-WAVE_OVERLAPPING_LONG = 4
+WAVE_1 = WAVE_SHORT = 1
+WAVE_2 = WAVE_LONG = 2
+WAVE_3 = WAVE_OVERLAPPING_SHORT = 3
+WAVE_4 = WAVE_OVERLAPPING_LONG = 4
+WAVE_5 = 5
+WAVE_VALID = frozenset([WAVE_1, WAVE_2, WAVE_3, WAVE_4, WAVE_5])
 
-PATTERN_TRAFFIC_LIGHT = 1
-PATTERN_RANDOM1 = 2,
-PATTERN_RANDOM2 = 3,
-PATTERN_RANDOM3 = 4,
-PATTERN_POLICE = 5
-PATTERN_RANDOM4 = 6,
-PATTERN_RANDOM5 = 7,
-PATTERN_RAINBOW = 8
+PATTERN_1 = PATTERN_TRAFFIC_LIGHT = 1
+PATTERN_2 = PATTERN_RANDOM1 = 2
+PATTERN_3 = PATTERN_RANDOM2 = 3
+PATTERN_4 = PATTERN_RANDOM3 = 4
+PATTERN_5 = PATTERN_POLICE = 5
+PATTERN_6 = PATTERN_RANDOM4 = 6
+PATTERN_7 = PATTERN_RANDOM5 = 7
+PATTERN_8 = PATTERN_RAINBOW = 8
+PATTERN_VALID = frozenset([PATTERN_1, PATTERN_2, PATTERN_3, PATTERN_4, PATTERN_5, PATTERN_6, PATTERN_7, PATTERN_8])
+
+COLOR_RED = ord('R')
+COLOR_GREEN = ord('G')
+COLOR_BLUE = ord('B')
+COLOR_CYAN = ord('C')
+COLOR_YELLOW = ord('Y')
+COLOR_MAGENTA = ord('M')
+COLOR_WHITE = ord('W')
+COLOR_OFF = ord('O')
+COLOR_VALID = frozenset(
+    [COLOR_RED, COLOR_GREEN, COLOR_BLUE, COLOR_CYAN, COLOR_YELLOW, COLOR_MAGENTA, COLOR_WHITE, COLOR_OFF]
+)
+
+BYTE_MIN = 0
+BYTE_MAX = 255
+
+
+def validate_wave(wave):
+    """Validate wave."""
+
+    if wave not in WAVE_VALID:
+        raise ValueError('Wave must be a positive integer between 1-5, {} was given'.format(wave))
+
+
+def validate_speed(speed):
+    """Validate speed."""
+
+    if not (BYTE_MIN <= speed <= BYTE_MAX):
+        raise ValueError('Speed channel must be a positive integer between 0-255, {} was given'.format(speed))
+
+
+def validate_repeat(repeat):
+    """Validate repeat."""
+
+    if not (BYTE_MIN <= repeat <= BYTE_MAX):
+        raise ValueError('Repeat channel must be a positive integer between 0-255, {} was given'.format(repeat))
+
+
+def validate_pattern(pattern):
+    """Validate pattern."""
+
+    if pattern not in PATTERN_VALID:
+        raise ValueError('Pattern must be a positive integer between 1-8, {} was given'.format(pattern))
+
+
+def validate_led(led):
+    """Validate led."""
+
+    if led not in LED_VALID:
+        raise ValueError("LED must either be an integer 1-6, 0x41, 0x42, or 0xFF, {} was given".format(led))
+
+
+def validate_simple_color(color):
+    """Validate simple color code."""
+
+    if color not in COLOR_VALID:
+        raise ValueError("Accepted color codes are R, G, B, C, M, Y, W, and O, {} was given".format(color))

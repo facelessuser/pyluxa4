@@ -30,6 +30,10 @@ You can also ensure the server only takes HTTPS requests by using `--ssl-key` an
 Commands sent via the client should use the `--secure <option>` option to either send requests with verification (`1`),
 requests with no verification (`0`), or to specify a certificate to validate against.
 
+!!! warning "Linux"
+    You may need to run the server as `sudo` in order to connect to the Luxafor device. If you get errors about not
+    being able to connect, try `sudo`.
+
 ```
 $ pyluxa4 serve --help
 usage: pyluxa4 serve [-h] [--device-path DEVICE_PATH]
@@ -167,7 +171,16 @@ optional arguments:
 ## Wave
 
 The `wave` command provides a way to have a color perform a wave effect. The type of wave, speed of the wave, and how
-many times it repeats can all be controlled.
+many times it repeats can all be controlled. You can also use friendly names for 4 of the wave patterns instead of their
+numerical patterns:
+
+Wave | Alias
+---- | -----
+1    | `short`
+2    | `long`
+3    | `overlapping-short`
+4    | `overlapping-long`
+5    | NA
 
 You cannot control individual LEDs with the wave command as all the LEDs are needed to perform the wave effect.
 
@@ -203,7 +216,19 @@ optional arguments:
 ## Pattern
 
 The `pattern` command initiates one of 8 built-in patterns on the Luxafor device. You can control which pattern is
-displayed along with how many times it repeats.
+displayed along with how many times it repeats. You can also use friendly names for patterns instead of their numerical
+values:
+
+Pattern | Alias
+------- | -----
+1       | `traffic-light`
+2       | `random1`
+3       | `random2`
+4       | `random3`
+5       | `police`
+6       | `random4`
+7       | `random5`
+8       | `rainbow`
 
 You cannot control individual LEDs with the pattern command as all the LEDs are needed to perform the patterns.
 
@@ -218,7 +243,7 @@ usage: pyluxa4 pattern [-h] [--repeat REPEAT] [--wait] [--token TOKEN]
 Display pattern
 
 positional arguments:
-  pattern            Color value.
+  pattern            Pattern value.
 
 optional arguments:
   -h, --help         show this help message and exit
