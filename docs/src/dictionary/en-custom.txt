@@ -1,11 +1,14 @@
+API
 Accessors
 CLI
 CSS
 HTTPS
+IP
 LED
 LEDs
 Luxafor
 Luxafor's
+OpenSSL
 SSL
 USB
 accessor
@@ -20,4 +23,5 @@ pre
 prerelease
 prereleases
 pyhidapi
+tuple
 webcolor
