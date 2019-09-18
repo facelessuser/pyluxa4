@@ -203,14 +203,29 @@ def cmd_kill(argv):
 def cmd_schedule(argv):
     """Send a schedule to execute patterns."""
 
-    parser = argparse.ArgumentParser(prog='pyluxa4 kill', description="Kill server")
+    parser = argparse.ArgumentParser(prog='pyluxa4 schedule', description="Schedule events")
     parser.add_argument('file', action='store', help="JSON schedule file.")
+    parser.add_argument('--append', action='store_true', help="Append schedule to existing schedule.")
     parser.add_argument('--token', action='store', default='', help="Send API token")
     connection_args(parser)
     args = parser.parse_args(argv)
 
     return client.LuxRest(args.host, args.port, args.secure, args.token).schedule(
         args.file,
+        append=args.append,
+        timeout=args.timeout
+    )
+
+
+def cmd_clear_schedule(argv):
+    """Clear all scheduled events patterns."""
+
+    parser = argparse.ArgumentParser(prog='pyluxa4 clear-schedule', description="Clear all scheduled events")
+    parser.add_argument('--token', action='store', default='', help="Send API token")
+    connection_args(parser)
+    args = parser.parse_args(argv)
+
+    return client.LuxRest(args.host, args.port, args.secure, args.token).clear_schedule(
         timeout=args.timeout
     )
 
@@ -220,6 +235,7 @@ def cmd_serve(argv):
     from . import server
 
     parser = argparse.ArgumentParser(prog='pyluxa4 serve', description="Run server")
+    parser.add_argument('--schedule', action='store', default='', help="JSON schedule file.")
     parser.add_argument('--device-path', action='store', default=None, help="Luxafor device path")
     parser.add_argument('--device-index', action='store', type=int, default=0, help="Luxafor device index")
     parser.add_argument('--host', action='store', default=server.HOST, help="Host")
@@ -239,7 +255,7 @@ def cmd_serve(argv):
     if args.ssl_cert:
         kwargs['certfile'] = args.ssl_cert
 
-    server.run(args.host, args.port, index, path, args.token, **kwargs)
+    server.run(args.host, args.port, index, path, args.token, args.schedule, **kwargs)
 
 
 def cmd_list(argv):
@@ -247,7 +263,7 @@ def cmd_list(argv):
 
     from . import usb
 
-    parser = argparse.ArgumentParser(prog='pyluxa4 serve', description="List available Luxafor devices")
+    parser = argparse.ArgumentParser(prog='pyluxa4 list', description="List available Luxafor devices")
     parser.parse_args(argv)
 
     devices = usb.enumerate_luxafor()
@@ -264,7 +280,9 @@ def main():
     # Flag arguments
     parser.add_argument('--version', action='version', version=('%(prog)s ' + __meta__.__version__))
     parser.add_argument(
-        'command', action='store', help="Command to send: color, off, fade, strobe, wave, pattern, api, serve, and kill"
+        'command',
+        action='store',
+        help="Command to send: color, off, fade, strobe, wave, pattern, api, serve, kill, schedule, and clear-schedule"
     )
     args = parser.parse_args(argv[0:1])
 
@@ -299,6 +317,9 @@ def main():
 
         elif args.command == 'schedule':
             resp = cmd_schedule(argv[1:])
+
+        elif args.command == 'clear-schedule':
+            resp = cmd_clear_schedule(argv[1:])
 
         else:
             raise ValueError('{} is not a recognized commad'.format(args.command))

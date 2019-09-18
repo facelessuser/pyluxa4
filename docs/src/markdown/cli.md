@@ -8,7 +8,7 @@ which device to connect to, the path will always take precedence.
 
 ```
 $ pyluxa4 list --help
-usage: pyluxa4 serve [-h]
+usage: pyluxa4 list [-h]
 
 List available Luxafor devices
 
@@ -21,6 +21,9 @@ optional arguments:
 The `serve` command connects with your device and starts a server. By default, the first Luxafor device that is found is
 the one that the server will connect to, but you can specify a specific device by either using `--device-path` or
 `--device-index`. `--device-path` take precedence over `--device-index`.
+
+If desired, you can schedule events by specifying a schedule file via the `--schedule` option. See [Schedule](#schedule)
+for more information.
 
 You can restrict the incoming requests by using a token via the `--token` option, and only requests that provide the
 token will be accepted. `--token` should really only be used over SSL.
@@ -36,15 +39,15 @@ requests with no verification (`0`), or to specify a certificate to validate aga
 
 ```
 $ pyluxa4 serve --help
-usage: pyluxa4 serve [-h] [--device-path DEVICE_PATH]
+usage: pyluxa4 serve [-h] [--schedule SCHEDULE] [--device-path DEVICE_PATH]
                      [--device-index DEVICE_INDEX] [--host HOST] [--port PORT]
-                     [--ssl-key SSL_KEY] [--ssl-cert SSL_CERT]
-                     [--token TOKEN]
+                     [--ssl-key SSL_KEY] [--ssl-cert SSL_CERT] [--token TOKEN]
 
 Run server
 
 optional arguments:
   -h, --help            show this help message and exit
+  --schedule SCHEDULE   JSON schedule file.
   --device-path DEVICE_PATH
                         Luxafor device path
   --device-index DEVICE_INDEX
@@ -53,7 +56,7 @@ optional arguments:
   --port PORT           Port
   --ssl-key SSL_KEY     SSL key file (for https://)
   --ssl-cert SSL_CERT   SSL cert file (for https://)
-  --token TOKEN         Assign an token that must be used when sending commands
+  --token TOKEN         Assign a token that must be used when sending commands
 ```
 
 ## Color
@@ -304,7 +307,7 @@ The `schedule` command takes a JSON file with either commands for either [color]
 
 Commands must contain:
 
-- `type` which is the command type, and is the name of the commands mentioned above.
+- `cmd` which is the command type, and is the name of the commands mentioned above.
 - `days` which can be either a single string or list of string values representing days of the week: `mon`, `tue`,
   `wen`, `thu`, `fri`, `sat`, or `sun`. You can also use `wke` to specify the weekend or `wkd` to specify weekdays.
   `all` would mean all days.
@@ -322,7 +325,7 @@ Example JSON (`schedule.json`):
 ```js
 [
     {
-        "type": "pattern",
+        "cmd": "pattern",
         "days": ["all"],
         "times": "20:21",
         "args": {
@@ -332,7 +335,7 @@ Example JSON (`schedule.json`):
     },
 
     {
-        "type": "fade",
+        "cmd": "fade",
         "days": "all",
         "times": ["20:20", "20:22"],
         "args": {
@@ -351,15 +354,35 @@ $ pyluxa4 schedule schedule.json
 ```
 
 ```
-$ pyluxa4 schedule --help
-usage: pyluxa4 kill [-h] [--token TOKEN] [--host HOST] [--port PORT]
-                    [--secure SECURE] [--timeout TIMEOUT]
-                    file
+usage: pyluxa4 schedule [-h] [--append] [--token TOKEN] [--host HOST]
+                        [--port PORT] [--secure SECURE] [--timeout TIMEOUT]
+                        file
 
-Kill server
+Schedule events
 
 positional arguments:
   file               JSON schedule file.
+
+optional arguments:
+  -h, --help         show this help message and exit
+  --append           Append schedule to existing schedule.
+  --token TOKEN      Send API token
+  --host HOST        Host
+  --port PORT        Port
+  --secure SECURE    Enable https requests: enable verification (1), disable
+                     verification(0), or specify a certificate.
+  --timeout TIMEOUT  Timeout
+```
+
+## Clear Schedule
+
+The `clear-schedule` command is used to clear all previously scheduled events.
+
+```
+usage: pyluxa4 clear-schedule [-h] [--token TOKEN] [--host HOST] [--port PORT]
+                              [--secure SECURE] [--timeout TIMEOUT]
+
+Clear all scheduled events
 
 optional arguments:
   -h, --help         show this help message and exit

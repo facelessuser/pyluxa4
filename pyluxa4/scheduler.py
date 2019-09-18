@@ -180,9 +180,11 @@ class Scheduler:
 
         err = ''
 
+        events = []
+
         for entry in config:
             try:
-                cmd_type = entry['type']
+                cmd_type = entry['cmd']
                 args = []
                 kwargs = {}
                 if cmd_type in self.mode_map:
@@ -210,13 +212,13 @@ class Scheduler:
                         self.parse_repeat(arguments, kwargs)
 
                 else:
-                    err = "Unrecognized command type {}".format(cmd_type)
+                    err = "Unrecognized command {}".format(cmd_type)
                     break
             except Exception as e:
                 err = str(e)
                 break
 
-            self.events.append(
+            events.append(
                 {
                     'cmd': cmd,
                     'args': args,
@@ -228,8 +230,8 @@ class Scheduler:
                     'ran': False
                 }
             )
-        if err:
-            self.clear_schedule()
+        if not err:
+            self.events.extend(events)
 
         return err
 

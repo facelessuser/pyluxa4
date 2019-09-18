@@ -185,14 +185,24 @@ class LuxRest:
             timeout
         )
 
-    def schedule(self, file, *, timeout=TIMEOUT):
+    def schedule(self, file, *, append=False, timeout=TIMEOUT):
         """Schedule command."""
 
         return self._post(
             "schedule",
             {
-                "file": file
+                "file": file,
+                "append": append
             },
+            timeout
+        )
+
+    def clear_schedule(self, *, timeout=TIMEOUT):
+        """Clear schedule command."""
+
+        return self._post(
+            "clear-schedule",
+            None,
             timeout
         )
 

@@ -257,15 +257,30 @@ def kill():
     }
 
 
+def clear_schedule():
+    """Clear schedule."""
+
+    sem.acquire()
+    schedule.clear_schedule()
+    sem.release()
+
+    return {
+        "path": request.path,
+        "status": 'success',
+        'code': 200,
+        'error': ''
+    }
+
+
 def setup_schedule():
     """Setup schedule."""
 
-    global schedule
-
     sem.acquire()
     filename = request.json.get('file', '')
+    append = request.json.get('append', False)
     if os.path.exists(filename) and os.path.isfile(filename):
-        schedule.clear_schedule()
+        if not append:
+            schedule.clear_schedule()
         err = schedule.read_schedule(filename)
     else:
         err = "The file '{}' does not exist".format(filename)
@@ -282,8 +297,6 @@ def setup_schedule():
 
 def check_schedule():
     """Check schedule in the background."""
-
-    global schedule
 
     last = time.time()
     while True:
@@ -329,6 +342,8 @@ def execute_command(command):
             results = kill()
         elif command == 'schedule':
             results = setup_schedule()
+        elif command == 'clear-schedule':
+            results = clear_schedule()
         else:
             abort(404)
 
@@ -398,7 +413,10 @@ def server_error(error):
     )
 
 
-def run(host=HOST, port=PORT, device_index=0, device_path=None, token=None, ssl=None, debug=False, **kwargs):
+def run(
+    host=HOST, port=PORT, device_index=0, device_path=None, token=None, schedule_file=None,
+    debug=False, **kwargs
+):
     """Run server."""
 
     global luxafor
@@ -410,6 +428,10 @@ def run(host=HOST, port=PORT, device_index=0, device_path=None, token=None, ssl=
         luxafor = lf
         tokens = set([token])
         schedule = scheduler.Scheduler(luxafor)
+        if schedule_file and os.path.exists(schedule_file) and os.path.isfile(schedule_file):
+            err = schedule.read_schedule(schedule_file)
+            if err:
+                print(err)
         http_server = WSGIServer((host, port), app, **kwargs)
         serve = gevent.spawn(http_server.start)
         background = gevent.spawn(check_schedule)

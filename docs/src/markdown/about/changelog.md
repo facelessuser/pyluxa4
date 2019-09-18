@@ -4,7 +4,8 @@
 
 - **NEW**: `--wait` removed from CLI as the server should not get hung while waiting. `wait` is still available when
   using `pyluxa4.usb` directly.
-- **NEW**: Add new `schedule` command that takes a JSON and schedules lights by days and times.
+- **NEW**: Add new `schedule` and `clear-schedule` command that allows scheduling command events based on day and time
+  and clearing scheduled events.
 
 ## 1.1.0
 
