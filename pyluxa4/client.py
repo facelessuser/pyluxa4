@@ -54,7 +54,7 @@ class LuxRest:
             r = {"status": "fail", "code": resp.status_code, "error": resp.text}
         return r
 
-    def _post(self, command, payload, timeout, no_response=False):
+    def _post(self, command, payload, timeout):
         """Post a REST command."""
 
         if timeout == 0:
@@ -88,8 +88,37 @@ class LuxRest:
 
         return self._format_respose(resp)
 
+    def _get(self, command, timeout):
+        """Perform a REST request."""
+
+        if timeout == 0:
+            timeout = None
+
+        headers = {'Authorization': 'Bearer {}'.format(self.token)}
+
+        try:
+            resp = requests.get(
+                '%s://%s:%d/pyluxa4/api/v%s.%s/command/%s' % (
+                    self.http,
+                    self.host,
+                    self.port,
+                    __meta__.__version_info__[0],
+                    __meta__.__version_info__[1],
+                    command
+                ),
+                headers=headers,
+                timeout=timeout,
+                verify=self.verify
+            )
+        except requests.exceptions.ConnectionError:
+            return {"status": "fail", "code": 0, "error": "Server does not appear to be running"}
+        except Exception as e:
+            return {"status": "fail", "code": 0, "error": str(e)}
+
+        return self._format_respose(resp)
+
     def _get_version(self, timeout):
-        """Perform a GET request."""
+        """Perform a GET request for version."""
 
         if timeout == 0:
             timeout = None
@@ -194,6 +223,14 @@ class LuxRest:
                 "schedule": schedule,
                 "clear": clear
             },
+            timeout
+        )
+
+    def get_schedule(self, *, timeout=TIMEOUT):
+        """Scheduler command."""
+
+        return self._get(
+            "scheduler/schedule",
             timeout
         )
 

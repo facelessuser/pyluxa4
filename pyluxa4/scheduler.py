@@ -1,6 +1,7 @@
 """Scheduler."""
 import json
 import time
+import copy
 from datetime import datetime, timedelta
 from . import common as cmn
 
@@ -189,6 +190,8 @@ class Scheduler:
                 kwargs = {}
                 if cmd_type in self.mode_map:
                     cmd = self.mode_map[cmd_type]
+                    label = entry.get('label', '')
+                    cmn.is_str('label', label)
                     days = self.resolve_days(entry['days'])
                     times = self.resolve_times(entry['times'])
                     arguments = entry.get('args', {})
@@ -220,6 +223,8 @@ class Scheduler:
 
             events.append(
                 {
+                    'label': label,
+                    'type': cmd_type,
                     'cmd': cmd,
                     'args': args,
                     'kwargs': kwargs,
@@ -234,6 +239,23 @@ class Scheduler:
             self.events.extend(events)
 
         return err
+
+    def get_schedule(self):
+        """Get the schedule."""
+
+        report = []
+        for event in self.events:
+            report.append(
+                {
+                    'label': event['label'],
+                    'type': event['type'],
+                    'days': list(event['days']),
+                    'times': list(event['times']),
+                    'args': copy.deepcopy(event['args']),
+                    'kwargs': copy.deepcopy(event['kwargs'])
+                }
+            )
+        return report
 
     def check_schedule(self):
         """Check events."""

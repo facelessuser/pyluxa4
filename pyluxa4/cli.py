@@ -217,6 +217,23 @@ def cmd_scheduler(argv):
     )
 
 
+def cmd_get(argv):
+    """Get information."""
+
+    parser = argparse.ArgumentParser(prog='pyluxa4 get', description="Get information")
+    parser.add_argument('info', action='store', help="Request information: schedule")
+    parser.add_argument('--token', action='store', default='', help="Send API token")
+    connection_args(parser)
+    args = parser.parse_args(argv)
+
+    if args.info != 'schedule':
+        raise ValueError('Unrecognized requested data {}'.format(args.info))
+
+    return client.LuxRest(args.host, args.port, args.secure, args.token).get_schedule(
+        timeout=args.timeout
+    )
+
+
 def cmd_serve(argv):
     """Start the server."""
     from . import server
@@ -269,7 +286,10 @@ def main():
     parser.add_argument(
         'command',
         action='store',
-        help="Command to send: color, off, fade, strobe, wave, pattern, api, serve, kill, schedule, and clear-schedule"
+        help=(
+            "Command to send: color, off, fade, strobe, wave, pattern, api, serve, "
+            "kill, get, schedule, and clear-schedule"
+        )
     )
     args = parser.parse_args(argv[0:1])
 
@@ -304,6 +324,9 @@ def main():
 
         elif args.command == 'scheduler':
             resp = cmd_scheduler(argv[1:])
+
+        elif args.command == 'get':
+            resp = cmd_get(argv[1:])
 
         else:
             raise ValueError('{} is not a recognized commad'.format(args.command))

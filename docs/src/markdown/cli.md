@@ -316,9 +316,16 @@ Commands must contain:
 - `times` which can be either a single string or a list of string values representing the hour and minute for the light
   to trigger on. The format should be `H:M` where `H` is the hour from 0 - 23 and `M` is the minute from 0 - 59.
 
-Lastly, you can specify the arguments for the command under the `args` keyword. For commands like `color`, `fade`,
-`strobe`, and `wave`, you must specify the color under `color`. For `pattern` you must specify the pattern under
-`pattern`. All other options such as `speed`, `repeat`, or `wave` (for the wave pattern) are optional.
+Command may contain:
+
+- While not required, it is also suggested that you include a `label` to help verify which pattern you are looking at when
+you list the schedule via `pyluxa4 get schedule`. See [Get](#get) for more information.
+
+- Additional options under `args` may or may not be needed depending on the command:
+
+    - For commands like `color`, `fade`, `strobe`, and `wave`, you must specify the color under `color`.
+    - For the `pattern` command, you must specify the pattern under `pattern`.
+    - All other options such as `speed`, `repeat`, or `wave` (for the wave pattern) are optional. Use as needed.
 
 For values that are numbers you can use integers. For values that are strings, you can use strings.
 
@@ -327,6 +334,7 @@ Example JSON (`schedule.json`):
 ```js
 [
     {
+        "label": "Time to go home!",
         "cmd": "pattern",
         "days": ["all"],
         "times": "20:21",
@@ -337,6 +345,7 @@ Example JSON (`schedule.json`):
     },
 
     {
+        "label": "Important event!",
         "cmd": "fade",
         "days": "all",
         "times": ["20:20", "20:22"],
@@ -373,6 +382,36 @@ optional arguments:
   --secure SECURE      Enable https requests: enable verification (1), disable
                        verification(0), or specify a certificate.
   --timeout TIMEOUT    Timeout
+```
+
+## Get
+
+The `get` command allows you to retrieve information. Currently you can only retrieve loaded schedules via:
+
+```
+$ pyluxa4 get schedule
+{'code': 200, 'error': '', 'path': '/pyluxa4/api/v1.2/command/scheduler/schedule', 'schedule': [{'args': ['magenta'], 'days': [0, 1, 2, 3, 4], 'kwargs': {'led': 255, 'repeat': 20, 'speed': 10}, 'label': 'Scheduler Test', 'times': [32400.0], 'type': 'strobe'}], 'status': 'success'}
+```
+
+```
+pyluxa4 get --help                                                                                                                                                                                
+usage: pyluxa4 get [-h] [--token TOKEN] [--host HOST] [--port PORT]
+                   [--secure SECURE] [--timeout TIMEOUT]
+                   info
+
+Get information
+
+positional arguments:
+  info               Request information: schedule
+
+optional arguments:
+  -h, --help         show this help message and exit
+  --token TOKEN      Send API token
+  --host HOST        Host
+  --port PORT        Port
+  --secure SECURE    Enable https requests: enable verification (1), disable
+                     verification(0), or specify a certificate.
+  --timeout TIMEOUT  Timeout
 ```
 
 ## API

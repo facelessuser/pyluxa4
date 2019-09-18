@@ -257,18 +257,18 @@ def kill():
     }
 
 
-def clear_schedule():
-    """Clear schedule."""
+def get_schedule():
+    """Return the current schedule."""
 
     sem.acquire()
-    schedule.clear_schedule()
+    report = schedule.get_schedule()
     sem.release()
-
     return {
         "path": request.path,
         "status": 'success',
-        'code': 200,
-        'error': ''
+        "code": 200,
+        "schedule": report,
+        "error": ''
     }
 
 
@@ -342,6 +342,24 @@ def execute_command(command):
             results = setup_schedule()
         else:
             abort(404)
+    else:
+        abort(404)
+
+    return results
+
+
+@app.route('%s/command/scheduler/<string:command>' % get_api_ver_path(), methods=['GET'])
+@auth.login_required
+def get_info(command):
+    """Retrieve information."""
+
+    if request.method == 'GET':
+        if command == 'schedule':
+            results = get_schedule()
+        else:
+            abort(404)
+    else:
+        abort(404)
 
     return results
 

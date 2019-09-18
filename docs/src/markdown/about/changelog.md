@@ -6,6 +6,7 @@
   using `pyluxa4.usb` directly.
 - **NEW**: Add new `scheduler` command that allows scheduling command events based on day and time and clearing
   scheduled events.
+- **NEW**: Add new `get` command which can be used to retrieve currently loaded schedules via `pyluxa4 get schedule`.
 
 ## 1.1.0
 
