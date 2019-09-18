@@ -200,32 +200,19 @@ def cmd_kill(argv):
     )
 
 
-def cmd_schedule(argv):
-    """Send a schedule to execute patterns."""
+def cmd_scheduler(argv):
+    """Send a schedule to execute patterns and/or clear existing schedules."""
 
-    parser = argparse.ArgumentParser(prog='pyluxa4 schedule', description="Schedule events")
-    parser.add_argument('file', action='store', help="JSON schedule file.")
-    parser.add_argument('--append', action='store_true', help="Append schedule to existing schedule.")
+    parser = argparse.ArgumentParser(prog='pyluxa4 scheduler', description="Schedule events")
+    parser.add_argument('--schedule', action='store', help="JSON schedule file.")
+    parser.add_argument('--clear', action='store_true', help="Clear all scheduled events")
     parser.add_argument('--token', action='store', default='', help="Send API token")
     connection_args(parser)
     args = parser.parse_args(argv)
 
-    return client.LuxRest(args.host, args.port, args.secure, args.token).schedule(
-        args.file,
-        append=args.append,
-        timeout=args.timeout
-    )
-
-
-def cmd_clear_schedule(argv):
-    """Clear all scheduled events patterns."""
-
-    parser = argparse.ArgumentParser(prog='pyluxa4 clear-schedule', description="Clear all scheduled events")
-    parser.add_argument('--token', action='store', default='', help="Send API token")
-    connection_args(parser)
-    args = parser.parse_args(argv)
-
-    return client.LuxRest(args.host, args.port, args.secure, args.token).clear_schedule(
+    return client.LuxRest(args.host, args.port, args.secure, args.token).scheduler(
+        schedule=args.schedule,
+        clear=args.clear,
         timeout=args.timeout
     )
 
@@ -235,7 +222,7 @@ def cmd_serve(argv):
     from . import server
 
     parser = argparse.ArgumentParser(prog='pyluxa4 serve', description="Run server")
-    parser.add_argument('--schedule', action='store', default='', help="JSON schedule file.")
+    parser.add_argument('--scheduler', action='store', default='', help="JSON schedule file.")
     parser.add_argument('--device-path', action='store', default=None, help="Luxafor device path")
     parser.add_argument('--device-index', action='store', type=int, default=0, help="Luxafor device index")
     parser.add_argument('--host', action='store', default=server.HOST, help="Host")
@@ -255,7 +242,7 @@ def cmd_serve(argv):
     if args.ssl_cert:
         kwargs['certfile'] = args.ssl_cert
 
-    server.run(args.host, args.port, index, path, args.token, args.schedule, **kwargs)
+    server.run(args.host, args.port, index, path, args.token, args.scheduler, **kwargs)
 
 
 def cmd_list(argv):
@@ -315,11 +302,8 @@ def main():
         elif args.command == 'pattern':
             resp = cmd_pattern(argv[1:])
 
-        elif args.command == 'schedule':
-            resp = cmd_schedule(argv[1:])
-
-        elif args.command == 'clear-schedule':
-            resp = cmd_clear_schedule(argv[1:])
+        elif args.command == 'scheduler':
+            resp = cmd_scheduler(argv[1:])
 
         else:
             raise ValueError('{} is not a recognized commad'.format(args.command))

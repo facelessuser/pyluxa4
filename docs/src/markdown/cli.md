@@ -22,8 +22,8 @@ The `serve` command connects with your device and starts a server. By default, t
 the one that the server will connect to, but you can specify a specific device by either using `--device-path` or
 `--device-index`. `--device-path` take precedence over `--device-index`.
 
-If desired, you can schedule events by specifying a schedule file via the `--schedule` option. See [Schedule](#schedule)
-for more information.
+If desired, you can schedule events by specifying a schedule file via the `--scheduler` option. See
+[Scheduler](#scheduler) for more information.
 
 You can restrict the incoming requests by using a token via the `--token` option, and only requests that provide the
 token will be accepted. `--token` should really only be used over SSL.
@@ -39,7 +39,7 @@ requests with no verification (`0`), or to specify a certificate to validate aga
 
 ```
 $ pyluxa4 serve --help
-usage: pyluxa4 serve [-h] [--schedule SCHEDULE] [--device-path DEVICE_PATH]
+usage: pyluxa4 serve [-h] [--scheduler SCHEDULER] [--device-path DEVICE_PATH]
                      [--device-index DEVICE_INDEX] [--host HOST] [--port PORT]
                      [--ssl-key SSL_KEY] [--ssl-cert SSL_CERT] [--token TOKEN]
 
@@ -47,7 +47,7 @@ Run server
 
 optional arguments:
   -h, --help            show this help message and exit
-  --schedule SCHEDULE   JSON schedule file.
+  --scheduler SCHEDULER JSON schedule file.
   --device-path DEVICE_PATH
                         Luxafor device path
   --device-index DEVICE_INDEX
@@ -300,10 +300,12 @@ optional arguments:
   --timeout TIMEOUT  Timeout
 ```
 
-## Schedule
+## Scheduler
 
-The `schedule` command takes a JSON file with either commands for either [color](#color), [fade](#fade),
-[strobe](#strobe), [wave](#wave), [pattern](#pattern), or [off](#off).
+The `scheduler` command takes a JSON file via `--schedule` with either commands for either [color](#color),
+[fade](#fade), [strobe](#strobe), [wave](#wave), [pattern](#pattern), or [off](#off), and schedules them to be executed
+at the specified times on the specified days. Events are appended to previously scheduled events unless `--clear` is
+provided. If desired, you can run `--clear` without `--schedule` which will simply clear all events.
 
 Commands must contain:
 
@@ -349,49 +351,28 @@ Example JSON (`schedule.json`):
 Command load the schedule:
 
 ```
-$ pyluxa4 schedule schedule.json
+$ pyluxa4 scheduler --schedule schedule.json
 {'code': 200, 'error': '', 'path': '/pyluxa4/api/v1.1/command/schedule', 'status': 'success'}
 ```
 
 ```
-usage: pyluxa4 schedule [-h] [--append] [--token TOKEN] [--host HOST]
-                        [--port PORT] [--secure SECURE] [--timeout TIMEOUT]
-                        file
+$ pyluxa4 scheduler --help
+usage: pyluxa4 scheduler [-h] [--schedule SCHEDULE] [--clear] [--token TOKEN]
+                         [--host HOST] [--port PORT] [--secure SECURE]
+                         [--timeout TIMEOUT]
 
 Schedule events
 
-positional arguments:
-  file               JSON schedule file.
-
 optional arguments:
-  -h, --help         show this help message and exit
-  --append           Append schedule to existing schedule.
-  --token TOKEN      Send API token
-  --host HOST        Host
-  --port PORT        Port
-  --secure SECURE    Enable https requests: enable verification (1), disable
-                     verification(0), or specify a certificate.
-  --timeout TIMEOUT  Timeout
-```
-
-## Clear Schedule
-
-The `clear-schedule` command is used to clear all previously scheduled events.
-
-```
-usage: pyluxa4 clear-schedule [-h] [--token TOKEN] [--host HOST] [--port PORT]
-                              [--secure SECURE] [--timeout TIMEOUT]
-
-Clear all scheduled events
-
-optional arguments:
-  -h, --help         show this help message and exit
-  --token TOKEN      Send API token
-  --host HOST        Host
-  --port PORT        Port
-  --secure SECURE    Enable https requests: enable verification (1), disable
-                     verification(0), or specify a certificate.
-  --timeout TIMEOUT  Timeout
+  -h, --help           show this help message and exit
+  --schedule SCHEDULE  JSON schedule file.
+  --clear              Clear all scheduled events
+  --token TOKEN        Send API token
+  --host HOST          Host
+  --port PORT          Port
+  --secure SECURE      Enable https requests: enable verification (1), disable
+                       verification(0), or specify a certificate.
+  --timeout TIMEOUT    Timeout
 ```
 
 ## API

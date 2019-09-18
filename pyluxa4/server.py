@@ -276,14 +276,12 @@ def setup_schedule():
     """Setup schedule."""
 
     sem.acquire()
-    filename = request.json.get('file', '')
-    append = request.json.get('append', False)
-    if os.path.exists(filename) and os.path.isfile(filename):
-        if not append:
-            schedule.clear_schedule()
+    filename = request.json.get('schedule')
+    clear = request.json.get('clear', False)
+    if clear:
+        schedule.clear_schedule()
+    if filename and os.path.exists(filename) and os.path.isfile(filename):
         err = schedule.read_schedule(filename)
-    else:
-        err = "The file '{}' does not exist".format(filename)
     sem.release()
     if err:
         abort(400, err)
@@ -340,10 +338,8 @@ def execute_command(command):
         elif command == 'kill':
             # Results won't make it back if successful
             results = kill()
-        elif command == 'schedule':
+        elif command == 'scheduler':
             results = setup_schedule()
-        elif command == 'clear-schedule':
-            results = clear_schedule()
         else:
             abort(404)
 
