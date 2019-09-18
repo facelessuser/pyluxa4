@@ -36,7 +36,7 @@ class Scheduler:
         """Initialize."""
 
         self.handle = handle
-        self.day_end = self.resolve_times('12:59')[0]
+        self.day_end = self.resolve_times('23:59')[0]
         self.mode_map = {
             "color": handle.color,
             "strobe": handle.strobe,
