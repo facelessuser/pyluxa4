@@ -6,30 +6,6 @@ from . import common as cmn
 from . import __meta__
 from . import client
 
-LED_MAP = {
-    "all": cmn.LED_ALL,
-    "back": cmn.LED_BACK,
-    "front": cmn.LED_FRONT
-}
-
-PATTERN_MAP = {
-    'traffic-light': cmn.PATTERN_TRAFFIC_LIGHT,
-    'police': cmn.PATTERN_POLICE,
-    'rainbow': cmn.PATTERN_RAINBOW,
-    'random1': cmn.PATTERN_RANDOM1,
-    'random2': cmn.PATTERN_RANDOM2,
-    'random3': cmn.PATTERN_RANDOM3,
-    'random4': cmn.PATTERN_RANDOM4,
-    'random5': cmn.PATTERN_RANDOM5
-}
-
-WAVE_MAP = {
-    "short": cmn.WAVE_SHORT,
-    "long": cmn.WAVE_LONG,
-    "overlapping-short": cmn.WAVE_OVERLAPPING_SHORT,
-    "overlapping-long": cmn.WAVE_OVERLAPPING_LONG
-}
-
 
 class LedAction(argparse.Action):
     """Resolve LED options."""
@@ -37,16 +13,7 @@ class LedAction(argparse.Action):
     def __call__(self, parser, namespace, values, option_string=None):
         """Handle the action call."""
 
-        led = values.lower()
-        if led in LED_MAP:
-            led = LED_MAP[led]
-        else:
-            try:
-                led = int(led)
-                cmn.validate_led(led)
-            except Exception:
-                raise ValueError('Invalid LED value of {}'.format(led))
-
+        led = cmn.resolve_led(values)
         setattr(namespace, self.dest, led)
 
 
@@ -56,16 +23,7 @@ class PatternAction(argparse.Action):
     def __call__(self, parser, namespace, values, option_string=None):
         """Handle the action call."""
 
-        p = values.lower()
-        if p in PATTERN_MAP:
-            p = PATTERN_MAP[p]
-        else:
-            try:
-                p = int(p)
-                cmn.validate_pattern(p)
-            except Exception:
-                raise ValueError('Invalid pattern value of {}'.format(p))
-
+        p = cmn.resolve_pattern(values)
         setattr(namespace, self.dest, p)
 
 
@@ -75,17 +33,7 @@ class WaveAction(argparse.Action):
     def __call__(self, parser, namespace, values, option_string=None):
         """Handle the action call."""
 
-        w = values.lower()
-        if w in WAVE_MAP:
-            w = WAVE_MAP[w]
-        else:
-            try:
-                w = int(w)
-                cmn.validate_wave(w)
-            except Exception as e:
-                print(e)
-                raise ValueError('Invalid wave value of {}'.format(w))
-
+        w = cmn.resolve_wave(values)
         setattr(namespace, self.dest, w)
 
 
@@ -145,7 +93,6 @@ def cmd_fade(argv):
     parser.add_argument('color', action='store', help="Color value.")
     parser.add_argument('--led', action=LedAction, default=cmn.LED_ALL, help="LED: 1-6, back, tab, or all")
     parser.add_argument('--speed', action=SpeedAction, type=int, default=0, help="Speed of fade: 0-255")
-    parser.add_argument('--wait', action='store_true', help="Wait for sequence to complete")
     parser.add_argument('--token', action='store', default='', help="Send API token")
     connection_args(parser)
     args = parser.parse_args(argv)
@@ -154,7 +101,6 @@ def cmd_fade(argv):
         args.color,
         led=args.led,
         speed=args.speed,
-        wait=args.wait,
         timeout=args.timeout
     )
 
@@ -167,7 +113,6 @@ def cmd_strobe(argv):
     parser.add_argument('--led', action=LedAction, default=cmn.LED_ALL, help="LED: 1-6, back, front, or all")
     parser.add_argument('--speed', action=SpeedAction, type=int, default=0, help="Speed of strobe: 0-255")
     parser.add_argument('--repeat', action=RepeatAction, type=int, default=0, help="Number of times to repeat: 0-255")
-    parser.add_argument('--wait', action='store_true', help="Wait for sequence to complete")
     parser.add_argument('--token', action='store', default='', help="Send API token")
     connection_args(parser)
     args = parser.parse_args(argv)
@@ -177,7 +122,6 @@ def cmd_strobe(argv):
         led=args.led,
         speed=args.speed,
         repeat=args.repeat,
-        wait=args.wait,
         timeout=args.timeout
     )
 
@@ -190,7 +134,6 @@ def cmd_wave(argv):
     parser.add_argument('--wave', action=WaveAction, default=cmn.WAVE_SHORT, help="Wave configuration: 1-5")
     parser.add_argument('--speed', action=SpeedAction, type=int, default=0, help="Speed of wave effect: 0-255")
     parser.add_argument('--repeat', action=RepeatAction, type=int, default=0, help="Number of times to repeat: 0-255")
-    parser.add_argument('--wait', action='store_true', help="Wait for sequence to complete")
     parser.add_argument('--token', action='store', default='', help="Send API token")
     connection_args(parser)
     args = parser.parse_args(argv)
@@ -200,7 +143,6 @@ def cmd_wave(argv):
         wave=args.wave,
         speed=args.speed,
         repeat=args.repeat,
-        wait=args.wait,
         timeout=args.timeout
     )
 
@@ -211,7 +153,6 @@ def cmd_pattern(argv):
     parser = argparse.ArgumentParser(prog='pyluxa4 pattern', description="Display pattern")
     parser.add_argument('pattern', action=PatternAction, help="Pattern value.")
     parser.add_argument('--repeat', action=RepeatAction, type=int, default=0, help="Number of times to repeat: 0-255")
-    parser.add_argument('--wait', action='store_true', help="Wait for sequence to complete")
     parser.add_argument('--token', action='store', default='', help="Send API token")
     connection_args(parser)
     args = parser.parse_args(argv)
@@ -219,7 +160,6 @@ def cmd_pattern(argv):
     return client.LuxRest(args.host, args.port, args.secure, args.token).pattern(
         args.pattern,
         repeat=args.repeat,
-        wait=args.wait,
         timeout=args.timeout
     )
 
@@ -256,6 +196,21 @@ def cmd_kill(argv):
     args = parser.parse_args(argv)
 
     return client.LuxRest(args.host, args.port, args.secure, args.token).kill(
+        timeout=args.timeout
+    )
+
+
+def cmd_schedule(argv):
+    """Send a schedule to execute patterns."""
+
+    parser = argparse.ArgumentParser(prog='pyluxa4 kill', description="Kill server")
+    parser.add_argument('file', action='store', help="JSON schedule file.")
+    parser.add_argument('--token', action='store', default='', help="Send API token")
+    connection_args(parser)
+    args = parser.parse_args(argv)
+
+    return client.LuxRest(args.host, args.port, args.secure, args.token).schedule(
+        args.file,
         timeout=args.timeout
     )
 
@@ -341,6 +296,9 @@ def main():
 
         elif args.command == 'pattern':
             resp = cmd_pattern(argv[1:])
+
+        elif args.command == 'schedule':
+            resp = cmd_schedule(argv[1:])
 
         else:
             raise ValueError('{} is not a recognized commad'.format(args.command))

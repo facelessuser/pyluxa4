@@ -123,7 +123,7 @@ class LuxRest:
             timeout
         )
 
-    def fade(self, color, *, led=LED_ALL, speed=0, wait=False, timeout=TIMEOUT):
+    def fade(self, color, *, led=LED_ALL, speed=0, timeout=TIMEOUT):
         """Create command to fade colors."""
 
         return self._post(
@@ -131,13 +131,12 @@ class LuxRest:
             {
                 "color": color,
                 "led": led,
-                "speed": speed,
-                "wait": wait
+                "speed": speed
             },
             timeout
         )
 
-    def strobe(self, color, *, led=LED_ALL, speed=0, repeat=0, wait=False, timeout=TIMEOUT):
+    def strobe(self, color, *, led=LED_ALL, speed=0, repeat=0, timeout=TIMEOUT):
         """Create command to strobe colors."""
 
         return self._post(
@@ -146,13 +145,12 @@ class LuxRest:
                 "color": color,
                 "led": led,
                 "speed": speed,
-                "repeat": repeat,
-                "wait": wait
+                "repeat": repeat
             },
             timeout
         )
 
-    def wave(self, color, *, wave=WAVE_SHORT, speed=0, repeat=0, wait=False, timeout=TIMEOUT):
+    def wave(self, color, *, wave=WAVE_SHORT, speed=0, repeat=0, timeout=TIMEOUT):
         """Create command to use the wave effect."""
 
         return self._post(
@@ -161,26 +159,24 @@ class LuxRest:
                 "color": color,
                 "wave": wave,
                 "speed": speed,
-                "repeat": repeat,
-                "wait": wait
+                "repeat": repeat
             },
             timeout
         )
 
-    def pattern(self, pattern, *, led=LED_ALL, repeat=0, wait=False, timeout=TIMEOUT):
+    def pattern(self, pattern, *, led=LED_ALL, repeat=0, timeout=TIMEOUT):
         """Create command to use the wave effect."""
 
         return self._post(
             "pattern",
             {
                 "pattern": pattern,
-                "repeat": repeat,
-                "wait": wait
+                "repeat": repeat
             },
             timeout
         )
 
-    def off(self, timeout=TIMEOUT):
+    def off(self, *, timeout=TIMEOUT):
         """Turn off all lights."""
 
         return self._post(
@@ -189,7 +185,18 @@ class LuxRest:
             timeout
         )
 
-    def kill(self, timeout=TIMEOUT):
+    def schedule(self, file, *, timeout=TIMEOUT):
+        """Schedule command."""
+
+        return self._post(
+            "schedule",
+            {
+                "file": file
+            },
+            timeout
+        )
+
+    def kill(self, *, timeout=TIMEOUT):
         """Kill the server."""
 
         return self._post(
@@ -198,7 +205,7 @@ class LuxRest:
             timeout
         )
 
-    def version(self, timeout=TIMEOUT):
+    def version(self, *, timeout=TIMEOUT):
         """Request the version from the running server."""
 
         return self._get_version(timeout)

@@ -2,14 +2,22 @@
 from flask import Flask, jsonify, abort, make_response, request
 from flask_httpauth import HTTPTokenAuth
 from gevent.pywsgi import WSGIServer
+from gevent.lock import BoundedSemaphore
+import gevent
+import time
+import os
+from . import scheduler
 from . import usb
 from . import common as cmn
 from . import __meta__
+
+sem = BoundedSemaphore(1)
 
 app = Flask(__name__)
 auth = HTTPTokenAuth('Bearer')
 tokens = set()
 luxafor = None
+schedule = None
 HOST = '0.0.0.0'
 PORT = 5000
 
@@ -18,27 +26,6 @@ def get_api_ver_path():
     """Get the API path."""
 
     return '/pyluxa4/api/v%s.%s' % __meta__.__version_info__[:2]
-
-
-def is_bool(name, value):
-    """Check if bool."""
-
-    if not isinstance(value, bool):
-        raise TypeError("'{}' must be a boolean".format(name))
-
-
-def is_str(name, value):
-    """Check if bool."""
-
-    if not isinstance(value, str):
-        raise TypeError("'{}' must be a string".format(name))
-
-
-def is_int(name, value):
-    """Check if bool."""
-
-    if not isinstance(value, int):
-        raise TypeError("'{}' must be a integer".format(name))
 
 
 @auth.verify_token
@@ -56,15 +43,17 @@ def color():
     try:
         error = ''
         led = request.json.get("led", cmn.LED_ALL)
-        is_int('led', led)
+        cmn.is_int('led', led)
         color = request.json.get('color', '')
-        is_str('color', color)
+        cmn.is_str('color', color)
     except Exception as e:
         error = str(e)
 
     if not error:
         try:
+            sem.acquire()
             luxafor.color(color, led=led)
+            sem.release()
         except Exception as e:
             error = str(e)
 
@@ -74,7 +63,7 @@ def color():
     return jsonify(
         {
             "path": request.path,
-            "status": 'success' if not error else 'fail',
+            "status": 'success',
             "code": 200,
             "error": error
         }
@@ -87,19 +76,19 @@ def fade():
     try:
         error = ''
         led = request.json.get("led", cmn.LED_ALL)
-        is_int('led', led)
+        cmn.is_int('led', led)
         color = request.json.get('color', '')
-        is_str('color', color)
+        cmn.is_str('color', color)
         speed = request.json.get('speed', 0)
-        is_int('speed', speed)
-        wait = request.json.get('wait', False)
-        is_bool('wait', wait)
+        cmn.is_int('speed', speed)
     except Exception as e:
         error = str(e)
 
     if not error:
         try:
-            luxafor.fade(color, led=led, speed=speed, wait=wait)
+            sem.acquire()
+            luxafor.fade(color, led=led, speed=speed)
+            sem.release()
         except Exception as e:
             error = str(e)
 
@@ -109,7 +98,7 @@ def fade():
     return jsonify(
         {
             "path": request.path,
-            "status": 'success' if not error else 'fail',
+            "status": 'success',
             "code": 200,
             "error": error
         }
@@ -122,21 +111,21 @@ def strobe():
     try:
         error = ''
         led = request.json.get("led", cmn.LED_ALL)
-        is_int('led', led)
+        cmn.is_int('led', led)
         color = request.json.get('color', '')
-        is_str('color', color)
+        cmn.is_str('color', color)
         speed = request.json.get('speed', 0)
-        is_int('speed', speed)
+        cmn.is_int('speed', speed)
         repeat = request.json.get('repeat', 0)
-        is_int('repeat', repeat)
-        wait = request.json.get('wait', False)
-        is_bool('wait', wait)
+        cmn.is_int('repeat', repeat)
     except Exception as e:
         error = str(e)
 
     if not error:
         try:
-            luxafor.strobe(color, led=led, speed=speed, repeat=repeat, wait=wait)
+            sem.acquire()
+            luxafor.strobe(color, led=led, speed=speed, repeat=repeat)
+            sem.release()
         except Exception as e:
             error = str(e)
 
@@ -146,7 +135,7 @@ def strobe():
     return jsonify(
         {
             "path": request.path,
-            "status": 'success' if not error else 'fail',
+            "status": 'success',
             "code": 200,
             "error": error
         }
@@ -159,21 +148,21 @@ def wave():
     try:
         error = ''
         color = request.json.get('color', '')
-        is_str('color', color)
+        cmn.is_str('color', color)
         wave = request.json.get('wave', cmn.WAVE_SHORT)
-        is_int('wave', wave)
+        cmn.is_int('wave', wave)
         speed = request.json.get('speed', 0)
-        is_int('speed', speed)
+        cmn.is_int('speed', speed)
         repeat = request.json.get('repeat', 0)
-        is_int('repeat', repeat)
-        wait = request.json.get('wait', False)
-        is_bool('wait', wait)
+        cmn.is_int('repeat', repeat)
     except Exception as e:
         error = str(e)
 
     if not error:
         try:
-            luxafor.wave(color, wave=wave, speed=speed, repeat=repeat, wait=wait)
+            sem.acquire()
+            luxafor.wave(color, wave=wave, speed=speed, repeat=repeat)
+            sem.release()
         except Exception as e:
             error = str(e)
 
@@ -183,7 +172,7 @@ def wave():
     return jsonify(
         {
             "path": request.path,
-            "status": 'success' if not error else 'fail',
+            "status": 'success',
             "code": 200,
             "error": error
         }
@@ -196,17 +185,17 @@ def pattern():
     try:
         error = ''
         pattern = request.json.get('pattern', 0)
-        is_int('pattern', pattern)
+        cmn.is_int('pattern', pattern)
         repeat = request.json.get('repeat', 0)
-        is_int('repeat', repeat)
-        wait = request.json.get('wait', False)
-        is_bool('wait', wait)
+        cmn.is_int('repeat', repeat)
     except Exception as e:
         error = str(e)
 
     if not error:
         try:
-            luxafor.pattern(pattern, repeat=repeat, wait=wait)
+            sem.acquire()
+            luxafor.pattern(pattern, repeat=repeat)
+            sem.release()
         except Exception as e:
             error = str(e)
 
@@ -216,7 +205,7 @@ def pattern():
     return jsonify(
         {
             "path": request.path,
-            "status": 'success' if not error else 'fail',
+            "status": 'success',
             "code": 200,
             "error": error
         }
@@ -228,7 +217,9 @@ def off():
 
     error = ''
     try:
+        sem.acquire()
         luxafor.off()
+        sem.release()
     except Exception as e:
         error = str(e)
 
@@ -238,7 +229,7 @@ def off():
     return jsonify(
         {
             "path": request.path,
-            "status": 'success' if not error else 'fail',
+            "status": 'success',
             "code": 200,
             "error": error
         }
@@ -260,10 +251,48 @@ def kill():
 
     return {
         "path": request.path,
-        "status": 'success' if not error else 'fail',
+        "status": 'success',
         "code": 200,
         "error": error
     }
+
+
+def setup_schedule():
+    """Setup schedule."""
+
+    global schedule
+
+    sem.acquire()
+    filename = request.json.get('file', '')
+    if os.path.exists(filename) and os.path.isfile(filename):
+        schedule.clear_schedule()
+        err = schedule.read_schedule(filename)
+    else:
+        err = "The file '{}' does not exist".format(filename)
+    sem.release()
+    if err:
+        abort(400, err)
+    return {
+        "path": request.path,
+        "status": 'success',
+        'code': 200,
+        "error": err
+    }
+
+
+def check_schedule():
+    """Check schedule in the background."""
+
+    global schedule
+
+    last = time.time()
+    while True:
+        if (time.time() - last) >= 10:
+            sem.acquire()
+            schedule.check_schedule()
+            sem.release()
+            last = time.time()
+        gevent.sleep(30)
 
 
 @app.route('/')
@@ -298,6 +327,8 @@ def execute_command(command):
         elif command == 'kill':
             # Results won't make it back if successful
             results = kill()
+        elif command == 'schedule':
+            results = setup_schedule()
         else:
             abort(404)
 
@@ -373,13 +404,18 @@ def run(host=HOST, port=PORT, device_index=0, device_path=None, token=None, ssl=
     global luxafor
     global http_server
     global tokens
+    global schedule
 
     with usb.Luxafor(device_index, device_path, token) as lf:
         luxafor = lf
         tokens = set([token])
+        schedule = scheduler.Scheduler(luxafor)
+        http_server = WSGIServer((host, port), app, **kwargs)
+        serve = gevent.spawn(http_server.start)
+        background = gevent.spawn(check_schedule)
 
         try:
-            http_server = WSGIServer((host, port), app, **kwargs)
-            http_server.serve_forever()
+            gevent.joinall([serve, background])
         except KeyboardInterrupt:
             pass
+        print('Exiting')
