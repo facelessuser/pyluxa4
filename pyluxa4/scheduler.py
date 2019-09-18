@@ -36,6 +36,7 @@ class Scheduler:
         """Initialize."""
 
         self.handle = handle
+        self.day_end = self.resolve_times('12:59')[0]
         self.mode_map = {
             "color": handle.color,
             "strobe": handle.strobe,
@@ -64,7 +65,11 @@ class Scheduler:
         return seconds, now.weekday()
 
     def resolve_times(self, times):
-        """Convert datetime to seconds."""
+        """
+        Convert convert time to seconds for easy comparison.
+
+        Seconds are relative to a day.
+        """
 
         if not isinstance(times, list):
             times = [times]
@@ -78,7 +83,11 @@ class Scheduler:
         return resolved
 
     def resolve_days(self, days):
-        """Resolve days."""
+        """
+        Resolve days.
+
+        Days are numbers from 0-6 where Monday is 0.
+        """
 
         if not isinstance(days, list):
             days = [days]
@@ -142,6 +151,22 @@ class Scheduler:
         color = arguments['color']
         cmn.is_str('color', color)
         args.append(color)
+
+    def time_in_range(self, day, seconds, delta, event_days):
+        """
+        Check if day is in range.
+
+        Day should equal the current day, but if seconds
+        is less than a minute into the next day, we could
+        match 12:59 PM.
+        """
+
+        yesterday = day - 1 if day > 0 else 6
+
+        return (
+            (day in event_days and 0 <= delta < 60) or
+            (seconds < 60 and yesterday in event_days and 0 <= delta < 60)
+        )
 
     def read_schedule(self, schedule):
         """Read schedule."""
@@ -213,23 +238,40 @@ class Scheduler:
 
         seconds, day = self.get_current_time()
         closest = -1
+
         for index, event in enumerate(self.events):
             delta = seconds - event['next']
-            if seconds < 60:
-                delta = abs(delta)
-            if day in event['days'] and 0 <= delta < 60:
+
+            # Acount for day rollover with delta
+            if seconds < 60 and delta < 0:
+                delta2 = (self.day_end + seconds + 1) - event['next']
+                if delta2 > 0:
+                    delta = delta2
+
+            # See if the current day and time matches
+            if self.time_in_range(day, seconds, delta, event['days']):
+                # "ran" is true if an event has only one time, this prevents it from
+                # matching repeatedly. Once it no longer matches, it will be
+                # set to false.
                 if not event['ran']:
+                    # Increment time index accounting for rollover.
                     i = event['index'] + 1
                     if i >= len(event['times']):
                         i = 0
                     if i == event['index']:
+                        # Next index is last index, there is only one time
+                        # Mark event as "ran".
                         event['ran'] = True
                     else:
+                        # Point to next time in the list
                         event['next'] = event['times'][i]
                         event['index'] = i
                     closest = index
             elif event['ran']:
+                # Event with single time instance no longer matches, set "False"
                 event['ran'] = False
+
+        # Run the matched event
         if closest > -1:
             event = self.events[closest]
             try:
