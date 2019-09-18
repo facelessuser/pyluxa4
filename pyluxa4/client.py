@@ -192,7 +192,7 @@ class LuxRest:
             "scheduler",
             {
                 "schedule": schedule,
-                "append": append
+                "clear": clear
             },
             timeout
         )
