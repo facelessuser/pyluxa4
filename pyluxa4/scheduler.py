@@ -242,7 +242,7 @@ class Scheduler:
         for index, event in enumerate(self.events):
             delta = seconds - event['next']
 
-            # Acount for day rollover with delta
+            # Account for day rollover with delta
             if seconds < 60 and delta < 0:
                 delta2 = (self.day_end + seconds + 1) - event['next']
                 if delta2 > 0:

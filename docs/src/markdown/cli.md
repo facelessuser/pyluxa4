@@ -341,7 +341,7 @@ Example JSON (`schedule.json`):
         }
     }
 ]
-````
+```
 
 Command load the schedule:
 
