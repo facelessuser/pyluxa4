@@ -125,8 +125,18 @@ class Luxafor:
             if index < 0 or index >= len(devices):
                 raise RuntimeError('The Luxafor device at index {} cannot be found'.format(index))
             device = devices[index]['path']
+        self._path = device
         self._token = token
-        self._device = hid.Device(path=device)
+        self._device = hid.Device(path=self._path)
+        self._closed = False
+        self._disconnected = False
+        self._serial = self._get_serial()
+
+    def _get_serial(self):
+        """Get serial number."""
+
+        self._device.write(b'\x00\x80')
+        return self._device.read(MSG_SIZE, 3)
 
     def __enter__(self):
         """Enter."""
@@ -138,9 +148,37 @@ class Luxafor:
 
         return self.close()
 
+    def _disconnect(self):
+        """Disconnect the device."""
+
+        if self._device is not None:
+            self._device.close()
+            self._disconnected = True
+            self._device = None
+
+    def _reconnect(self):
+        """Reconnect device."""
+
+        devices = enumerate_luxafor()
+        for device in devices:
+            path = device['path']
+            try:
+                self._device = hid.Device(path=path)
+                if self._get_serial() == self._serial:
+                    self._path = path
+                    self._disconnected = False
+                    break
+                else:
+                    self._disconnect()
+            except Exception:
+                self._disconnect()
+
+        return not self._disconnected
+
     def close(self):
         """Close Luxafor device."""
 
+        self._closed = True
         return self._device.close()
 
     def get_token(self):
@@ -151,7 +189,7 @@ class Luxafor:
     def off(self):
         """Set all LEDs to off."""
 
-        self.basic_color('O')
+        return self.basic_color('O')
 
     def basic_color(self, color):
         """
@@ -173,7 +211,7 @@ class Luxafor:
 
         color = ord(color.upper())
         cmn.validate_simple_color(color)
-        self._execute([CMD_REPORT_NUM, MODE_BASIC, color])
+        return self._execute([CMD_REPORT_NUM, MODE_BASIC, color])
 
     def color(self, color, *, led=LED_ALL):
         """
@@ -194,11 +232,11 @@ class Luxafor:
         """
 
         if isinstance(color, str) and len(color) == 1:
-            self.basic_color(color)
+            return self.basic_color(color)
         else:
             red, green, blue = resolve_color(color)
             cmn.validate_led(led)
-            self._execute([CMD_REPORT_NUM, MODE_STATIC, led, red, green, blue, 0, 0, 0])
+            return self._execute([CMD_REPORT_NUM, MODE_STATIC, led, red, green, blue, 0, 0, 0])
 
     def fade(self, color, *, led=LED_ALL, speed=1, wait=False):
         """
@@ -221,7 +259,7 @@ class Luxafor:
         red, green, blue = resolve_color(color)
         cmn.validate_led(led)
         cmn.validate_speed(speed)
-        self._execute([CMD_REPORT_NUM, MODE_FADE, led, red, green, blue, speed, 0, 0], wait=wait)
+        return self._execute([CMD_REPORT_NUM, MODE_FADE, led, red, green, blue, speed, 0, 0], wait=wait)
 
     def wave(self, color, *, wave=WAVE_SHORT, speed=0, repeat=0, wait=False):
         """
@@ -248,7 +286,7 @@ class Luxafor:
         cmn.validate_wave(wave)
         cmn.validate_speed(speed)
         cmn.validate_repeat(repeat)
-        self._execute([CMD_REPORT_NUM, MODE_WAVE, wave, red, green, blue, 0, repeat, speed], wait=wait)
+        return self._execute([CMD_REPORT_NUM, MODE_WAVE, wave, red, green, blue, 0, repeat, speed], wait=wait)
 
     def strobe(self, color, *, led=LED_ALL, speed=0, repeat=0, wait=False):
         """
@@ -275,7 +313,7 @@ class Luxafor:
         cmn.validate_led(led)
         cmn.validate_speed(speed)
         cmn.validate_repeat(repeat)
-        self._execute([CMD_REPORT_NUM, MODE_STROBE, led, red, green, blue, speed, 0, repeat], wait=wait)
+        return self._execute([CMD_REPORT_NUM, MODE_STROBE, led, red, green, blue, speed, 0, repeat], wait=wait)
 
     def pattern(self, pattern, *, repeat=0, wait=False):
         """
@@ -295,17 +333,41 @@ class Luxafor:
             wait = False
         cmn.validate_pattern(pattern)
         cmn.validate_repeat(repeat)
-        self._execute([CMD_REPORT_NUM, MODE_PATTERN, pattern, repeat, 0, 0, 0, 0, 0], wait=wait)
+        return self._execute([CMD_REPORT_NUM, MODE_PATTERN, pattern, repeat, 0, 0, 0, 0, 0], wait=wait)
 
     def _execute(self, cmd, wait=False):
-        """Set color."""
+        """
+        Set color.
 
-        self._device.write(bytes(cmd))
+        Return false if there was an error.
+        """
+
+        if self._disconnected and not self._reconnect():
+            return True
+        elif self._closed:
+            return True
+
+        try:
+            self._device.write(bytes(cmd))
+        except hid.HIDException:
+            # Failed to connect
+            self._disconnect()
+
+        # Attempt to reconnect and try again
+        if self._disconnected:
+            if not self._reconnect():
+                return True
+            self._device.write(bytes(cmd))
 
         # Wait for commands that take time to complete.
         # When the `hid` is released on Windows, the current
         # command may not complete. Using wait before the
         # script exits will help ensure the command completes.
         if wait:
-            while self._device.read(MSG_SIZE, 100) != MSG_NON_IMMEDIATE_COMPLETE:
-                pass
+            try:
+                while self._device.read(MSG_SIZE, 100) != MSG_NON_IMMEDIATE_COMPLETE:
+                    pass
+            except hid.HIDException:
+                self._disconnect()
+                return True
+        return False
