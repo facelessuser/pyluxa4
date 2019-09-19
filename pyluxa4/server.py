@@ -242,6 +242,7 @@ def kill():
         error = ''
         http_server.close()
         http_server.stop(timeout=10)
+        background.kill()
     except Exception as e:
         error = str(e)
 
@@ -434,6 +435,7 @@ def run(
     global http_server
     global tokens
     global schedule
+    global background
 
     with usb.Luxafor(device_index, device_path, token) as lf:
         luxafor = lf
