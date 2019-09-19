@@ -345,10 +345,10 @@ def execute_command(command):
     return results
 
 
-@app.route('%s/command/scheduler/<string:command>' % get_api_ver_path(), methods=['GET'])
+@app.route('%s/scheduler/<string:command>' % get_api_ver_path(), methods=['GET'])
 @auth.login_required
-def get_info(command):
-    """Retrieve information."""
+def get_scheduler(command):
+    """Retrieve information from scheduler."""
 
     if request.method == 'GET':
         if command == 'schedule':

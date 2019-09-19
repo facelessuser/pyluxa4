@@ -22,7 +22,7 @@ The `serve` command connects with your device and starts a server. By default, t
 the one that the server will connect to, but you can specify a specific device by either using `--device-path` or
 `--device-index`. `--device-path` take precedence over `--device-index`.
 
-If desired, you can schedule events by specifying a schedule file via the `--scheduler` option. See
+If desired, you can schedule events by specifying a schedule file via the `--schedule` option. See
 [Scheduler](#scheduler) for more information.
 
 You can restrict the incoming requests by using a token via the `--token` option, and only requests that provide the
@@ -39,7 +39,7 @@ requests with no verification (`0`), or to specify a certificate to validate aga
 
 ```
 $ pyluxa4 serve --help
-usage: pyluxa4 serve [-h] [--scheduler SCHEDULER] [--device-path DEVICE_PATH]
+usage: pyluxa4 serve [-h] [--schedule SCHEDULE] [--device-path DEVICE_PATH]
                      [--device-index DEVICE_INDEX] [--host HOST] [--port PORT]
                      [--ssl-key SSL_KEY] [--ssl-cert SSL_CERT] [--token TOKEN]
 
@@ -47,7 +47,7 @@ Run server
 
 optional arguments:
   -h, --help            show this help message and exit
-  --scheduler SCHEDULER JSON schedule file.
+  --schedule SCHEDULE   JSON schedule file.
   --device-path DEVICE_PATH
                         Luxafor device path
   --device-index DEVICE_INDEX
@@ -356,7 +356,7 @@ Command load the schedule:
 
 ```
 $ pyluxa4 scheduler --schedule schedule.json
-{'code': 200, 'error': '', 'path': '/pyluxa4/api/v1.1/command/schedule', 'status': 'success'}
+{'code': 200, 'error': '', 'path': '/pyluxa4/api/v1.2/command/schedule', 'status': 'success'}
 ```
 
 ```
@@ -385,11 +385,11 @@ The `get` command allows you to retrieve information. Currently you can only ret
 
 ```
 $ pyluxa4 get schedule
-{'code': 200, 'error': '', 'path': '/pyluxa4/api/v1.2/command/scheduler/schedule', 'schedule': [{'args': ['magenta'], 'days': [0, 1, 2, 3, 4], 'kwargs': {'led': 255, 'repeat': 20, 'speed': 10}, 'label': 'Scheduler Test', 'times': [32400.0], 'type': 'strobe'}], 'status': 'success'}
+{'code': 200, 'error': '', 'path': '/pyluxa4/api/v1.2/scheduler/schedule', 'schedule': [{'args': {'pattern': 'police', 'repeat': 3}, 'cmd': 'pattern', 'days': ['all'], 'times': '20:16'}, {'args': {'color': 'red', 'speed': 100}, 'cmd': 'fade', 'days': 'all', 'times': ['20:15', '20:17']}], 'status': 'success'}
 ```
 
 ```
-pyluxa4 get --help                                                                                                                                                                                
+pyluxa4 get --help
 usage: pyluxa4 get [-h] [--token TOKEN] [--host HOST] [--port PORT]
                    [--secure SECURE] [--timeout TIMEOUT]
                    info

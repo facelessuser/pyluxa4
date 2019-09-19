@@ -98,7 +98,7 @@ class LuxRest:
 
         try:
             resp = requests.get(
-                '%s://%s:%d/pyluxa4/api/v%s.%s/command/%s' % (
+                '%s://%s:%d/pyluxa4/api/v%s.%s/%s' % (
                     self.http,
                     self.host,
                     self.port,

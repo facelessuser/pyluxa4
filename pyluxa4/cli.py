@@ -239,7 +239,7 @@ def cmd_serve(argv):
     from . import server
 
     parser = argparse.ArgumentParser(prog='pyluxa4 serve', description="Run server")
-    parser.add_argument('--scheduler', action='store', default='', help="JSON schedule file.")
+    parser.add_argument('--schedule', action='store', default='', help="JSON schedule file.")
     parser.add_argument('--device-path', action='store', default=None, help="Luxafor device path")
     parser.add_argument('--device-index', action='store', type=int, default=0, help="Luxafor device index")
     parser.add_argument('--host', action='store', default=server.HOST, help="Host")
@@ -259,7 +259,7 @@ def cmd_serve(argv):
     if args.ssl_cert:
         kwargs['certfile'] = args.ssl_cert
 
-    server.run(args.host, args.port, index, path, args.token, args.scheduler, **kwargs)
+    server.run(args.host, args.port, index, path, args.token, args.schedule, **kwargs)
 
 
 def cmd_list(argv):
