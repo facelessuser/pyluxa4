@@ -1,4 +1,5 @@
 """Luxafor server."""
+import logging
 from flask import Flask, jsonify, abort, make_response, request
 from flask_httpauth import HTTPTokenAuth
 from gevent.pywsgi import WSGIServer
@@ -12,6 +13,10 @@ from . import __meta__
 
 sem = BoundedSemaphore(1)
 
+logger = logging.getLogger(__name__)
+log_handler = logging.StreamHandler()
+logger.addHandler(log_handler)
+logger.setLevel(logging.INFO)
 app = Flask(__name__)
 auth = HTTPTokenAuth('Bearer')
 tokens = set()
@@ -437,6 +442,10 @@ def run(
     global schedule
     global background
 
+    log_handler.setFormatter(
+        logging.Formatter(fmt='[%(asctime)s] %(levelname)s: %(message)s', datefmt="%Y-%m-%d %H:%M:%S")
+    )
+
     with usb.Luxafor(device_index, device_path, token) as lf:
         luxafor = lf
         tokens = set([token])
@@ -444,13 +453,14 @@ def run(
         if schedule_file and os.path.exists(schedule_file) and os.path.isfile(schedule_file):
             err = schedule.read_schedule(schedule_file)
             if err:
-                print(err)
+                logger.error(err)
         http_server = WSGIServer((host, port), app, **kwargs)
         serve = gevent.spawn(http_server.start)
         background = gevent.spawn(check_schedule)
 
         try:
+            logger.info('Starting Luxafor server...')
             gevent.joinall([serve, background])
         except KeyboardInterrupt:
             pass
-        print('Exiting')
+        logger.info('Exiting Luxafor server...')
