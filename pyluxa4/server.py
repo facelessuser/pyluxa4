@@ -24,6 +24,7 @@ luxafor = None
 schedule = None
 HOST = '0.0.0.0'
 PORT = 5000
+ERR_CMD_FAILED = "Command could not be excuted, possibly due to a disconnected device"
 
 
 def get_api_ver_path():
@@ -51,15 +52,18 @@ def color():
         color = request.json.get('color', '')
         cmn.is_str('color', color)
     except Exception as e:
+        logger.error(e)
         error = str(e)
 
     if not error:
+        sem.acquire()
         try:
-            sem.acquire()
-            luxafor.color(color, led=led)
-            sem.release()
+            if luxafor.color(color, led=led):
+                raise RuntimeError(ERR_CMD_FAILED)
         except Exception as e:
+            logger.error(e)
             error = str(e)
+        sem.release()
 
     if error:
         abort(400, error)
@@ -86,15 +90,18 @@ def fade():
         speed = request.json.get('speed', 0)
         cmn.is_int('speed', speed)
     except Exception as e:
+        logger.error(e)
         error = str(e)
 
     if not error:
+        sem.acquire()
         try:
-            sem.acquire()
-            luxafor.fade(color, led=led, speed=speed)
-            sem.release()
+            if luxafor.fade(color, led=led, speed=speed):
+                raise RuntimeError(ERR_CMD_FAILED)
         except Exception as e:
+            logger.error(e)
             error = str(e)
+        sem.release()
 
     if error:
         abort(400, error)
@@ -123,15 +130,18 @@ def strobe():
         repeat = request.json.get('repeat', 0)
         cmn.is_int('repeat', repeat)
     except Exception as e:
+        logger.error(e)
         error = str(e)
 
     if not error:
+        sem.acquire()
         try:
-            sem.acquire()
-            luxafor.strobe(color, led=led, speed=speed, repeat=repeat)
-            sem.release()
+            if luxafor.strobe(color, led=led, speed=speed, repeat=repeat):
+                raise RuntimeError(ERR_CMD_FAILED)
         except Exception as e:
+            logger.error(e)
             error = str(e)
+        sem.release()
 
     if error:
         abort(400, error)
@@ -160,15 +170,18 @@ def wave():
         repeat = request.json.get('repeat', 0)
         cmn.is_int('repeat', repeat)
     except Exception as e:
+        logger.error(e)
         error = str(e)
 
     if not error:
+        sem.acquire()
         try:
-            sem.acquire()
-            luxafor.wave(color, wave=wave, speed=speed, repeat=repeat)
-            sem.release()
+            if luxafor.wave(color, wave=wave, speed=speed, repeat=repeat):
+                raise RuntimeError(ERR_CMD_FAILED)
         except Exception as e:
+            logger.error(e)
             error = str(e)
+        sem.release()
 
     if error:
         abort(400, error)
@@ -193,15 +206,18 @@ def pattern():
         repeat = request.json.get('repeat', 0)
         cmn.is_int('repeat', repeat)
     except Exception as e:
+        logger.error(e)
         error = str(e)
 
     if not error:
+        sem.acquire()
         try:
-            sem.acquire()
-            luxafor.pattern(pattern, repeat=repeat)
-            sem.release()
+            if luxafor.pattern(pattern, repeat=repeat):
+                raise RuntimeError(ERR_CMD_FAILED)
         except Exception as e:
+            logger.error(e)
             error = str(e)
+        sem.release()
 
     if error:
         abort(400, error)
@@ -220,12 +236,14 @@ def off():
     """Set off."""
 
     error = ''
+    sem.acquire()
     try:
-        sem.acquire()
-        luxafor.off()
-        sem.release()
+        if luxafor.off():
+            raise RuntimeError(ERR_CMD_FAILED)
     except Exception as e:
+        logger.error(e)
         error = str(e)
+    sem.release()
 
     if error:
         abort(400, error)
@@ -249,6 +267,7 @@ def kill():
         http_server.stop(timeout=10)
         background.kill()
     except Exception as e:
+        logger.error(e)
         error = str(e)
 
     if error:
@@ -449,7 +468,7 @@ def run(
     with usb.Luxafor(device_index, device_path, token) as lf:
         luxafor = lf
         tokens = set([token])
-        schedule = scheduler.Scheduler(luxafor)
+        schedule = scheduler.Scheduler(luxafor, logger)
         if schedule_file and os.path.exists(schedule_file) and os.path.isfile(schedule_file):
             err = schedule.read_schedule(schedule_file)
             if err:

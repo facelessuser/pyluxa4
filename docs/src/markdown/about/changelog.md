@@ -1,5 +1,11 @@
 # Changelog
 
+## 1.3.0
+
+- **NEW**: API for USB library now returns whether it passed or failed. This can indicate a disconnected device.
+- **FIX**: A command may fail for various reasons, so don't remove a command from schedule just because it fails.
+- **FIX**: Add logic to reconnect to a device if it appears the device was disconnected.
+
 ## 1.2.0
 
 - **NEW**: `--wait` removed from CLI as the server should not get hung while waiting. `wait` is still available when

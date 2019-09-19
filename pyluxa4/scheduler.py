@@ -33,9 +33,10 @@ DAY_MAP = {
 class Scheduler:
     """Scheduler."""
 
-    def __init__(self, handle):
+    def __init__(self, handle, logger):
         """Initialize."""
 
+        self.logger = logger
         self.handle = handle
         self.day_end = self.resolve_times('23:59')[0]
         self.mode_map = {
@@ -179,7 +180,9 @@ class Scheduler:
                 config = json.loads(f.read())
             assert isinstance(config, list)
         except Exception:
-            return "Could not open file or file content was invalid {}".format(schedule)
+            err = "Could not open file or file content was invalid {}".format(schedule)
+            self.logger(err)
+            return err
 
         err = ''
 
@@ -237,6 +240,7 @@ class Scheduler:
                     raise ValueError("Unrecognized command {}".format(cmd_type))
 
             except Exception as e:
+                self.logger.error(e)
                 err = str(e)
                 break
 
@@ -307,7 +311,5 @@ class Scheduler:
             cmd = self.cmds[index]
             try:
                 cmd['cmd'](*cmd['args'], **cmd['kwargs'])
-            except Exception:
-                # Remove bad commands
-                del self.events[index]
-                del self.cmds[index]
+            except Exception as e:
+                self.logger.error(e)
