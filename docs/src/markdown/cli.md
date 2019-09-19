@@ -318,9 +318,6 @@ Commands must contain:
 
 Command may contain:
 
-- While not required, it is also suggested that you include a `label` to help verify which pattern you are looking at when
-you list the schedule via `pyluxa4 get schedule`. See [Get](#get) for more information.
-
 - Additional options under `args` may or may not be needed depending on the command:
 
     - For commands like `color`, `fade`, `strobe`, and `wave`, you must specify the color under `color`.
@@ -334,7 +331,6 @@ Example JSON (`schedule.json`):
 ```js
 [
     {
-        "label": "Time to go home!",
         "cmd": "pattern",
         "days": ["all"],
         "times": "20:21",
@@ -345,7 +341,6 @@ Example JSON (`schedule.json`):
     },
 
     {
-        "label": "Important event!",
         "cmd": "fade",
         "days": "all",
         "times": ["20:20", "20:22"],

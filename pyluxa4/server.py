@@ -4,7 +4,6 @@ from flask_httpauth import HTTPTokenAuth
 from gevent.pywsgi import WSGIServer
 from gevent.lock import BoundedSemaphore
 import gevent
-import time
 import os
 from . import scheduler
 from . import usb
@@ -275,6 +274,7 @@ def get_schedule():
 def setup_schedule():
     """Setup schedule."""
 
+    err = ''
     sem.acquire()
     filename = request.json.get('schedule')
     clear = request.json.get('clear', False)
@@ -296,14 +296,11 @@ def setup_schedule():
 def check_schedule():
     """Check schedule in the background."""
 
-    last = time.time()
     while True:
-        if (time.time() - last) >= 10:
-            sem.acquire()
-            schedule.check_schedule()
-            sem.release()
-            last = time.time()
-        gevent.sleep(30)
+        sem.acquire()
+        schedule.check_schedule()
+        sem.release()
+        gevent.sleep(10)
 
 
 @app.route('/')

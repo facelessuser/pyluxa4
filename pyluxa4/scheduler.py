@@ -47,11 +47,13 @@ class Scheduler:
             "off": handle.off
         }
         self.events = []
+        self.cmds = []
 
     def clear_schedule(self):
         """Clear the schedule."""
 
         self.events = []
+        self.cmds = []
 
     def total_seconds(self, t):
         """Get the total seconds."""
@@ -182,49 +184,65 @@ class Scheduler:
         err = ''
 
         events = []
+        cmds = []
 
         for entry in config:
             try:
+                # Throw an error for unexpected parameters
+                for k in entry.keys():
+                    if k not in ('cmd', 'days', 'times', 'args'):
+                        raise ValueError('Unexpected event parameter {}'.format(k))
+
                 cmd_type = entry['cmd']
                 args = []
                 kwargs = {}
                 if cmd_type in self.mode_map:
                     cmd = self.mode_map[cmd_type]
-                    label = entry.get('label', '')
-                    cmn.is_str('label', label)
                     days = self.resolve_days(entry['days'])
                     times = self.resolve_times(entry['times'])
                     arguments = entry.get('args', {})
+                    expected = set()
                     if cmd_type in ('color', 'strobe', 'fade', 'wave'):
+                        expected.add('color')
                         self.parse_color(arguments, args)
 
                         if cmd_type in ('color', 'strobe', 'fade'):
+                            expected.add('led')
                             self.parse_led(arguments, kwargs)
 
                         if cmd_type in ('strobe', 'fade', 'wave'):
+                            expected.add('speed')
                             self.parse_speed(arguments, kwargs)
 
                         if cmd_type in ('strobe', 'wave'):
+                            expected.add('repeat')
                             self.parse_repeat(arguments, kwargs)
 
                         if cmd_type == 'wave':
+                            expected.add('wave')
                             self.parse_wave(arguments, kwargs)
 
                     elif cmd_type == 'pattern':
+                        expected.add('pattern')
+                        expected.add('repeat')
                         self.parse_pattern(arguments, args)
                         self.parse_repeat(arguments, kwargs)
 
+                    # Throw an error for unexpected arguments
+                    for k in arguments.keys():
+                        if k not in expected:
+                            raise ValueError('Unexpected command argument {}'.format(k))
+
                 else:
-                    err = "Unrecognized command {}".format(cmd_type)
-                    break
+                    raise ValueError("Unrecognized command {}".format(cmd_type))
+
             except Exception as e:
                 err = str(e)
                 break
 
-            events.append(
+            events.append(entry)
+            cmds.append(
                 {
-                    'label': label,
-                    'type': cmd_type,
                     'cmd': cmd,
                     'args': args,
                     'kwargs': kwargs,
@@ -237,70 +255,59 @@ class Scheduler:
             )
         if not err:
             self.events.extend(events)
+            self.cmds.extend(cmds)
 
         return err
 
     def get_schedule(self):
         """Get the schedule."""
 
-        report = []
-        for event in self.events:
-            report.append(
-                {
-                    'label': event['label'],
-                    'type': event['type'],
-                    'days': list(event['days']),
-                    'times': list(event['times']),
-                    'args': copy.deepcopy(event['args']),
-                    'kwargs': copy.deepcopy(event['kwargs'])
-                }
-            )
-        return report
+        return copy.deepcopy(self.events)
 
     def check_schedule(self):
         """Check events."""
 
         seconds, day = self.get_current_time()
-        closest = -1
+        indexes = []
 
-        for index, event in enumerate(self.events):
-            delta = seconds - event['next']
+        for index, cmd in enumerate(self.cmds):
+            delta = seconds - cmd['next']
 
             # Account for day rollover with delta
             if seconds < 60 and delta < 0:
-                delta2 = (self.day_end + seconds + 1) - event['next']
+                delta2 = (self.day_end + seconds + 1) - cmd['next']
                 if delta2 > 0:
                     delta = delta2
 
             # See if the current day and time matches
-            if self.time_in_range(day, seconds, delta, event['days']):
+            if self.time_in_range(day, seconds, delta, cmd['days']):
                 # "ran" is true if an event has only one time, this prevents it from
                 # matching repeatedly. Once it no longer matches, it will be
                 # set to false.
-                if not event['ran']:
+                if not cmd['ran']:
                     # Increment time index accounting for rollover.
-                    i = event['index'] + 1
-                    if i >= len(event['times']):
+                    i = cmd['index'] + 1
+                    if i >= len(cmd['times']):
                         i = 0
-                    if i == event['index']:
+                    if i == cmd['index']:
                         # Next index is last index, there is only one time
                         # Mark event as "ran".
-                        event['ran'] = True
+                        cmd['ran'] = True
                     else:
                         # Point to next time in the list
-                        event['next'] = event['times'][i]
-                        event['index'] = i
-                    closest = index
-            elif event['ran']:
+                        cmd['next'] = cmd['times'][i]
+                        cmd['index'] = i
+                    indexes.append(index)
+            elif cmd['ran']:
                 # Event with single time instance no longer matches, set "False"
-                event['ran'] = False
+                cmd['ran'] = False
 
         # Run the matched event
-        if closest > -1:
-            event = self.events[closest]
+        for index in indexes:
+            cmd = self.cmds[index]
             try:
-                event['cmd'](*event['args'], **event['kwargs'])
+                cmd['cmd'](*cmd['args'], **cmd['kwargs'])
             except Exception:
                 # Remove bad commands
-                print('Failed to execute command...')
-                del self.events[closest]
+                del self.events[index]
+                del self.cmds[index]
