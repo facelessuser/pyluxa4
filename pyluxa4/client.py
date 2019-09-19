@@ -54,7 +54,7 @@ class LuxRest:
             r = {"status": "fail", "code": resp.status_code, "error": resp.text}
         return r
 
-    def _post(self, command, payload, timeout, no_response=False):
+    def _post(self, command, payload, timeout):
         """Post a REST command."""
 
         if timeout == 0:
@@ -88,8 +88,37 @@ class LuxRest:
 
         return self._format_respose(resp)
 
+    def _get(self, command, timeout):
+        """Perform a REST request."""
+
+        if timeout == 0:
+            timeout = None
+
+        headers = {'Authorization': 'Bearer {}'.format(self.token)}
+
+        try:
+            resp = requests.get(
+                '%s://%s:%d/pyluxa4/api/v%s.%s/%s' % (
+                    self.http,
+                    self.host,
+                    self.port,
+                    __meta__.__version_info__[0],
+                    __meta__.__version_info__[1],
+                    command
+                ),
+                headers=headers,
+                timeout=timeout,
+                verify=self.verify
+            )
+        except requests.exceptions.ConnectionError:
+            return {"status": "fail", "code": 0, "error": "Server does not appear to be running"}
+        except Exception as e:
+            return {"status": "fail", "code": 0, "error": str(e)}
+
+        return self._format_respose(resp)
+
     def _get_version(self, timeout):
-        """Perform a GET request."""
+        """Perform a GET request for version."""
 
         if timeout == 0:
             timeout = None
@@ -123,7 +152,7 @@ class LuxRest:
             timeout
         )
 
-    def fade(self, color, *, led=LED_ALL, speed=0, wait=False, timeout=TIMEOUT):
+    def fade(self, color, *, led=LED_ALL, speed=0, timeout=TIMEOUT):
         """Create command to fade colors."""
 
         return self._post(
@@ -131,13 +160,12 @@ class LuxRest:
             {
                 "color": color,
                 "led": led,
-                "speed": speed,
-                "wait": wait
+                "speed": speed
             },
             timeout
         )
 
-    def strobe(self, color, *, led=LED_ALL, speed=0, repeat=0, wait=False, timeout=TIMEOUT):
+    def strobe(self, color, *, led=LED_ALL, speed=0, repeat=0, timeout=TIMEOUT):
         """Create command to strobe colors."""
 
         return self._post(
@@ -146,13 +174,12 @@ class LuxRest:
                 "color": color,
                 "led": led,
                 "speed": speed,
-                "repeat": repeat,
-                "wait": wait
+                "repeat": repeat
             },
             timeout
         )
 
-    def wave(self, color, *, wave=WAVE_SHORT, speed=0, repeat=0, wait=False, timeout=TIMEOUT):
+    def wave(self, color, *, wave=WAVE_SHORT, speed=0, repeat=0, timeout=TIMEOUT):
         """Create command to use the wave effect."""
 
         return self._post(
@@ -161,26 +188,24 @@ class LuxRest:
                 "color": color,
                 "wave": wave,
                 "speed": speed,
-                "repeat": repeat,
-                "wait": wait
+                "repeat": repeat
             },
             timeout
         )
 
-    def pattern(self, pattern, *, led=LED_ALL, repeat=0, wait=False, timeout=TIMEOUT):
+    def pattern(self, pattern, *, led=LED_ALL, repeat=0, timeout=TIMEOUT):
         """Create command to use the wave effect."""
 
         return self._post(
             "pattern",
             {
                 "pattern": pattern,
-                "repeat": repeat,
-                "wait": wait
+                "repeat": repeat
             },
             timeout
         )
 
-    def off(self, timeout=TIMEOUT):
+    def off(self, *, timeout=TIMEOUT):
         """Turn off all lights."""
 
         return self._post(
@@ -189,7 +214,27 @@ class LuxRest:
             timeout
         )
 
-    def kill(self, timeout=TIMEOUT):
+    def scheduler(self, *, schedule=None, clear=False, timeout=TIMEOUT):
+        """Scheduler command."""
+
+        return self._post(
+            "scheduler",
+            {
+                "schedule": schedule,
+                "clear": clear
+            },
+            timeout
+        )
+
+    def get_schedule(self, *, timeout=TIMEOUT):
+        """Scheduler command."""
+
+        return self._get(
+            "scheduler/schedule",
+            timeout
+        )
+
+    def kill(self, *, timeout=TIMEOUT):
         """Kill the server."""
 
         return self._post(
@@ -198,7 +243,7 @@ class LuxRest:
             timeout
         )
 
-    def version(self, timeout=TIMEOUT):
+    def version(self, *, timeout=TIMEOUT):
         """Request the version from the running server."""
 
         return self._get_version(timeout)

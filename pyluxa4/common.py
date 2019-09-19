@@ -44,6 +44,31 @@ BYTE_MIN = 0
 BYTE_MAX = 255
 
 
+LED_MAP = {
+    "all": LED_ALL,
+    "back": LED_BACK,
+    "front": LED_FRONT
+}
+
+PATTERN_MAP = {
+    'traffic-light': PATTERN_TRAFFIC_LIGHT,
+    'police': PATTERN_POLICE,
+    'rainbow': PATTERN_RAINBOW,
+    'random1': PATTERN_RANDOM1,
+    'random2': PATTERN_RANDOM2,
+    'random3': PATTERN_RANDOM3,
+    'random4': PATTERN_RANDOM4,
+    'random5': PATTERN_RANDOM5
+}
+
+WAVE_MAP = {
+    "short": WAVE_SHORT,
+    "long": WAVE_LONG,
+    "overlapping-short": WAVE_OVERLAPPING_SHORT,
+    "overlapping-long": WAVE_OVERLAPPING_LONG
+}
+
+
 def validate_wave(wave):
     """Validate wave."""
 
@@ -84,3 +109,69 @@ def validate_simple_color(color):
 
     if color not in COLOR_VALID:
         raise ValueError("Accepted color codes are R, G, B, C, M, Y, W, and O, {} was given".format(color))
+
+
+def is_bool(name, value):
+    """Check if bool."""
+
+    if not isinstance(value, bool):
+        raise TypeError("'{}' must be a boolean".format(name))
+
+
+def is_str(name, value):
+    """Check if bool."""
+
+    if not isinstance(value, str):
+        raise TypeError("'{}' must be a string".format(name))
+
+
+def is_int(name, value):
+    """Check if bool."""
+
+    if not isinstance(value, int):
+        raise TypeError("'{}' must be a integer".format(name))
+
+
+def reslove_led(value):
+    """Resolve LED."""
+
+    led = value.lower()
+    if led in LED_MAP:
+        led = LED_MAP[led]
+    else:
+        try:
+            led = int(led)
+            validate_led(led)
+        except Exception:
+            raise ValueError('Invalid LED value of {}'.format(led))
+    return led
+
+
+def resolve_pattern(value):
+    """Resolve pattern."""
+
+    p = value.lower()
+    if p in PATTERN_MAP:
+        p = PATTERN_MAP[p]
+    else:
+        try:
+            p = int(p)
+            validate_pattern(p)
+        except Exception:
+            raise ValueError('Invalid pattern value of {}'.format(p))
+    return p
+
+
+def resolve_wave(value):
+    """Resolve wave."""
+
+    w = value.lower()
+    if w in WAVE_MAP:
+        w = WAVE_MAP[w]
+    else:
+        try:
+            w = int(w)
+            validate_wave(w)
+        except Exception:
+            raise ValueError('Invalid wave value of {}'.format(w))
+    return w

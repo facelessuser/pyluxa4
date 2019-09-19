@@ -5,6 +5,7 @@ CSS
 Changelog
 HTTPS
 IP
+JSON
 LED
 LEDs
 Luxafor

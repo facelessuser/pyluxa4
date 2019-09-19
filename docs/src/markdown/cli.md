@@ -8,7 +8,7 @@ which device to connect to, the path will always take precedence.
 
 ```
 $ pyluxa4 list --help
-usage: pyluxa4 serve [-h]
+usage: pyluxa4 list [-h]
 
 List available Luxafor devices
 
@@ -21,6 +21,9 @@ optional arguments:
 The `serve` command connects with your device and starts a server. By default, the first Luxafor device that is found is
 the one that the server will connect to, but you can specify a specific device by either using `--device-path` or
 `--device-index`. `--device-path` take precedence over `--device-index`.
+
+If desired, you can schedule events by specifying a schedule file via the `--schedule` option. See
+[Scheduler](#scheduler) for more information.
 
 You can restrict the incoming requests by using a token via the `--token` option, and only requests that provide the
 token will be accepted. `--token` should really only be used over SSL.
@@ -36,15 +39,15 @@ requests with no verification (`0`), or to specify a certificate to validate aga
 
 ```
 $ pyluxa4 serve --help
-usage: pyluxa4 serve [-h] [--device-path DEVICE_PATH]
+usage: pyluxa4 serve [-h] [--schedule SCHEDULE] [--device-path DEVICE_PATH]
                      [--device-index DEVICE_INDEX] [--host HOST] [--port PORT]
-                     [--ssl-key SSL_KEY] [--ssl-cert SSL_CERT]
-                     [--token TOKEN]
+                     [--ssl-key SSL_KEY] [--ssl-cert SSL_CERT] [--token TOKEN]
 
 Run server
 
 optional arguments:
   -h, --help            show this help message and exit
+  --schedule SCHEDULE   JSON schedule file.
   --device-path DEVICE_PATH
                         Luxafor device path
   --device-index DEVICE_INDEX
@@ -53,7 +56,7 @@ optional arguments:
   --port PORT           Port
   --ssl-key SSL_KEY     SSL key file (for https://)
   --ssl-cert SSL_CERT   SSL cert file (for https://)
-  --token TOKEN         Assign an token that must be used when sending commands
+  --token TOKEN         Assign a token that must be used when sending commands
 ```
 
 ## Color
@@ -110,27 +113,26 @@ If needed, you can also control each LED individually, or by the groups front an
 
 ```
 $ pyluxa4 fade --help
-usage: pyluxa4 fade [-h] [--led LED] [--speed SPEED] [--wait]
-                    [--token TOKEN] [--host HOST] [--port PORT]
-                    [--secure SECURE] [--timeout TIMEOUT]
+usage: pyluxa4 fade [-h] [--led LED] [--speed SPEED] [--token TOKEN]
+                    [--host HOST] [--port PORT] [--secure SECURE]
+                    [--timeout TIMEOUT]
                     color
 
 Fade to color
 
 positional arguments:
-  color                Color value.
+  color              Color value.
 
 optional arguments:
-  -h, --help           show this help message and exit
-  --led LED            LED: 1-6, back, tab, or all
-  --speed SPEED        Speed of fade: 0-255
-  --wait               Wait for sequence to complete
-  --token TOKEN        Send API token
-  --host HOST          Host
-  --port PORT          Port
-  --secure SECURE      Enable https requests: enable verification (1), disable
-                       verification(0), or specify a certificate.
-  --timeout TIMEOUT    Timeout
+  -h, --help         show this help message and exit
+  --led LED          LED: 1-6, back, tab, or all
+  --speed SPEED      Speed of fade: 0-255
+  --token TOKEN      Send API token
+  --host HOST        Host
+  --port PORT        Port
+  --secure SECURE    Enable https requests: enable verification (1), disable
+                     verification(0), or specify a certificate.
+  --timeout TIMEOUT  Timeout
 ```
 
 ## Strobe
@@ -145,7 +147,7 @@ Color can be any value excepted by the [`color`](#color) command except Luxafor 
 ```
 $ pyluxa4 strobe --help
 usage: pyluxa4 strobe [-h] [--led LED] [--speed SPEED] [--repeat REPEAT]
-                      [--wait] [--token TOKEN] [--host HOST] [--port PORT]
+                      [--token TOKEN] [--host HOST] [--port PORT]
                       [--secure SECURE] [--timeout TIMEOUT]
                       color
 
@@ -159,7 +161,6 @@ optional arguments:
   --led LED          LED: 1-6, back, front, or all
   --speed SPEED      Speed of strobe: 0-255
   --repeat REPEAT    Number of times to repeat: 0-255
-  --wait             Wait for sequence to complete
   --token TOKEN      Send API token
   --host HOST        Host
   --port PORT        Port
@@ -190,27 +191,26 @@ Color can be any value excepted by the [`color`](#color) command except Luxafor 
 ```
 $ pyluxa4 wave --help
 usage: pyluxa4 wave [-h] [--wave WAVE] [--speed SPEED] [--repeat REPEAT]
-                    [--wait] [--token TOKEN] [--host HOST] [--port PORT]
+                    [--token TOKEN] [--host HOST] [--port PORT]
                     [--secure SECURE] [--timeout TIMEOUT]
                     color
 
 Wave effect
 
 positional arguments:
-  color                Color value.
+  color              Color value.
 
 optional arguments:
-  -h, --help           show this help message and exit
-  --wave WAVE          Wave configuration: 1-5
-  --speed SPEED        Speed of wave effect: 0-255
-  --repeat REPEAT      Number of times to repeat: 0-255
-  --wait               Wait for sequence to complete
-  --token TOKEN        Send API token
-  --host HOST          Host
-  --port PORT          Port
-  --secure SECURE      Enable https requests: enable verification (1), disable
-                       verification(0), or specify a certificate.
-  --timeout TIMEOUT    Timeout
+  -h, --help         show this help message and exit
+  --wave WAVE        Wave configuration: 1-5
+  --speed SPEED      Speed of wave effect: 0-255
+  --repeat REPEAT    Number of times to repeat: 0-255
+  --token TOKEN      Send API token
+  --host HOST        Host
+  --port PORT        Port
+  --secure SECURE    Enable https requests: enable verification (1), disable
+                     verification(0), or specify a certificate.
+  --timeout TIMEOUT  Timeout
 ```
 
 ## Pattern
@@ -235,9 +235,8 @@ You cannot control individual LEDs with the pattern command as all the LEDs are 
 
 ```
 $ pyluxa4 pattern --help
-usage: pyluxa4 pattern [-h] [--repeat REPEAT] [--wait] [--token TOKEN]
-                       [--host HOST] [--port PORT] [--secure SECURE]
-                       [--timeout TIMEOUT]
+usage: pyluxa4 pattern [-h] [--repeat REPEAT] [--token TOKEN] [--host HOST]
+                       [--port PORT] [--secure SECURE] [--timeout TIMEOUT]
                        pattern
 
 Display pattern
@@ -248,7 +247,6 @@ positional arguments:
 optional arguments:
   -h, --help         show this help message and exit
   --repeat REPEAT    Number of times to repeat: 0-255
-  --wait             Wait for sequence to complete
   --token TOKEN      Send API token
   --host HOST        Host
   --port PORT        Port
@@ -291,6 +289,115 @@ usage: pyluxa4 kill [-h] [--token TOKEN] [--host HOST] [--port PORT]
                     [--secure SECURE] [--timeout TIMEOUT]
 
 Kill server
+
+optional arguments:
+  -h, --help         show this help message and exit
+  --token TOKEN      Send API token
+  --host HOST        Host
+  --port PORT        Port
+  --secure SECURE    Enable https requests: enable verification (1), disable
+                     verification(0), or specify a certificate.
+  --timeout TIMEOUT  Timeout
+```
+
+## Scheduler
+
+The `scheduler` command takes a JSON file via `--schedule` with either commands for either [color](#color),
+[fade](#fade), [strobe](#strobe), [wave](#wave), [pattern](#pattern), or [off](#off), and schedules them to be executed
+at the specified times on the specified days. Events are appended to previously scheduled events unless `--clear` is
+provided. If desired, you can run `--clear` without `--schedule` which will simply clear all events.
+
+Commands must contain:
+
+- `cmd` which is the command type, and is the name of the commands mentioned above.
+- `days` which can be either a single string or list of string values representing days of the week: `mon`, `tue`,
+  `wen`, `thu`, `fri`, `sat`, or `sun`. You can also use `wke` to specify the weekend or `wkd` to specify weekdays.
+  `all` would mean all days.
+- `times` which can be either a single string or a list of string values representing the hour and minute for the light
+  to trigger on. The format should be `H:M` where `H` is the hour from 0 - 23 and `M` is the minute from 0 - 59.
+
+Command may contain:
+
+- Additional options under `args` may or may not be needed depending on the command:
+
+    - For commands like `color`, `fade`, `strobe`, and `wave`, you must specify the color under `color`.
+    - For the `pattern` command, you must specify the pattern under `pattern`.
+    - All other options such as `speed`, `repeat`, or `wave` (for the wave pattern) are optional. Use as needed.
+
+For values that are numbers you can use integers. For values that are strings, you can use strings.
+
+Example JSON (`schedule.json`):
+
+```js
+[
+    {
+        "cmd": "pattern",
+        "days": ["all"],
+        "times": "20:21",
+        "args": {
+            "pattern": "police",
+            "repeat": 3
+        }
+    },
+
+    {
+        "cmd": "fade",
+        "days": "all",
+        "times": ["20:20", "20:22"],
+        "args": {
+            "color": "red",
+            "speed": 100
+        }
+    }
+]
+```
+
+Command load the schedule:
+
+```
+$ pyluxa4 scheduler --schedule schedule.json
+{'code': 200, 'error': '', 'path': '/pyluxa4/api/v1.2/command/schedule', 'status': 'success'}
+```
+
+```
+$ pyluxa4 scheduler --help
+usage: pyluxa4 scheduler [-h] [--schedule SCHEDULE] [--clear] [--token TOKEN]
+                         [--host HOST] [--port PORT] [--secure SECURE]
+                         [--timeout TIMEOUT]
+
+Schedule events
+
+optional arguments:
+  -h, --help           show this help message and exit
+  --schedule SCHEDULE  JSON schedule file.
+  --clear              Clear all scheduled events
+  --token TOKEN        Send API token
+  --host HOST          Host
+  --port PORT          Port
+  --secure SECURE      Enable https requests: enable verification (1), disable
+                       verification(0), or specify a certificate.
+  --timeout TIMEOUT    Timeout
+```
+
+## Get
+
+The `get` command allows you to retrieve information. Currently you can only retrieve loaded schedules via:
+
+```
+$ pyluxa4 get schedule
+{'code': 200, 'error': '', 'path': '/pyluxa4/api/v1.2/scheduler/schedule', 'schedule': [{'args': {'pattern': 'police', 'repeat': 3}, 'cmd': 'pattern', 'days': ['all'], 'times': '20:16'}, {'args': {'color': 'red', 'speed': 100}, 'cmd': 'fade', 'days': 'all', 'times': ['20:15', '20:17']}], 'status': 'success'}
+```
+
+```
+pyluxa4 get --help
+usage: pyluxa4 get [-h] [--token TOKEN] [--host HOST] [--port PORT]
+                   [--secure SECURE] [--timeout TIMEOUT]
+                   info
+
+Get information
+
+positional arguments:
+  info               Request information: schedule
 
 optional arguments:
   -h, --help         show this help message and exit
