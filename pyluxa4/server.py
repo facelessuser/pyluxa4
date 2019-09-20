@@ -5,7 +5,6 @@ from flask_httpauth import HTTPTokenAuth
 from gevent.pywsgi import WSGIServer
 from gevent.lock import BoundedSemaphore
 import gevent
-import os
 from . import scheduler
 from . import usb
 from . import common as cmn
@@ -301,12 +300,12 @@ def setup_schedule():
 
     err = ''
     sem.acquire()
-    filename = request.json.get('schedule')
+    events = request.json.get('schedule')
     clear = request.json.get('clear', False)
     if clear:
         schedule.clear_schedule()
-    if filename and os.path.exists(filename) and os.path.isfile(filename):
-        err = schedule.read_schedule(filename)
+    if events is not None:
+        err = schedule.read_schedule(events)
     sem.release()
     if err:
         abort(400, err)
@@ -450,7 +449,7 @@ def server_error(error):
 
 
 def run(
-    host=HOST, port=PORT, device_index=0, device_path=None, token=None, schedule_file=None,
+    host=HOST, port=PORT, device_index=0, device_path=None, token=None, events=None,
     debug=False, **kwargs
 ):
     """Run server."""
@@ -469,8 +468,8 @@ def run(
         luxafor = lf
         tokens = set([token])
         schedule = scheduler.Scheduler(luxafor, logger)
-        if schedule_file and os.path.exists(schedule_file) and os.path.isfile(schedule_file):
-            err = schedule.read_schedule(schedule_file)
+        if events is not None:
+            err = schedule.read_schedule(events)
             if err:
                 logger.error(err)
         http_server = WSGIServer((host, port), app, **kwargs)

@@ -2,9 +2,22 @@
 import argparse
 import os
 import sys
+import json
 from . import common as cmn
 from . import __meta__
 from . import client
+
+
+def process_schedule(schedule):
+    """Read JSON file."""
+
+    config = None
+    if schedule and os.path.exists(schedule) and os.path.isfile(schedule):
+        with open(schedule, 'r') as f:
+            config = json.loads(f.read())
+        if not isinstance(config, list):
+            raise ValueError('JSON file should contain a list of events')
+    return config
 
 
 class LedAction(argparse.Action):
@@ -211,7 +224,7 @@ def cmd_scheduler(argv):
     args = parser.parse_args(argv)
 
     return client.LuxRest(args.host, args.port, args.secure, args.token).scheduler(
-        schedule=args.schedule,
+        schedule=process_schedule(args.schedule),
         clear=args.clear,
         timeout=args.timeout
     )
@@ -259,7 +272,7 @@ def cmd_serve(argv):
     if args.ssl_cert:
         kwargs['certfile'] = args.ssl_cert
 
-    server.run(args.host, args.port, index, path, args.token, args.schedule, **kwargs)
+    server.run(args.host, args.port, index, path, args.token, process_schedule(args.schedule), **kwargs)
 
 
 def cmd_list(argv):

@@ -1,5 +1,4 @@
 """Scheduler."""
-import json
 import time
 import copy
 from datetime import datetime, timedelta
@@ -175,13 +174,9 @@ class Scheduler:
     def read_schedule(self, schedule):
         """Read schedule."""
 
-        try:
-            with open(schedule, 'r') as f:
-                config = json.loads(f.read())
-            assert isinstance(config, list)
-        except Exception:
-            err = "Could not open file or file content was invalid {}".format(schedule)
-            self.logger(err)
+        if not isinstance(schedule, list):
+            err = "Schedule should be of type list, not {}.".format(type(schedule))
+            self.logger.error(err)
             return err
 
         err = ''
@@ -189,7 +184,7 @@ class Scheduler:
         events = []
         cmds = []
 
-        for entry in config:
+        for entry in schedule:
             try:
                 # Throw an error for unexpected parameters
                 for k in entry.keys():

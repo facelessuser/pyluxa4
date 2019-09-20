@@ -1,5 +1,9 @@
 # Changelog
 
+## 1.4.0
+
+- **NEW**: Schedule should not be sent as a file name, but as a JSON object.
+
 ## 1.3.0
 
 - **NEW**: API for USB library now returns whether it passed or failed. This can indicate a disconnected device.
