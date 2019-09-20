@@ -360,6 +360,27 @@ $ pyluxa4 scheduler --schedule schedule.json
 {'code': 200, 'error': '', 'path': '/pyluxa4/api/v1.2/command/schedule', 'status': 'success'}
 ```
 
+If desired, you could include timers in your JSON file. They are similar to normal scheduled events accept they contain
+a couple of extra keys. This makes it easy to load preset timers. They will not show of in `pyluxa4 get schedule`. You
+would need to use `pyluxa4 get itmers` to see timers that have not yet expired.
+
+Timers Must contain:
+
+- `timer` key is required and must be an integer greater than zero. The value represents how many times the timer cycles
+  through the relative times. Zero would cycle forever.
+- `times` are treated a little different. They can still be a string or a list of strings but each time represents how
+  much time to wait before showing the timer. They do not represent a specific time. These relative times are in the
+  form `<total hours>:<minutes>`.
+- All other scheduled event arguments follow the same rules as normal events except `days` will be ignored. Timers are
+  not sensitive to the actual day, and will ignore any value you give for days.
+
+Timers may additionally contain:
+
+- `start` represents a specific time to delay the timer until. This is an actual time of the day in the form `H:M` and
+  represents the point by which the timer will start counting from.
+- `end` is a specific time in the form `H:M` which represents when a timer will expire. For instance, you could create
+  a continuous timer that will fire up until the `end` time.
+
 ```
 $ pyluxa4 scheduler --help
 usage: pyluxa4 scheduler [-h] [--schedule SCHEDULE] [--clear] [--cancel]
@@ -457,7 +478,8 @@ optional arguments:
 
 ## Get
 
-The `get` command allows you to retrieve information. Currently you can only retrieve loaded schedules via:
+The `get` command allows you to retrieve information. Currently you can only retrieve the loaded `schedule` (scheduled
+non-timer events) or scheduled `timers`:
 
 ```
 $ pyluxa4 get schedule
@@ -473,7 +495,7 @@ usage: pyluxa4 get [-h] [--token TOKEN] [--host HOST] [--port PORT]
 Get information
 
 positional arguments:
-  info               Request information: schedule
+  info               Request information: schedule or timers
 
 optional arguments:
   -h, --help         show this help message and exit

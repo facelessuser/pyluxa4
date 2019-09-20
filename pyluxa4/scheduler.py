@@ -49,29 +49,31 @@ class Scheduler:
         self.events = []
         self.cmds = []
 
-    def clear_schedule(self, timers=False):
+    def clear_timers(self):
+        """Clear the timers."""
+
+        remove = []
+        for index, event in enumerate(self.events):
+            timer = event.get('timer')
+            if timer is not None:
+                remove.append(index)
+
+        for index in reversed(remove):
+            del self.events[index]
+            del self.cmds[index]
+
+    def clear_schedule(self):
         """Clear the schedule."""
 
-        if timers:
-            remove = []
-            for index, event in enumerate(self.events):
-                timer = event.get('timer')
-                if timer is not None:
-                    remove.append(index)
+        remove = []
+        for index, event in enumerate(self.events):
+            timer = event.get('timer')
+            if timer is None:
+                remove.append(index)
 
-            for index in reversed(remove):
-                del self.events[index]
-                del self.cmds[index]
-        else:
-            remove = []
-            for index, event in enumerate(self.events):
-                timer = event.get('timer')
-                if timer is None:
-                    remove.append(index)
-
-            for index in reversed(remove):
-                del self.events[index]
-                del self.cmds[index]
+        for index in reversed(remove):
+            del self.events[index]
+            del self.cmds[index]
 
     def end_of_day(self):
         """End of day time."""
@@ -223,11 +225,11 @@ class Scheduler:
             (seconds < 60 and yesterday in event_days and 0 <= delta < 60)
         )
 
-    def read_schedule(self, schedule):
+    def read_schedule(self, records):
         """Read schedule."""
 
-        if not isinstance(schedule, list):
-            err = "Schedule should be of type list, not {}.".format(type(schedule))
+        if not isinstance(records, list):
+            err = "Schedule should be of type list, not {}.".format(type(records))
             self.logger.error(err)
             return err
 
@@ -236,7 +238,7 @@ class Scheduler:
         events = []
         cmds = []
 
-        for entry in schedule:
+        for entry in records:
             start = None
             end = None
             try:
@@ -332,7 +334,22 @@ class Scheduler:
     def get_schedule(self):
         """Get the schedule."""
 
-        return copy.deepcopy(self.events)
+        records = []
+        for event in self.events:
+            timer = event.get('timer')
+            if timer is None:
+                records.append(copy.deepcopy(event))
+        return records
+
+    def get_timers(self):
+        """Get the timers."""
+
+        records = []
+        for event in self.events:
+            timer = event.get('timer')
+            if timer is not None:
+                records.append(copy.deepcopy(event))
+        return records
 
     def get_delta(self, current, target):
         """Get the delta between the current seconds and the target."""
@@ -347,7 +364,7 @@ class Scheduler:
 
         return delta
 
-    def check_schedule(self):
+    def check_records(self):
         """Check events."""
 
         seconds, day = self.get_current_time()

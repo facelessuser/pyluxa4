@@ -355,17 +355,21 @@ def cmd_get(argv):
     """Get information."""
 
     parser = argparse.ArgumentParser(prog='pyluxa4 get', description="Get information")
-    parser.add_argument('info', help="Request information: schedule")
+    parser.add_argument('info', help="Request information: schedule or timers")
     parser.add_argument('--token', default='', help="Send API token")
     connection_args(parser)
     args = parser.parse_args(argv)
 
-    if args.info != 'schedule':
+    if args.info == 'schedule':
+        return client.LuxRest(args.host, args.port, args.secure, args.token).get_schedule(
+            timeout=args.timeout
+        )
+    elif args.info == 'timers':
+        return client.LuxRest(args.host, args.port, args.secure, args.token).get_timers(
+            timeout=args.timeout
+        )
+    else:
         parser.error('Unrecognized requested data {}'.format(args.info))
-
-    return client.LuxRest(args.host, args.port, args.secure, args.token).get_schedule(
-        timeout=args.timeout
-    )
 
 
 def cmd_serve(argv):

@@ -228,10 +228,18 @@ class LuxRest:
         )
 
     def get_schedule(self, *, timeout=TIMEOUT):
-        """Scheduler command."""
+        """Get schedule from scheduler."""
 
         return self._get(
             "scheduler/schedule",
+            timeout
+        )
+
+    def get_timers(self, *, timeout=TIMEOUT):
+        """Get timers from scheduler."""
+
+        return self._get(
+            "scheduler/timers",
             timeout
         )
 

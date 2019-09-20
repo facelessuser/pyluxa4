@@ -280,11 +280,14 @@ def kill():
     }
 
 
-def get_schedule():
-    """Return the current schedule."""
+def get_records(timers=False):
+    """Return the current schedule or timers from the scheduler."""
 
     sem.acquire()
-    report = schedule.get_schedule()
+    if timers:
+        report = schedule.get_timers()
+    else:
+        report = schedule.get_schedule()
     sem.release()
     return {
         "path": request.path,
@@ -304,7 +307,7 @@ def setup_schedule():
     clear = request.json.get('clear', False)
     cancel = request.json.get('cancel', False)
     if cancel:
-        schedule.clear_schedule(timers=True)
+        schedule.clear_timers()
     if clear:
         schedule.clear_schedule()
     if events is not None:
@@ -325,7 +328,7 @@ def check_schedule():
 
     while True:
         sem.acquire()
-        schedule.check_schedule()
+        schedule.check_records()
         sem.release()
         gevent.sleep(10)
 
@@ -379,7 +382,9 @@ def get_scheduler(command):
 
     if request.method == 'GET':
         if command == 'schedule':
-            results = get_schedule()
+            results = get_records()
+        elif command == 'timers':
+            results = get_records(timers=True)
         else:
             abort(404)
     else:
