@@ -111,6 +111,13 @@ def validate_simple_color(color):
         raise ValueError("Accepted color codes are R, G, B, C, M, Y, W, and O, {} was given".format(color))
 
 
+def validate_timer_cycle(cycle):
+    """Validate the timer cycle."""
+
+    if cycle < 0:
+        raise ValueError("Timer cycle can not be less than zero")
+
+
 def is_bool(name, value):
     """Check if bool."""
 
@@ -132,7 +139,7 @@ def is_int(name, value):
         raise TypeError("'{}' must be a integer".format(name))
 
 
-def reslove_led(value):
+def resolve_led(value):
     """Resolve LED."""
 
     led = value.lower()

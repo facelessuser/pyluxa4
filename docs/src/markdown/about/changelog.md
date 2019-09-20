@@ -1,5 +1,13 @@
 # Changelog
 
+## 1.5.0
+
+- **NEW**: Add `timer` command.
+- **NEW**: Add `--cancel` option to `scheduler` command that cancels timers in the scheduler. `--clear` will not remove
+  timers, only traditional scheduled events.
+- **FIX**: Better day rollover logic.
+- **FIX**: LED resolution from CLI.
+
 ## 1.4.0
 
 - **NEW**: Schedule should not be sent as a file name, but as a JSON object.
