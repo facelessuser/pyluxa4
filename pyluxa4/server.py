@@ -302,6 +302,9 @@ def setup_schedule():
     sem.acquire()
     events = request.json.get('schedule')
     clear = request.json.get('clear', False)
+    cancel = request.json.get('cancel', False)
+    if cancel:
+        schedule.clear_schedule(timers=True)
     if clear:
         schedule.clear_schedule()
     if events is not None:

@@ -305,7 +305,8 @@ optional arguments:
 The `scheduler` command takes a JSON file via `--schedule` with either commands for either [color](#color),
 [fade](#fade), [strobe](#strobe), [wave](#wave), [pattern](#pattern), or [off](#off), and schedules them to be executed
 at the specified times on the specified days. Events are appended to previously scheduled events unless `--clear` is
-provided. If desired, you can run `--clear` without `--schedule` which will simply clear all events.
+provided. If desired, you can run `--clear` without `--schedule` which will simply clear all events. `--clear` does not
+cancel timers, it only removes normal, scheduled events. To cancel timers, use `--cancel`.
 
 Commands must contain:
 
@@ -361,9 +362,9 @@ $ pyluxa4 scheduler --schedule schedule.json
 
 ```
 $ pyluxa4 scheduler --help
-usage: pyluxa4 scheduler [-h] [--schedule SCHEDULE] [--clear] [--token TOKEN]
-                         [--host HOST] [--port PORT] [--secure SECURE]
-                         [--timeout TIMEOUT]
+usage: pyluxa4 scheduler [-h] [--schedule SCHEDULE] [--clear] [--cancel]
+                         [--token TOKEN] [--host HOST] [--port PORT]
+                         [--secure SECURE] [--timeout TIMEOUT]
 
 Schedule events
 
@@ -371,12 +372,87 @@ optional arguments:
   -h, --help           show this help message and exit
   --schedule SCHEDULE  JSON schedule file.
   --clear              Clear all scheduled events
+  --cancel             Cancel timers.
   --token TOKEN        Send API token
   --host HOST          Host
   --port PORT          Port
   --secure SECURE      Enable https requests: enable verification (1), disable
                        verification(0), or specify a certificate.
   --timeout TIMEOUT    Timeout
+```
+
+## Timer
+
+The `timer` command provides a way to set off a timer that will execute a command based on a relative time. For
+instance, if we wanted to strobe a red light in an hour and 30 minutes, we could use the following command:
+
+```
+pyluxa4 timer --type strobe --color red --speed 10 --repeat 10 --times 1:30
+```
+
+If we wanted to do it at ten minutes from now followed by another 5 minutes after that:
+
+```
+pyluxa4 timer --type strobe --color red --speed 10 --repeat 10 --times 0:10,0:5
+```
+
+We could even repeat the cycle to flash the red light at 10 minutes, 5 minutes, 10 minutes, and 5 minutes
+
+```
+pyluxa4 timer --type strobe --color red --speed 10 --repeat 10 --times 0:10,0:5 --cycle 2
+```
+
+Or every 30 minutes continually:
+
+```
+pyluxa4 timer --type strobe --color red --speed 10 --repeat 10 --times 0:30 --cycle 0
+```
+
+You can also delay the start to start flashing the light every 30 minutes starting at 9:00 AM:
+
+```
+pyluxa4 timer --type strobe --color red --speed 10 --repeat 10 --times 0:30 --cycle 0 --start 9:00
+```
+
+You could also terminate the timer after a certain time, for example 5:00 PM:
+
+```
+pyluxa4 timer --type strobe --color red --speed 10 --repeat 10 --times 0:30 --cycle 0 --start 9:00 --end 17:00
+```
+
+To clear the running timers, see [Scheduler](#scheduler), as timers are actually done via the scheduler.
+
+```
+$ pyluxa4 timer --help
+usage: pyluxa4 timer [-h] --times TIMES --type TYPE [--led LED]
+                     [--color COLOR] [--pattern PATTERN] [--wave WAVE]
+                     [--speed SPEED] [--repeat REPEAT] [--cycle CYCLE]
+                     [--start START] [--end END] [--token TOKEN] [--host HOST]
+                     [--port PORT] [--secure SECURE] [--timeout TIMEOUT]
+
+Setup timers
+
+optional arguments:
+  -h, --help         show this help message and exit
+  --times TIMES      List of relative times (<num hours>:<num minutes>)
+                     separated by commas.
+  --type TYPE        Timer event type: color, strobe, fade, wave, pattern, or
+                     off
+  --led LED          LED: 1-6, back, tab, or all
+  --color COLOR      Color of timer alerts.
+  --pattern PATTERN  Pattern of timer alerts.
+  --wave WAVE        Force a given wave effect instead of strobe.
+  --speed SPEED      Speed of strobe or wave: 0-255
+  --repeat REPEAT    Number of times to repeat: 0-255
+  --cycle CYCLE      Number of times to cycle through the timers.
+  --start START      Delay the timer to a specific time.
+  --end END          End timer at a specific time.
+  --token TOKEN      Send API token
+  --host HOST        Host
+  --port PORT        Port
+  --secure SECURE    Enable https requests: enable verification (1), disable
+                     verification(0), or specify a certificate.
+  --timeout TIMEOUT  Timeout
 ```
 
 ## Get

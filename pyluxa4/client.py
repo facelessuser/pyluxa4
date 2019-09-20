@@ -214,14 +214,15 @@ class LuxRest:
             timeout
         )
 
-    def scheduler(self, *, schedule=None, clear=False, timeout=TIMEOUT):
+    def scheduler(self, *, schedule=None, clear=False, cancel=False, timeout=TIMEOUT):
         """Scheduler command."""
 
         return self._post(
             "scheduler",
             {
                 "schedule": schedule,
-                "clear": clear
+                "clear": clear,
+                "cancel": cancel
             },
             timeout
         )
