@@ -1,7 +1,7 @@
 """Scheduler."""
 import time
 import copy
-from datetime import datetime, timedelta
+from datetime import datetime
 from . import common as cmn
 
 MON = 0
@@ -37,7 +37,6 @@ class Scheduler:
 
         self.logger = logger
         self.handle = handle
-        self.day_end = self.end_of_day()
         self.mode_map = {
             "color": handle.color,
             "strobe": handle.strobe,
@@ -75,55 +74,52 @@ class Scheduler:
             del self.events[index]
             del self.cmds[index]
 
-    def end_of_day(self):
-        """End of day time."""
-        tm = time.strptime("23:59:59", '%H:%M:%S')
-        return self.total_seconds(timedelta(hours=tm.tm_hour, minutes=tm.tm_min, seconds=tm.tm_sec))
+    def get_timer_increment(self, times):
+        """Calculate timer increments."""
 
-    def total_seconds(self, t):
-        """Get the total seconds."""
+        if not isinstance(times, list):
+            times = [times]
 
-        return (t.microseconds + (t.seconds + t.days * 24 * 3600) * 10 ** 6) / 10 ** 6
+        accum = 0
+        for t in times:
+            h, m = t.split(':')
+            accum += int(h) * 60 * 60 + int(m) * 60
+        if accum == 0:
+            accum = 1
+        return accum
 
-    def get_current_time(self):
-        """Get the current time."""
-
-        now = datetime.now()
-        seconds = self.total_seconds(timedelta(hours=now.hour, minutes=now.minute, seconds=now.second))
-        return seconds, now.weekday()
-
-    def resolve_times(self, times, timer, timer_start=None):
+    def resolve_times(self, ref, times, timer=False):
         """
-        Convert convert time to seconds for easy comparison.
+        Resolve times.
 
-        Seconds are relative to a day.
+        Timers should relative the current time.
+
+        Non-timers should be relative to the current day.
+        If a non-timer's time is less than the current time,
+        we should add a day.
         """
 
         if not isinstance(times, list):
             times = [times]
 
-        resolved = []
+        seconds = ref.timestamp()
         if timer:
-            if timer_start is None:
-                now = time.localtime()
-                seconds = self.total_seconds(timedelta(hours=now.tm_hour, minutes=now.tm_min, seconds=now.tm_sec))
-            else:
-                seconds = timer_start
-            accum = 0
-            for t in sorted(set(times)):
-                hours, minutes = [int(part) for part in t.split(':')]
-                relative_time = accum = hours * 60 * 60 + minutes * 60 + accum
-                relative_time += seconds
-                while relative_time > self.day_end:
-                    relative_time -= self.day_end + 1
-                resolved.append(relative_time)
+            new_times = []
+            ts = ref.timestamp()
+            for t in times:
+                h, m = t.split(':')
+                new_times.append(ts + int(h) * 60 * 60 + int(m) * 60)
+                ts = new_times[-1]
         else:
-            for t in sorted(set(times)):
-                tm = time.strptime(t, '%H:%M')
-                resolved.append(self.total_seconds(timedelta(hours=tm.tm_hour, minutes=tm.tm_min, seconds=tm.tm_sec)))
-            if not resolved:
-                raise ValueError('No valid times found')
-        return resolved
+            new_times = []
+            for t in times:
+                h, m = t.split(':')
+                dt = ref.replace(hour=int(h), minute=int(m), second=0, microsecond=0)
+                t = dt.timestamp()
+                if t < seconds:
+                    t += 24 * 60 * 60
+                new_times.append(dt.timestamp())
+        return new_times
 
     def resolve_days(self, days):
         """
@@ -203,27 +199,14 @@ class Scheduler:
         cmn.validate_timer_cycle(timer)
         return timer
 
-    def parse_timer_boundary(self, obj, name):
+    def parse_timer_boundary(self, ref, value, now):
         """Parse timer boundary."""
 
-        value = obj.get(name)
-        return self.resolve_times(value, False)[0] if value is not None else None
-
-    def time_in_range(self, day, seconds, delta, event_days):
-        """
-        Check if day is in range.
-
-        Day should equal the current day, but if seconds
-        is less than a minute into the next day, we could
-        match 12:59 PM.
-        """
-
-        yesterday = day - 1 if day > 0 else 6
-
-        return (
-            (day in event_days and 0 <= delta < 60) or
-            (seconds < 60 and yesterday in event_days and 0 <= delta < 60)
-        )
+        t = self.resolve_times(ref, [value], False)[0] if value is not None else None
+        # Time is already passed for today, assume tomorrow
+        if t is not None and t < now.timestamp():
+            t += 24 * 60 * 60
+        return t
 
     def read_schedule(self, records):
         """Read schedule."""
@@ -237,6 +220,8 @@ class Scheduler:
 
         events = []
         cmds = []
+
+        now = datetime.now()
 
         for entry in records:
             start = None
@@ -256,8 +241,8 @@ class Scheduler:
                 # Handle timer variables
                 timer = self.parse_timer(entry) if 'timer' in entry else None
                 if timer is not None:
-                    start = self.parse_timer_boundary(entry, 'start')
-                    end = self.parse_timer_boundary(entry, 'end')
+                    start = self.parse_timer_boundary(now, entry.get('start'), now)
+                    end = self.parse_timer_boundary(now, entry.get('end'), now)
 
                 args = []
                 kwargs = {}
@@ -267,7 +252,11 @@ class Scheduler:
                         days = ALL
                     else:
                         days = self.resolve_days(entry['days'])
-                    times = self.resolve_times(entry['times'], timer is not None, timer_start=start)
+                    times = self.resolve_times(
+                        (datetime.fromtimestamp(start) if start is not None else now),
+                        entry['times'],
+                        timer is not None
+                    )
                     arguments = entry.get('args', {})
                     expected = set()
                     if cmd_type in ('color', 'strobe', 'fade', 'wave'):
@@ -305,7 +294,6 @@ class Scheduler:
                     raise ValueError("Unrecognized command {}".format(cmd_type))
 
             except Exception as e:
-                self.logger.error(e)
                 err = str(e)
                 break
 
@@ -316,11 +304,10 @@ class Scheduler:
                     'args': args,
                     'kwargs': kwargs,
                     'days': days,
-                    'next': times[0],
-                    'index': 0,
                     'times': times,
-                    'ran': False,
-                    'timer': timer,
+                    'cycles': None if timer is None else [timer] * len(entry['times']),
+                    'increment': 1 if timer is None else self.get_timer_increment(entry['times']),
+                    'timer': timer is not None,
                     'start': start,
                     'end': end
                 }
@@ -351,77 +338,115 @@ class Scheduler:
                 records.append(copy.deepcopy(event))
         return records
 
-    def get_delta(self, current, target):
-        """Get the delta between the current seconds and the target."""
+    def time_expired(self, now, target):
+        """Check if target past any usable range."""
 
-        delta = current - target
+        return target is None or (now >= target and (now - target) >= 60)
 
-        # Account for day rollover with delta
-        if current < 60 and delta < 0:
-            delta2 = (self.day_end + current + 1) - target
-            if delta2 > 0:
-                delta = delta2
+    def time_in_range(self, now, target, day, days):
+        """Evaluate if time is in range."""
 
-        return delta
+        return target is not None and now >= target and day in days and (now - target) < 60
+
+    def update_timer(self, cmd, event_index, time_index, dt_now, expired):
+        """Update a timer."""
+
+        timer_expired = False
+        t = cmd['times'][time_index]
+
+        if t is not None:
+            cycle = cmd['cycles'][time_index]
+            increment = cmd['increment']
+            now = dt_now.timestamp()
+            cycles = 0
+
+            while t < now:
+                t += increment
+                cycles += 1
+
+            if cycle == 0:
+                cmd['times'][time_index] = t
+            elif cycles < cycle:
+                cmd['cycles'][time_index] -= cycles
+                cmd['times'][time_index] = t
+            else:
+                cmd['times'][time_index] = None
+
+        if cmd['times'][-1] is None:
+            # All time slots have expired
+            timer_expired = True
+            expired.append(event_index)
+
+        return timer_expired
+
+    def update_time(self, cmd, event_index, time_index, dt_now):
+        """Update a normal event time."""
+
+        times = self.events[event_index]['times']
+        t = cmd['times'][time_index]
+        t2 = self.resolve_times(dt_now, times[time_index] if isinstance(times, list) else times, False)[0]
+        if t2 == t:
+            # We haven't rolled over to a new day, so we calculated the same time.
+            # Add a day.
+            t2 += 24 * 60 * 60
+        cmd['times'][time_index] = t2
+
+    def update_times(self, cmd, index, dt_now, expired):
+        """Update any times that have expired."""
+
+        timer_expired = False
+        now = dt_now.timestamp()
+        # Update expired times if required
+        for i, t in enumerate(cmd['times']):
+            if self.time_expired(now, t):
+                is_timer = cmd['timer']
+                if is_timer:
+                    timer_expired = self.update_timer(cmd, index, i, dt_now, expired)
+                    break
+                else:
+                    self.update_time(cmd, index, i, dt_now)
+
+        return timer_expired
 
     def check_records(self):
         """Check events."""
 
-        seconds, day = self.get_current_time()
         indexes = []
         timers = []
         expired = []
 
+        now = time.time()
+        dt_now = datetime.fromtimestamp(now)
+        day = dt_now.weekday()
+
         for index, cmd in enumerate(self.cmds):
 
-            delta = self.get_delta(seconds, cmd['next'])
-
-            if cmd['timer'] is not None and cmd['start'] is not None:
-                timer_delta = self.get_delta(seconds, cmd['start'])
-                if not self.time_in_range(day, seconds, timer_delta, cmd['days']):
+            if cmd['timer'] and cmd['start'] is not None:
+                if now < cmd['start']:
                     continue
                 # Okay to start timer
                 cmd['start'] = None
 
-            if cmd['timer'] is not None and cmd['start'] is None and cmd['end'] is not None:
-                timer_delta = self.get_delta(seconds, cmd['end'])
-                if self.time_in_range(day, seconds, timer_delta, cmd['days']):
-                    # Timer has now expired
+            if cmd['timer'] and cmd['start'] is None and cmd['end'] is not None:
+                if now >= cmd['end']:
                     expired.append(index)
                     continue
 
-            # See if the current day and time matches
-            if self.time_in_range(day, seconds, delta, cmd['days']):
-                # "ran" is true if an event has only one time, this prevents it from
-                # matching repeatedly. Once it no longer matches, it will be
-                # set to false.
-                if not cmd['ran']:
-                    # Increment time index accounting for rollover.
-                    i = cmd['index'] + 1
-                    if i >= len(cmd['times']):
-                        i = 0
-                        if cmd['timer'] is not None:
-                            if cmd['timer'] != 1:
-                                cmd['times'] = self.resolve_times(self.events[index]['times'], True)
-                                if cmd['timer'] != 0:
-                                    cmd['timer'] -= 1
-                            else:
-                                expired.append(index)
-                    if i == cmd['index'] and cmd['timer'] is None:
-                        # Next index is last index, there is only one time
-                        # Mark event as "ran".
-                        cmd['ran'] = True
-                    else:
-                        # Point to next time in the list
-                        cmd['next'] = cmd['times'][i]
-                        cmd['index'] = i
-                    if cmd['timer'] is not None:
+            # We don't know if the computer just woke up and all are times are bad.
+            # Refresh stale times.
+            if self.update_times(cmd, index, dt_now, expired):
+                # We found an timer which is completely expired. No need to explore this entry further.
+                continue
+
+            # Capture events whose time we match.
+            for i, t in enumerate(cmd['times']):
+                if self.time_in_range(now, t, day, cmd['days']):
+                    if cmd['timer']:
                         timers.append(index)
+                        self.update_timer(cmd, index, i, dt_now, expired)
                     else:
                         indexes.append(index)
-            elif cmd['ran']:
-                # Event with single time instance no longer matches, set "False"
-                cmd['ran'] = False
+                        self.update_time(cmd, index, i, dt_now)
 
         indexes.extend(timers)
 

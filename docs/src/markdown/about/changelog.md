@@ -1,5 +1,9 @@
 # Changelog
 
+## 1.5.1
+
+- **FIX**: Better scheduler algorithm. Handles lapse in time (computer sleeping), more efficient, etc.
+
 ## 1.5.0
 
 - **NEW**: Add `timer` command.
