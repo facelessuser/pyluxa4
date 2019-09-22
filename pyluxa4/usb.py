@@ -106,7 +106,7 @@ class Luxafor:
 
     """
 
-    def __init__(self, index=0, path=None, token=None):
+    def __init__(self, index=0, path=None):
         """Initialize."""
 
         device = None
@@ -126,7 +126,6 @@ class Luxafor:
                 raise RuntimeError('The Luxafor device at index {} cannot be found'.format(index))
             device = devices[index]['path']
         self._path = device
-        self._token = token
         self._device = hid.Device(path=self._path)
         self._closed = False
         self._disconnected = False
@@ -180,11 +179,6 @@ class Luxafor:
 
         self._closed = True
         return self._device.close()
-
-    def get_token(self):
-        """Get the API ID."""
-
-        return self._token
 
     def off(self):
         """Set all LEDs to off."""

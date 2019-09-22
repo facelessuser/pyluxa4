@@ -472,7 +472,7 @@ def run(
         logging.Formatter(fmt='[%(asctime)s] %(levelname)s: %(message)s', datefmt="%Y-%m-%d %H:%M:%S")
     )
 
-    with usb.Luxafor(device_index, device_path, token) as lf:
+    with usb.Luxafor(device_index, device_path) as lf:
         luxafor = lf
         tokens = set([token])
         schedule = scheduler.Scheduler(luxafor, logger)
