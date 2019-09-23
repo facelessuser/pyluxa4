@@ -28,7 +28,8 @@ nav:
     - Installation: install.md
     - Usage: usage.md
     - Commands: commands.md
-    - API: api.md
+    - USB API: usb.md
+    - REST API: rest.md
   - About:
     - Contributing &amp; Support: about/contributing.md
     - Development: about/development.md
