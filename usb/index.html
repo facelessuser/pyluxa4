@@ -1,0 +1,1302 @@
+
+
+
+
+<!doctype html>
+<html lang="en" class="no-js">
+  <head>
+    
+      <meta charset="utf-8">
+      <meta name="viewport" content="width=device-width,initial-scale=1">
+      <meta http-equiv="x-ua-compatible" content="ie=edge">
+      
+        <meta name="description" content="A library/command line tool for controlling Luxafor devices.">
+      
+      
+        <link rel="canonical" href="https://facelessuser.github.io/pyluxa4/usb/">
+      
+      
+      
+        <meta name="lang:clipboard.copy" content="Copy to clipboard">
+      
+        <meta name="lang:clipboard.copied" content="Copied to clipboard">
+      
+        <meta name="lang:search.language" content="en">
+      
+        <meta name="lang:search.pipeline.stopwords" content="True">
+      
+        <meta name="lang:search.pipeline.trimmer" content="True">
+      
+        <meta name="lang:search.result.none" content="No matching documents">
+      
+        <meta name="lang:search.result.one" content="1 matching document">
+      
+        <meta name="lang:search.result.other" content="# matching documents">
+      
+        <meta name="lang:search.tokenizer" content="[\s\-]+">
+      
+      <link rel="shortcut icon" href="../assets/images/favicon.png">
+      <meta name="generator" content="mkdocs-1.0.4, mkdocs-material-4.4.2">
+    
+    
+      
+        <title>USB API - Pyluxa4</title>
+      
+    
+    
+      <link rel="stylesheet" href="../assets/stylesheets/application.30686662.css">
+      
+        <link rel="stylesheet" href="../assets/stylesheets/application-palette.a8b3c06d.css">
+      
+      
+        
+        
+        <meta name="theme-color" content="#2196f3">
+      
+    
+    
+      <script src="../assets/javascripts/modernizr.74668098.js"></script>
+    
+    
+      
+        <link href="https://fonts.gstatic.com" rel="preconnect" crossorigin>
+        <link rel="stylesheet" href="https://fonts.googleapis.com/css?family=Roboto:300,400,400i,700|Roboto+Mono&display=fallback">
+        <style>body,input{font-family:"Roboto","Helvetica Neue",Helvetica,Arial,sans-serif}code,kbd,pre{font-family:"Roboto Mono","Courier New",Courier,monospace}</style>
+      
+    
+    <link rel="stylesheet" href="../assets/fonts/material-icons.css">
+    
+    
+      <link rel="stylesheet" href="../extra-30d8e6755c.css">
+    
+    
+      
+    
+    
+  </head>
+  
+    
+    
+    <body dir="ltr" data-md-color-primary="blue" data-md-color-accent="blue">
+  
+    <svg class="md-svg">
+      <defs>
+        
+        
+          <svg xmlns="http://www.w3.org/2000/svg" width="416" height="448" viewBox="0 0 416 448" id="__github"><path fill="currentColor" d="M160 304q0 10-3.125 20.5t-10.75 19T128 352t-18.125-8.5-10.75-19T96 304t3.125-20.5 10.75-19T128 256t18.125 8.5 10.75 19T160 304zm160 0q0 10-3.125 20.5t-10.75 19T288 352t-18.125-8.5-10.75-19T256 304t3.125-20.5 10.75-19T288 256t18.125 8.5 10.75 19T320 304zm40 0q0-30-17.25-51T296 232q-10.25 0-48.75 5.25Q229.5 240 208 240t-39.25-2.75Q130.75 232 120 232q-29.5 0-46.75 21T56 304q0 22 8 38.375t20.25 25.75 30.5 15 35 7.375 37.25 1.75h42q20.5 0 37.25-1.75t35-7.375 30.5-15 20.25-25.75T360 304zm56-44q0 51.75-15.25 82.75-9.5 19.25-26.375 33.25t-35.25 21.5-42.5 11.875-42.875 5.5T212 416q-19.5 0-35.5-.75t-36.875-3.125-38.125-7.5-34.25-12.875T37 371.5t-21.5-28.75Q0 312 0 260q0-59.25 34-99-6.75-20.5-6.75-42.5 0-29 12.75-54.5 27 0 47.5 9.875t47.25 30.875Q171.5 96 212 96q37 0 70 8 26.25-20.5 46.75-30.25T376 64q12.75 25.5 12.75 54.5 0 21.75-6.75 42 34 40 34 99.5z"/></svg>
+        
+      </defs>
+    </svg>
+    <input class="md-toggle" data-md-toggle="drawer" type="checkbox" id="__drawer" autocomplete="off">
+    <input class="md-toggle" data-md-toggle="search" type="checkbox" id="__search" autocomplete="off">
+    <label class="md-overlay" data-md-component="overlay" for="__drawer"></label>
+    
+      <a href="#usb-api" tabindex="1" class="md-skip">
+        Skip to content
+      </a>
+    
+    
+      <header class="md-header" data-md-component="header">
+  <nav class="md-header-nav md-grid">
+    <div class="md-flex">
+      <div class="md-flex__cell md-flex__cell--shrink">
+        <a href="https://facelessuser.github.io/pyluxa4" title="Pyluxa4" class="md-header-nav__button md-logo">
+          
+            <i class="md-icon">description</i>
+          
+        </a>
+      </div>
+      <div class="md-flex__cell md-flex__cell--shrink">
+        <label class="md-icon md-icon--menu md-header-nav__button" for="__drawer"></label>
+      </div>
+      <div class="md-flex__cell md-flex__cell--stretch">
+        <div class="md-flex__ellipsis md-header-nav__title" data-md-component="title">
+          
+            <span class="md-header-nav__topic">
+              Pyluxa4
+            </span>
+            <span class="md-header-nav__topic">
+              
+                USB API
+              
+            </span>
+          
+        </div>
+      </div>
+      <div class="md-flex__cell md-flex__cell--shrink">
+        
+          <label class="md-icon md-icon--search md-header-nav__button" for="__search"></label>
+          
+<div class="md-search" data-md-component="search" role="dialog">
+  <label class="md-search__overlay" for="__search"></label>
+  <div class="md-search__inner" role="search">
+    <form class="md-search__form" name="search">
+      <input type="text" class="md-search__input" name="query" placeholder="Search" autocapitalize="off" autocorrect="off" autocomplete="off" spellcheck="false" data-md-component="query" data-md-state="active">
+      <label class="md-icon md-search__icon" for="__search"></label>
+      <button type="reset" class="md-icon md-search__icon" data-md-component="reset" tabindex="-1">
+        &#xE5CD;
+      </button>
+    </form>
+    <div class="md-search__output">
+      <div class="md-search__scrollwrap" data-md-scrollfix>
+        <div class="md-search-result" data-md-component="result">
+          <div class="md-search-result__meta">
+            Type to start searching
+          </div>
+          <ol class="md-search-result__list"></ol>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+        
+      </div>
+      
+        <div class="md-flex__cell md-flex__cell--shrink">
+          <div class="md-header-nav__source">
+            
+
+
+  
+
+<a href="https://github.com/facelessuser/pyluxa4/" title="Go to repository" class="md-source" data-md-source="github">
+  
+    <div class="md-source__icon">
+      <svg viewBox="0 0 24 24" width="24" height="24">
+        <use xlink:href="#__github" width="24" height="24"></use>
+      </svg>
+    </div>
+  
+  <div class="md-source__repository">
+    GitHub
+  </div>
+</a>
+          </div>
+        </div>
+      
+    </div>
+  </nav>
+</header>
+    
+    <div class="md-container">
+      
+        
+      
+      
+        
+
+  
+
+<nav class="md-tabs md-tabs--active" data-md-component="tabs">
+  <div class="md-tabs__inner md-grid">
+    <ul class="md-tabs__list">
+      
+        
+  
+  
+    <li class="md-tabs__item">
+      
+        <a href=".." class="md-tabs__link md-tabs__link--active">
+          Usage
+        </a>
+      
+    </li>
+  
+
+      
+        
+  
+  
+    <li class="md-tabs__item">
+      
+        <a href="../about/contributing/" class="md-tabs__link">
+          About
+        </a>
+      
+    </li>
+  
+
+      
+    </ul>
+  </div>
+</nav>
+      
+      <main class="md-main" role="main">
+        <div class="md-main__inner md-grid" data-md-component="container">
+          
+            
+              <div class="md-sidebar md-sidebar--primary" data-md-component="navigation">
+                <div class="md-sidebar__scrollwrap">
+                  <div class="md-sidebar__inner">
+                    <nav class="md-nav md-nav--primary" data-md-level="0">
+  <label class="md-nav__title md-nav__title--site" for="__drawer">
+    <a href="https://facelessuser.github.io/pyluxa4" title="Pyluxa4" class="md-nav__button md-logo">
+      
+        <i class="md-icon">description</i>
+      
+    </a>
+    Pyluxa4
+  </label>
+  
+    <div class="md-nav__source">
+      
+
+
+  
+
+<a href="https://github.com/facelessuser/pyluxa4/" title="Go to repository" class="md-source" data-md-source="github">
+  
+    <div class="md-source__icon">
+      <svg viewBox="0 0 24 24" width="24" height="24">
+        <use xlink:href="#__github" width="24" height="24"></use>
+      </svg>
+    </div>
+  
+  <div class="md-source__repository">
+    GitHub
+  </div>
+</a>
+    </div>
+  
+  <ul class="md-nav__list" data-md-scrollfix>
+    
+      
+      
+      
+
+  
+
+
+  <li class="md-nav__item md-nav__item--active md-nav__item--nested">
+    
+      <input class="md-toggle md-nav__toggle" data-md-toggle="nav-1" type="checkbox" id="nav-1" checked>
+    
+    <label class="md-nav__link" for="nav-1">
+      Usage
+    </label>
+    <nav class="md-nav" data-md-component="collapsible" data-md-level="1">
+      <label class="md-nav__title" for="nav-1">
+        Usage
+      </label>
+      <ul class="md-nav__list" data-md-scrollfix>
+        
+        
+          
+          
+          
+
+
+  <li class="md-nav__item">
+    <a href=".." title="Pyluxa4" class="md-nav__link">
+      Pyluxa4
+    </a>
+  </li>
+
+        
+          
+          
+          
+
+
+  <li class="md-nav__item">
+    <a href="../install/" title="Installation" class="md-nav__link">
+      Installation
+    </a>
+  </li>
+
+        
+          
+          
+          
+
+
+  <li class="md-nav__item">
+    <a href="../usage/" title="Usage" class="md-nav__link">
+      Usage
+    </a>
+  </li>
+
+        
+          
+          
+          
+
+
+  <li class="md-nav__item">
+    <a href="../commands/" title="Commands" class="md-nav__link">
+      Commands
+    </a>
+  </li>
+
+        
+          
+          
+          
+
+  
+
+
+  <li class="md-nav__item md-nav__item--active">
+    
+    <input class="md-toggle md-nav__toggle" data-md-toggle="toc" type="checkbox" id="__toc">
+    
+      
+    
+    
+      <label class="md-nav__link md-nav__link--active" for="__toc">
+        USB API
+      </label>
+    
+    <a href="./" title="USB API" class="md-nav__link md-nav__link--active">
+      USB API
+    </a>
+    
+      
+<nav class="md-nav md-nav--secondary">
+  
+  
+    
+  
+  
+    <label class="md-nav__title" for="__toc">Table of contents</label>
+    <ul class="md-nav__list" data-md-scrollfix>
+      
+        <li class="md-nav__item">
+  <a href="#overview" class="md-nav__link">
+    Overview
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#constants" class="md-nav__link">
+    Constants
+  </a>
+  
+    <nav class="md-nav">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#leds" class="md-nav__link">
+    LEDs
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#waves" class="md-nav__link">
+    Waves
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#patterns" class="md-nav__link">
+    Patterns
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#enumerate_luxafor" class="md-nav__link">
+    enumerate_luxafor()
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#luxafor" class="md-nav__link">
+    Luxafor()
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#luxaforclose" class="md-nav__link">
+    Luxafor.close()
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#luxaforoff" class="md-nav__link">
+    Luxafor.off()
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#luxaforbasic_color" class="md-nav__link">
+    Luxafor.basic_color()
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#luxaforcolor" class="md-nav__link">
+    Luxafor.color()
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#luxaforfade" class="md-nav__link">
+    Luxafor.fade()
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#luxaforstrobe" class="md-nav__link">
+    Luxafor.strobe()
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#luxaforwave" class="md-nav__link">
+    Luxafor.wave()
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#luxaforpattern" class="md-nav__link">
+    Luxafor.pattern()
+  </a>
+  
+</li>
+      
+      
+      
+      
+      
+    </ul>
+  
+</nav>
+    
+  </li>
+
+        
+          
+          
+          
+
+
+  <li class="md-nav__item">
+    <a href="../rest/" title="REST API" class="md-nav__link">
+      REST API
+    </a>
+  </li>
+
+        
+      </ul>
+    </nav>
+  </li>
+
+    
+      
+      
+      
+
+
+  <li class="md-nav__item md-nav__item--nested">
+    
+      <input class="md-toggle md-nav__toggle" data-md-toggle="nav-2" type="checkbox" id="nav-2">
+    
+    <label class="md-nav__link" for="nav-2">
+      About
+    </label>
+    <nav class="md-nav" data-md-component="collapsible" data-md-level="1">
+      <label class="md-nav__title" for="nav-2">
+        About
+      </label>
+      <ul class="md-nav__list" data-md-scrollfix>
+        
+        
+          
+          
+          
+
+
+  <li class="md-nav__item">
+    <a href="../about/contributing/" title="Contributing & Support" class="md-nav__link">
+      Contributing &amp; Support
+    </a>
+  </li>
+
+        
+          
+          
+          
+
+
+  <li class="md-nav__item">
+    <a href="../about/development/" title="Development" class="md-nav__link">
+      Development
+    </a>
+  </li>
+
+        
+          
+          
+          
+
+
+  <li class="md-nav__item">
+    <a href="../about/changelog/" title="Changelog" class="md-nav__link">
+      Changelog
+    </a>
+  </li>
+
+        
+          
+          
+          
+
+
+  <li class="md-nav__item">
+    <a href="../about/license/" title="License" class="md-nav__link">
+      License
+    </a>
+  </li>
+
+        
+      </ul>
+    </nav>
+  </li>
+
+    
+  </ul>
+</nav>
+                  </div>
+                </div>
+              </div>
+            
+            
+              <div class="md-sidebar md-sidebar--secondary" data-md-component="toc">
+                <div class="md-sidebar__scrollwrap">
+                  <div class="md-sidebar__inner">
+                    
+<nav class="md-nav md-nav--secondary">
+  
+  
+    
+  
+  
+    <label class="md-nav__title" for="__toc">Table of contents</label>
+    <ul class="md-nav__list" data-md-scrollfix>
+      
+        <li class="md-nav__item">
+  <a href="#overview" class="md-nav__link">
+    Overview
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#constants" class="md-nav__link">
+    Constants
+  </a>
+  
+    <nav class="md-nav">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#leds" class="md-nav__link">
+    LEDs
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#waves" class="md-nav__link">
+    Waves
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#patterns" class="md-nav__link">
+    Patterns
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#enumerate_luxafor" class="md-nav__link">
+    enumerate_luxafor()
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#luxafor" class="md-nav__link">
+    Luxafor()
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#luxaforclose" class="md-nav__link">
+    Luxafor.close()
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#luxaforoff" class="md-nav__link">
+    Luxafor.off()
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#luxaforbasic_color" class="md-nav__link">
+    Luxafor.basic_color()
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#luxaforcolor" class="md-nav__link">
+    Luxafor.color()
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#luxaforfade" class="md-nav__link">
+    Luxafor.fade()
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#luxaforstrobe" class="md-nav__link">
+    Luxafor.strobe()
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#luxaforwave" class="md-nav__link">
+    Luxafor.wave()
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#luxaforpattern" class="md-nav__link">
+    Luxafor.pattern()
+  </a>
+  
+</li>
+      
+      
+      
+      
+      
+    </ul>
+  
+</nav>
+                  </div>
+                </div>
+              </div>
+            
+          
+          <div class="md-content">
+            <article class="md-content__inner md-typeset">
+              
+                
+                  <a href="https://github.com/facelessuser/pyluxa4/tree/master/docs/src/markdown/usb.md" title="Edit this page" class="md-icon md-content__icon">&#xE3C9;</a>
+                
+                
+                <h1 id="usb-api">USB API<a class="headerlink" href="#usb-api" title="Permanent link"></a></h1>
+<h2 id="overview">Overview<a class="headerlink" href="#overview" title="Permanent link"></a></h2>
+<p>While <code>pyluxa4</code> provides a CLI interface for starting a server and commands that control a Luxafor device, you can also
+use <code>pyluxa4</code> to control the device directly through the USB without the server directly using. If you wish to control
+the device directly from your own Python scripts, simply import the <code>usb</code> library:</p>
+<div class="codehilite"><pre><span></span><span class="kn">from</span> <span class="nn">pyluxa4</span> <span class="k">import</span> <span class="n">usb</span>
+</pre></div>
+
+<p>Then you can connect to a Luxafor device:</p>
+<div class="codehilite"><pre><span></span><span class="k">with</span> <span class="n">usb</span><span class="o">.</span><span class="n">Luxafor</span><span class="p">(</span><span class="n">index</span><span class="o">=</span><span class="mi">0</span><span class="p">)</span> <span class="k">as</span> <span class="n">luxafor</span><span class="p">:</span>
+    <span class="n">luxafor</span><span class="o">.</span><span class="n">fade</span><span class="p">(</span><span class="s2">&quot;red&quot;</span><span class="p">,</span> <span class="n">speed</span><span class="o">=</span><span class="mi">10</span><span class="p">,</span> <span class="n">wait</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
+    <span class="n">luxafor</span><span class="o">.</span><span class="n">fade</span><span class="p">(</span><span class="s2">&quot;green&quot;</span><span class="p">,</span> <span class="n">speed</span><span class="o">=</span><span class="mi">10</span><span class="p">,</span> <span class="n">wait</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
+</pre></div>
+
+<p>You can also use it without <code>with</code>:</p>
+<div class="codehilite"><pre><span></span><span class="n">device</span> <span class="o">=</span> <span class="n">usb</span><span class="o">.</span><span class="n">Luxafor</span><span class="p">(</span><span class="n">index</span><span class="o">=</span><span class="mi">0</span><span class="p">)</span>
+<span class="n">luxafor</span><span class="o">.</span><span class="n">fade</span><span class="p">(</span><span class="s2">&quot;red&quot;</span><span class="p">,</span> <span class="n">speed</span><span class="o">=</span><span class="mi">10</span><span class="p">,</span> <span class="n">wait</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
+<span class="n">luxafor</span><span class="o">.</span><span class="n">fade</span><span class="p">(</span><span class="s2">&quot;green&quot;</span><span class="p">,</span> <span class="n">speed</span><span class="o">=</span><span class="mi">10</span><span class="p">,</span> <span class="n">wait</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
+<span class="n">device</span><span class="o">.</span><span class="n">close</span><span class="p">()</span>
+</pre></div>
+
+<h2 id="constants">Constants<a class="headerlink" href="#constants" title="Permanent link"></a></h2>
+<h3 id="leds">LEDs<a class="headerlink" href="#leds" title="Permanent link"></a></h3>
+<table>
+<thead>
+<tr>
+<th>Constant</th>
+<th>Alias</th>
+<th>Value</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>LED_ALL</td>
+<td></td>
+<td><code>0xff</code></td>
+</tr>
+<tr>
+<td>LED_FRONT</td>
+<td></td>
+<td><code>0x41</code></td>
+</tr>
+<tr>
+<td>LED_BACK</td>
+<td></td>
+<td><code>0x42</code></td>
+</tr>
+<tr>
+<td>LED_1</td>
+<td></td>
+<td><code>1</code></td>
+</tr>
+<tr>
+<td>LED_2</td>
+<td></td>
+<td><code>2</code></td>
+</tr>
+<tr>
+<td>LED_3</td>
+<td></td>
+<td><code>3</code></td>
+</tr>
+<tr>
+<td>LED_4</td>
+<td></td>
+<td><code>4</code></td>
+</tr>
+<tr>
+<td>LED_5</td>
+<td></td>
+<td><code>5</code></td>
+</tr>
+<tr>
+<td>LED_6</td>
+<td></td>
+<td><code>6</code></td>
+</tr>
+</tbody>
+</table>
+<h3 id="waves">Waves<a class="headerlink" href="#waves" title="Permanent link"></a></h3>
+<table>
+<thead>
+<tr>
+<th>Constant</th>
+<th>Alias</th>
+<th>Value</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>WAVE_1</td>
+<td>WAVE_SHORT</td>
+<td><code>1</code></td>
+</tr>
+<tr>
+<td>WAVE_2</td>
+<td>WAVE_LONG</td>
+<td><code>2</code></td>
+</tr>
+<tr>
+<td>WAVE_3</td>
+<td>WAVE_OVERLAPPING_SHORT</td>
+<td><code>3</code></td>
+</tr>
+<tr>
+<td>WAVE_4</td>
+<td>WAVE_OVERLAPPING_LONG</td>
+<td><code>4</code></td>
+</tr>
+<tr>
+<td>WAVE_5</td>
+<td></td>
+<td><code>5</code></td>
+</tr>
+</tbody>
+</table>
+<h3 id="patterns">Patterns<a class="headerlink" href="#patterns" title="Permanent link"></a></h3>
+<table>
+<thead>
+<tr>
+<th>Constant</th>
+<th>Alias</th>
+<th>Value</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>PATTERN_1</td>
+<td>PATTERN_TRAFFIC_LIGHT</td>
+<td><code>1</code></td>
+</tr>
+<tr>
+<td>PATTERN_2</td>
+<td>PATTERN_RANDOM1</td>
+<td><code>2</code></td>
+</tr>
+<tr>
+<td>PATTERN_3</td>
+<td>PATTERN_RANDOM2</td>
+<td><code>3</code></td>
+</tr>
+<tr>
+<td>PATTERN_4</td>
+<td>PATTERN_RANDOM3</td>
+<td><code>4</code></td>
+</tr>
+<tr>
+<td>PATTERN_5</td>
+<td>PATTERN_POLICE</td>
+<td><code>5</code></td>
+</tr>
+<tr>
+<td>PATTERN_6</td>
+<td>PATTERN_RANDOM4</td>
+<td><code>6</code></td>
+</tr>
+<tr>
+<td>PATTERN_7</td>
+<td>PATTERN_RANDOM5</td>
+<td><code>7</code></td>
+</tr>
+<tr>
+<td>PATTERN_8</td>
+<td>PATTERN_RAINBOW</td>
+<td><code>8</code></td>
+</tr>
+</tbody>
+</table>
+<h2 id="enumerate_luxafor"><code>enumerate_luxafor()</code><a class="headerlink" href="#enumerate_luxafor" title="Permanent link"></a></h2>
+<p>Enumerate Luxafor devices returning a list of the available devices:</p>
+<div class="codehilite"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="kn">import</span> <span class="nn">pyluxa4.usb</span> <span class="k">as</span> <span class="nn">usb</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">usb</span><span class="o">.</span><span class="n">enumerate_luxafor</span><span class="p">()</span>
+<span class="go">[{&#39;path&#39;: b&#39;\\\\?\\hid#vid_04d8&amp;pid_f372#6&amp;38a95344&amp;1&amp;0000#{4d1e55b2-f16f-11cf-88cb-001111000030}&#39;, &#39;vendor_id&#39;: 1240, &#39;product_id&#39;: 62322, &#39;serial_number&#39;: None, &#39;release_number&#39;: 256, &#39;manufacturer_string&#39;: &#39;Microchip Technology Inc.&#39;, &#39;product_string&#39;: &#39;LUXAFOR FLAG&#39;, &#39;usage_page&#39;: 65280, &#39;usage&#39;: 1, &#39;interface_number&#39;: -1}]</span>
+</pre></div>
+
+<h2 id="luxafor">Luxafor()<a class="headerlink" href="#luxafor" title="Permanent link"></a></h2>
+<div class="codehilite"><pre><span></span><span class="k">class</span> <span class="nc">Luxafor</span><span class="p">:</span>
+    <span class="sd">&quot;&quot;&quot;Class to control Luxafor device.&quot;&quot;&quot;</span>
+
+    <span class="k">def</span> <span class="nf">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">index</span><span class="o">=</span><span class="mi">0</span><span class="p">,</span> <span class="n">path</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
+</pre></div>
+
+<p>Luxafor is the class that connects to the Luxafor USB device.</p>
+<table>
+<thead>
+<tr>
+<th>Parameters</th>
+<th>Description</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><code>index</code></td>
+<td>Index of the HID USB device as returned by <a href="#enumerate_luxafor"><code>enumerate_luxafor()</code></a>.</td>
+</tr>
+<tr>
+<td><code>path</code></td>
+<td>The path of the HID USB device as returned by <a href="#enumerate_luxafor"><code>enumerate_luxafor()</code></a>.</td>
+</tr>
+</tbody>
+</table>
+<h2 id="luxaforclose">Luxafor.close()<a class="headerlink" href="#luxaforclose" title="Permanent link"></a></h2>
+<div class="codehilite"><pre><span></span><span class="k">def</span> <span class="nf">close</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot;Close Luxafor device.&quot;&quot;&quot;</span>
+</pre></div>
+
+<p>Close the connection to the Luxafor device.</p>
+<h2 id="luxaforoff">Luxafor.off()<a class="headerlink" href="#luxaforoff" title="Permanent link"></a></h2>
+<div class="codehilite"><pre><span></span><span class="k">def</span> <span class="nf">off</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot;Set all LEDs to off.&quot;&quot;&quot;</span>
+</pre></div>
+
+<p>Sets all the LEDs of the Luxafor device off.</p>
+<h2 id="luxaforbasic_color">Luxafor.basic_color()<a class="headerlink" href="#luxaforbasic_color" title="Permanent link"></a></h2>
+<div class="codehilite"><pre><span></span><span class="k">def</span> <span class="nf">basic_color</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">color</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    Build basic color command.</span>
+
+<span class="sd">    ```</span>
+<span class="sd">    Byte 0: Report number (Luxafor flag only has 0)</span>
+<span class="sd">    Byte 1: Color: R, G, B, C, M, Y, W, O</span>
+<span class="sd">    Byte 2: NA</span>
+<span class="sd">    Byte 3: NA</span>
+<span class="sd">    Byte 4: NA</span>
+<span class="sd">    Byte 5: NA</span>
+<span class="sd">    Byte 6: NA</span>
+<span class="sd">    Byte 7: NA</span>
+<span class="sd">    Byte 8: NA</span>
+<span class="sd">    ```</span>
+
+<span class="sd">    &quot;&quot;&quot;</span>
+</pre></div>
+
+<p>Using the built-in color codes, set all the LEDs to the color.</p>
+<table>
+<thead>
+<tr>
+<th>Parameters</th>
+<th>Description</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><code>color</code></td>
+<td>A string with either the values <code>R</code> (red), <code>G</code> (green), <code>B</code> (blue), <code>C</code> (cyan), <code>M</code> (magenta), <code>Y</code> (yellow), or <code>O</code> (off).</td>
+</tr>
+</tbody>
+</table>
+<h2 id="luxaforcolor">Luxafor.color()<a class="headerlink" href="#luxaforcolor" title="Permanent link"></a></h2>
+<div class="codehilite"><pre><span></span><span class="k">def</span> <span class="nf">color</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">color</span><span class="p">,</span> <span class="o">*</span><span class="p">,</span> <span class="n">led</span><span class="o">=</span><span class="n">LED_ALL</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    Build static color command.</span>
+
+<span class="sd">    ```</span>
+<span class="sd">    Byte 0: Report number: 0 (Luxafor flag only has 0)</span>
+<span class="sd">    Byte 1: Command Mode: 1</span>
+<span class="sd">    Byte 2: LED: 1-6, 0x42 (back), 0x41 (front), 0xFF (all)</span>
+<span class="sd">    Byte 3: Red channel: 0-255</span>
+<span class="sd">    Byte 4: Green channel: 0-255</span>
+<span class="sd">    Byte 5: Blue channel: 0-255</span>
+<span class="sd">    Byte 6: NA</span>
+<span class="sd">    Byte 7: NA</span>
+<span class="sd">    Byte 8: NA</span>
+<span class="sd">    ```</span>
+
+<span class="sd">    &quot;&quot;&quot;</span>
+</pre></div>
+
+<p>Set LEDs to the specified colors. Each LED can be controlled individually. If a built-in color code is used, the command
+will revert to <code>basic_color</code> functionality, which means <code>led</code> specifics will be ignored and all LED will be set.</p>
+<table>
+<thead>
+<tr>
+<th>Parameters</th>
+<th>Description</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><code>color</code></td>
+<td>Color is specified by a string with hex RGB color codes in the form of <code>#RRGGBB</code> or <code>#RGB</code>. You can also use any CSS webcolor name, such as <code>red</code>, <code>green</code>, etc. <code>off</code> is treated like <code>black</code> which turns all LEDs off.</td>
+</tr>
+<tr>
+<td><code>led</code></td>
+<td>Specific LEDs can be specified to control (1-6). You can also set all the front LEDs with <code>0x41</code>, all the back LEDs with <code>0x42</code>, or all the LEDs with <code>0xff</code>. See <a href="#leds">LED constants</a>.</td>
+</tr>
+</tbody>
+</table>
+<h2 id="luxaforfade">Luxafor.fade()<a class="headerlink" href="#luxaforfade" title="Permanent link"></a></h2>
+<div class="codehilite"><pre><span></span><span class="k">def</span> <span class="nf">fade</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">color</span><span class="p">,</span> <span class="o">*</span><span class="p">,</span> <span class="n">led</span><span class="o">=</span><span class="n">LED_ALL</span><span class="p">,</span> <span class="n">speed</span><span class="o">=</span><span class="mi">1</span><span class="p">,</span> <span class="n">wait</span><span class="o">=</span><span class="kc">False</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    Build fade command.</span>
+
+<span class="sd">    ```</span>
+<span class="sd">    Byte 0: Report number: 0 (Luxafor flag only has 0)</span>
+<span class="sd">    Byte 1: Command Mode: 2</span>
+<span class="sd">    Byte 2: LED: 1-6, 0x42 (back), 0x41 (front), 0xFF (all)</span>
+<span class="sd">    Byte 3: Red channel: 0-255</span>
+<span class="sd">    Byte 4: Green channel: 0-255</span>
+<span class="sd">    Byte 5: Blue channel: 0-255</span>
+<span class="sd">    Byte 6: Fade speed: 0-255</span>
+<span class="sd">    Byte 7: NA</span>
+<span class="sd">    Byte 8: NA</span>
+<span class="sd">    ```</span>
+
+<span class="sd">    &quot;&quot;&quot;</span>
+</pre></div>
+
+<p>Fade a color in (or out if the color is <code>off</code> or <code>black</code>). Each LED can be controlled individually via <code>led</code>. The
+duration/speed of the fade can also be controlled. If desired, you can wait for the command to complete as well.
+Commands that employ <code>repeat=0</code> will continue forever, so wait will not be considered for infinite loops.</p>
+<table>
+<thead>
+<tr>
+<th>Parameters</th>
+<th>Description</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><code>color</code></td>
+<td>Color is specified by a string with hex RGB color codes in the form of <code>#RRGGBB</code> or <code>#RGB</code>. You can also use any CSS webcolor name, such as <code>red</code>, <code>green</code>, etc. <code>off</code> is treated like <code>black</code> which turns all LEDs off.</td>
+</tr>
+<tr>
+<td><code>led</code></td>
+<td>Specific LEDs can be specified to control (1-6). You can also set all the front LEDs with <code>0x41</code>, all the back LEDs with <code>0x42</code>, or all the LEDs with <code>0xff</code>. See <a href="#leds">LED constants</a>.</td>
+</tr>
+<tr>
+<td><code>speed</code></td>
+<td>Speed at which the color will be faded (0-255). Lower is generally faster.</td>
+</tr>
+<tr>
+<td><code>repeat</code></td>
+<td>How many times to repeat the fade effect (0-255). 0 will cause the effect to repeat forever.</td>
+</tr>
+<tr>
+<td><code>wait</code></td>
+<td>Wait for the command to complete. Wait will be ignored if <code>repeat</code> is 0.</td>
+</tr>
+</tbody>
+</table>
+<h2 id="luxaforstrobe">Luxafor.strobe()<a class="headerlink" href="#luxaforstrobe" title="Permanent link"></a></h2>
+<div class="codehilite"><pre><span></span><span class="k">def</span> <span class="nf">strobe</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">color</span><span class="p">,</span> <span class="o">*</span><span class="p">,</span> <span class="n">led</span><span class="o">=</span><span class="n">LED_ALL</span><span class="p">,</span> <span class="n">speed</span><span class="o">=</span><span class="mi">0</span><span class="p">,</span> <span class="n">repeat</span><span class="o">=</span><span class="mi">0</span><span class="p">,</span> <span class="n">wait</span><span class="o">=</span><span class="kc">False</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    Build strobe command.</span>
+
+<span class="sd">    ```</span>
+<span class="sd">    Byte 0: Report number: 0 (Luxafor flag only has 0)</span>
+<span class="sd">    Byte 1: Command Mode: 3</span>
+<span class="sd">    Byte 2: LED: 1-6, 0x42 (back), 0x41 (front), 0xFF (all)</span>
+<span class="sd">    Byte 3: Red channel: 0-255</span>
+<span class="sd">    Byte 4: Green channel: 0-255</span>
+<span class="sd">    Byte 5: Blue channel: 0-255</span>
+<span class="sd">    Byte 6: Speed: 0-255</span>
+<span class="sd">    Byte 7: NA</span>
+<span class="sd">    Byte 8: Repeat: 0-255</span>
+<span class="sd">    ```</span>
+
+<span class="sd">    &quot;&quot;&quot;</span>
+</pre></div>
+
+<p>Strobe the LEDs with the specified color. Each LED can be controlled individually via <code>led</code>. You can also control the
+speed and how many times the strobe repeats. If desired, you can wait for the command to complete as well. Commands
+that employ <code>repeat=0</code> will continue forever, so wait will not be considered for infinite loops.</p>
+<table>
+<thead>
+<tr>
+<th>Parameters</th>
+<th>Description</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><code>color</code></td>
+<td>Color is specified by a string with hex RGB color codes in the form of <code>#RRGGBB</code> or <code>#RGB</code>. You can also use any CSS webcolor name, such as <code>red</code>, <code>green</code>, etc. <code>off</code> is treated like <code>black</code> which turns all LEDs off.</td>
+</tr>
+<tr>
+<td><code>led</code></td>
+<td>Specific LEDs can be specified to control (1-6). You can also set all the front LEDs with <code>0x41</code>, all the back LEDs with <code>0x42</code>, or all the LEDs with <code>0xff</code>. See <a href="#leds">LED constants</a>.</td>
+</tr>
+<tr>
+<td><code>speed</code></td>
+<td>Speed at which the color will strobe (0-255). Lower is generally faster.</td>
+</tr>
+<tr>
+<td><code>repeat</code></td>
+<td>How many times to repeat the strobe effect (0-255). 0 will cause the effect to repeat forever.</td>
+</tr>
+<tr>
+<td><code>wait</code></td>
+<td>Wait for the command to complete. Wait will be ignored if <code>repeat</code> is 0.</td>
+</tr>
+</tbody>
+</table>
+<h2 id="luxaforwave">Luxafor.wave()<a class="headerlink" href="#luxaforwave" title="Permanent link"></a></h2>
+<div class="codehilite"><pre><span></span><span class="k">def</span> <span class="nf">wave</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">color</span><span class="p">,</span> <span class="o">*</span><span class="p">,</span> <span class="n">wave</span><span class="o">=</span><span class="n">WAVE_SHORT</span><span class="p">,</span> <span class="n">speed</span><span class="o">=</span><span class="mi">0</span><span class="p">,</span> <span class="n">repeat</span><span class="o">=</span><span class="mi">0</span><span class="p">,</span> <span class="n">wait</span><span class="o">=</span><span class="kc">False</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    Build wave command.</span>
+
+<span class="sd">    ```</span>
+<span class="sd">    Byte 0: Report number: 0 (Luxafor flag only has 0)</span>
+<span class="sd">    Byte 1: Command Mode: 4</span>
+<span class="sd">    Byte 2: Wave type: 1-5</span>
+<span class="sd">    Byte 3: Red channel: 0-255</span>
+<span class="sd">    Byte 4: Green channel: 0-255</span>
+<span class="sd">    Byte 5: Blue channel: 0-255</span>
+<span class="sd">    Byte 6: NA</span>
+<span class="sd">    Byte 7: Repeat: 0-255</span>
+<span class="sd">    Byte 8: Speed: 0-255</span>
+<span class="sd">    ```</span>
+
+<span class="sd">    &quot;&quot;&quot;</span>
+</pre></div>
+
+<p>Apply a wave effect using the specified color across the LEDs. You can control the speed and how many times the wave
+is repeated. If desired, you can wait for the command to complete as well. Commands that employ <code>repeat=0</code> will continue
+forever, so wait will not be considered for infinite loops.</p>
+<table>
+<thead>
+<tr>
+<th>Parameters</th>
+<th>Description</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><code>color</code></td>
+<td>Color is specified by a string with hex RGB color codes in the form of <code>#RRGGBB</code> or <code>#RGB</code>. You can also use any CSS webcolor name, such as <code>red</code>, <code>green</code>, etc. <code>off</code> is treated like <code>black</code> which turns all LEDs off.</td>
+</tr>
+<tr>
+<td><code>wave</code></td>
+<td>Specify the desired wave pattern. See the <a href="#waves">wave constants</a>.</td>
+</tr>
+<tr>
+<td><code>speed</code></td>
+<td>Speed at which the color will apply the wave effect (0-255). Lower is generally faster.</td>
+</tr>
+<tr>
+<td><code>repeat</code></td>
+<td>How many times to repeat the wave effect (0-255). 0 will cause the effect to repeat forever.</td>
+</tr>
+<tr>
+<td><code>wait</code></td>
+<td>Wait for the command to complete. Wait will be ignored if <code>repeat</code> is 0.</td>
+</tr>
+</tbody>
+</table>
+<h2 id="luxaforpattern">Luxafor.pattern()<a class="headerlink" href="#luxaforpattern" title="Permanent link"></a></h2>
+<div class="codehilite"><pre><span></span><span class="k">def</span> <span class="nf">pattern</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">pattern</span><span class="p">,</span> <span class="o">*</span><span class="p">,</span> <span class="n">repeat</span><span class="o">=</span><span class="mi">0</span><span class="p">,</span> <span class="n">wait</span><span class="o">=</span><span class="kc">False</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    Build pattern command.</span>
+
+<span class="sd">    ```</span>
+<span class="sd">    Byte 0: Report number: 0 (Luxafor flag only has 0)</span>
+<span class="sd">    Byte 1: Command Mode: 6</span>
+<span class="sd">    Byte 2: Pattern ID: 0-8</span>
+<span class="sd">    Byte 3: Repeat: 0-255</span>
+<span class="sd">    ```</span>
+
+<span class="sd">    &quot;&quot;&quot;</span>
+</pre></div>
+
+<p>Initiate one of the built-in patterns in the Luxafor device. You can also control how man times the pattern repeats. If
+desired, you can wait for the command to complete as well. Commands that employ <code>repeat=0</code> will continue forever, so
+wait will not be considered for infinite loops.</p>
+<table>
+<thead>
+<tr>
+<th>Parameters</th>
+<th>Description</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><code>pattern</code></td>
+<td>Pattern code (1-8). See the <a href="#patterns">pattern constants</a>.</td>
+</tr>
+<tr>
+<td><code>repeat</code></td>
+<td>How many times to repeat the pattern (0-255). 0 will cause the effect to repeat forever.</td>
+</tr>
+<tr>
+<td><code>wait</code></td>
+<td>Wait for the command to complete. Wait will be ignored if <code>repeat</code> is 0.</td>
+</tr>
+</tbody>
+</table>
+                
+                  
+                
+              
+              
+                
+
+
+              
+            </article>
+          </div>
+        </div>
+      </main>
+      
+        
+<footer class="md-footer">
+  
+    <div class="md-footer-nav">
+      <nav class="md-footer-nav__inner md-grid">
+        
+          <a href="../commands/" title="Commands" class="md-flex md-footer-nav__link md-footer-nav__link--prev" rel="prev">
+            <div class="md-flex__cell md-flex__cell--shrink">
+              <i class="md-icon md-icon--arrow-back md-footer-nav__button"></i>
+            </div>
+            <div class="md-flex__cell md-flex__cell--stretch md-footer-nav__title">
+              <span class="md-flex__ellipsis">
+                <span class="md-footer-nav__direction">
+                  Previous
+                </span>
+                Commands
+              </span>
+            </div>
+          </a>
+        
+        
+          <a href="../rest/" title="REST API" class="md-flex md-footer-nav__link md-footer-nav__link--next" rel="next">
+            <div class="md-flex__cell md-flex__cell--stretch md-footer-nav__title">
+              <span class="md-flex__ellipsis">
+                <span class="md-footer-nav__direction">
+                  Next
+                </span>
+                REST API
+              </span>
+            </div>
+            <div class="md-flex__cell md-flex__cell--shrink">
+              <i class="md-icon md-icon--arrow-forward md-footer-nav__button"></i>
+            </div>
+          </a>
+        
+      </nav>
+    </div>
+  
+  <div class="md-footer-meta md-typeset">
+    <div class="md-footer-meta__inner md-grid">
+      <div class="md-footer-copyright">
+        
+          <div class="md-footer-copyright__highlight">
+            Copyright &copy; 2019 <a href="https://github.com/facelessuser">Isaac Muse</a>
+<br><span class="md-footer-custom-text">emoji provided free by <a href="http://www.emojione.com">EmojiOne</a></span>
+
+          </div>
+        
+        powered by
+        <a href="https://www.mkdocs.org">MkDocs</a>
+        and
+        <a href="https://squidfunk.github.io/mkdocs-material/">
+          Material for MkDocs</a>
+      </div>
+      
+  <div class="md-footer-social">
+    <link rel="stylesheet" href="../assets/fonts/font-awesome.css">
+    
+      <a href="https://github.com/facelessuser" class="md-footer-social__link fa fa-github"></a>
+    
+  </div>
+
+    </div>
+  </div>
+</footer>
+      
+    </div>
+    
+      <script src="../assets/javascripts/application.c648116f.js"></script>
+      
+      <script>app.initialize({version:"1.0.4",url:{base:".."}})</script>
+      
+        <script src="../extra-0b9b22dd13.js"></script>
+      
+    
+  </body>
+</html>
