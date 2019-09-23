@@ -15,6 +15,7 @@ MkDocs
 NONINFRINGEMENT
 OpenSSL
 Pyluxa
+RGB
 SSL
 Tox
 USB

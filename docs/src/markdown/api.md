@@ -226,14 +226,14 @@ def strobe(self, color, *, led=LED_ALL, speed=0, repeat=0, wait=False):
 ```
 
 Strobe the LEDs with the specified color. Each LED can be controlled individually via `led`. You can also control the
-speed and how many times the strobing repeats. If desired, you can wait for the command to complete as well. Commands
+speed and how many times the strobe repeats. If desired, you can wait for the command to complete as well. Commands
 that employ `repeat=0` will continue forever, so wait will not be considered for infinite loops.
 
 Parameters | Description
 ---------- | -----------
 `color`    | Color is specified by a string with hex RGB color codes in the form of `#RRGGBB` or `#RGB`. You can also use any CSS webcolor name, such as `red`, `green`, etc. `off` is treated like `black` which turns all LEDs off.
 `led`      | Specific LEDs can be specified to control (1-6). You can also set all the front LEDs with `0x41`, all the back LEDs with `0x42`, or all the LEDs with `0xff`. See [LED constants](#leds).
-`speed`    | Speed at which the color will be strobed (0-255). Lower is generally faster.
+`speed`    | Speed at which the color will strobe (0-255). Lower is generally faster.
 `repeat`   | How many times to repeat the strobe effect (0-255). 0 will cause the effect to repeat forever.
 `wait`     | Wait for the command to complete. Wait will be ignored if `repeat` is 0.
 
