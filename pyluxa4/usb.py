@@ -214,7 +214,7 @@ class Luxafor:
         ```
         Byte 0: Report number: 0 (Luxafor flag only has 0)
         Byte 1: Command Mode: 1
-        Byte 2: LED: 1-6, 0x42 (back), 0x41 (tab), 0xFF (all)
+        Byte 2: LED: 1-6, 0x42 (back), 0x41 (front), 0xFF (all)
         Byte 3: Red channel: 0-255
         Byte 4: Green channel: 0-255
         Byte 5: Blue channel: 0-255
@@ -239,7 +239,7 @@ class Luxafor:
         ```
         Byte 0: Report number: 0 (Luxafor flag only has 0)
         Byte 1: Command Mode: 2
-        Byte 2: LED: 1-6, 0x42 (back), 0x41 (tab), 0xFF (all)
+        Byte 2: LED: 1-6, 0x42 (back), 0x41 (front), 0xFF (all)
         Byte 3: Red channel: 0-255
         Byte 4: Green channel: 0-255
         Byte 5: Blue channel: 0-255
@@ -289,7 +289,7 @@ class Luxafor:
         ```
         Byte 0: Report number: 0 (Luxafor flag only has 0)
         Byte 1: Command Mode: 3
-        Byte 2: LED: 1-6, 0x42 (back), 0x41 (tab), 0xFF (all)
+        Byte 2: LED: 1-6, 0x42 (back), 0x41 (front), 0xFF (all)
         Byte 3: Red channel: 0-255
         Byte 4: Green channel: 0-255
         Byte 5: Blue channel: 0-255

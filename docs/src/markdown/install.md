@@ -32,13 +32,15 @@ After that, `pyluxa4` should be available from the command line (assuming Python
 path).
 
 ```
-pyluxa4 --version
+$ pyluxa4 --version
+pyluxa4 1.5
 ```
 
 You can also run the module with:
 
 ```
-python3 -m pyluxa4 --version
+$ python3 -m pyluxa4 --version
+pyluxa4 1.5
 ```
 
 --8<--

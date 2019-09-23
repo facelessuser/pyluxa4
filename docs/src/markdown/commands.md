@@ -1,5 +1,3 @@
-# CLI Usage
-
 ## List
 
 The `list` command lists all the available Luxafor devices connected to the machine. It provides the index of the device
@@ -302,84 +300,11 @@ optional arguments:
 
 ## Scheduler
 
-The `scheduler` command takes a JSON file via `--schedule` with either commands for either [color](#color),
+The `scheduler` command takes a JSON file via `--schedule` with commands for either [color](#color),
 [fade](#fade), [strobe](#strobe), [wave](#wave), [pattern](#pattern), or [off](#off), and schedules them to be executed
 at the specified times on the specified days. Events are appended to previously scheduled events unless `--clear` is
 provided. If desired, you can run `--clear` without `--schedule` which will simply clear all events. `--clear` does not
 cancel timers, it only removes normal, scheduled events. To cancel timers, use `--cancel`.
-
-Commands must contain:
-
-- `cmd` which is the command type, and is the name of the commands mentioned above.
-- `days` which can be either a single string or list of string values representing days of the week: `mon`, `tue`,
-  `wen`, `thu`, `fri`, `sat`, or `sun`. You can also use `wke` to specify the weekend or `wkd` to specify weekdays.
-  `all` would mean all days.
-- `times` which can be either a single string or a list of string values representing the hour and minute for the light
-  to trigger on. The format should be `H:M` where `H` is the hour from 0 - 23 and `M` is the minute from 0 - 59.
-
-Command may contain:
-
-- Additional options under `args` may or may not be needed depending on the command:
-
-    - For commands like `color`, `fade`, `strobe`, and `wave`, you must specify the color under `color`.
-    - For the `pattern` command, you must specify the pattern under `pattern`.
-    - All other options such as `speed`, `repeat`, or `wave` (for the wave pattern) are optional. Use as needed.
-
-For values that are numbers you can use integers. For values that are strings, you can use strings.
-
-Example JSON (`schedule.json`):
-
-```js
-[
-    {
-        "cmd": "pattern",
-        "days": ["all"],
-        "times": "20:21",
-        "args": {
-            "pattern": "police",
-            "repeat": 3
-        }
-    },
-
-    {
-        "cmd": "fade",
-        "days": "all",
-        "times": ["20:20", "20:22"],
-        "args": {
-            "color": "red",
-            "speed": 100
-        }
-    }
-]
-```
-
-Command load the schedule:
-
-```
-$ pyluxa4 scheduler --schedule schedule.json
-{'code': 200, 'error': '', 'path': '/pyluxa4/api/v1.2/command/schedule', 'status': 'success'}
-```
-
-If desired, you could include timers in your JSON file. They are similar to normal scheduled events accept they contain
-a couple of extra keys. This makes it easy to load preset timers. They will not show of in `pyluxa4 get schedule`. You
-would need to use `pyluxa4 get itmers` to see timers that have not yet expired.
-
-Timers Must contain:
-
-- `timer` key is required and must be an integer greater than zero. The value represents how many times the timer cycles
-  through the relative times. Zero would cycle forever.
-- `times` are treated a little different. They can still be a string or a list of strings but each time represents how
-  much time to wait before showing the timer. They do not represent a specific time. These relative times are in the
-  form `<total hours>:<minutes>`.
-- All other scheduled event arguments follow the same rules as normal events except `days` will be ignored. Timers are
-  not sensitive to the actual day, and will ignore any value you give for days.
-
-Timers may additionally contain:
-
-- `start` represents a specific time to delay the timer until. This is an actual time of the day in the form `H:M` and
-  represents the point by which the timer will start counting from.
-- `end` is a specific time in the form `H:M` which represents when a timer will expire. For instance, you could create
-  a continuous timer that will fire up until the `end` time.
 
 ```
 $ pyluxa4 scheduler --help
@@ -402,54 +327,19 @@ optional arguments:
   --timeout TIMEOUT    Timeout
 ```
 
+To learn more about using the scheduler see [Scheduling Commands](./usage.md#scheduling-commands).
+
 ## Timer
 
-The `timer` command provides a way to set off a timer that will execute a command based on a relative time. For
-instance, if we wanted to strobe a red light in an hour and 30 minutes, we could use the following command:
-
-```
-pyluxa4 timer --type strobe --color red --speed 10 --repeat 10 --times 1:30
-```
-
-If we wanted to do it at ten minutes from now followed by another 5 minutes after that:
-
-```
-pyluxa4 timer --type strobe --color red --speed 10 --repeat 10 --times 0:10,0:5
-```
-
-We could even repeat the cycle to flash the red light at 10 minutes, 5 minutes, 10 minutes, and 5 minutes
-
-```
-pyluxa4 timer --type strobe --color red --speed 10 --repeat 10 --times 0:10,0:5 --cycle 2
-```
-
-Or every 30 minutes continually:
-
-```
-pyluxa4 timer --type strobe --color red --speed 10 --repeat 10 --times 0:30 --cycle 0
-```
-
-You can also delay the start to start flashing the light every 30 minutes starting at 9:00 AM:
-
-```
-pyluxa4 timer --type strobe --color red --speed 10 --repeat 10 --times 0:30 --cycle 0 --start 9:00
-```
-
-You could also terminate the timer after a certain time, for example 5:00 PM:
-
-```
-pyluxa4 timer --type strobe --color red --speed 10 --repeat 10 --times 0:30 --cycle 0 --start 9:00 --end 17:00
-```
-
-To clear the running timers, see [Scheduler](#scheduler), as timers are actually done via the scheduler.
+The `timer` command provides a way to set off a timer that will execute a command based on a relative time.
 
 ```
 $ pyluxa4 timer --help
-usage: pyluxa4 timer [-h] --times TIMES --type TYPE [--led LED]
-                     [--color COLOR] [--pattern PATTERN] [--wave WAVE]
-                     [--speed SPEED] [--repeat REPEAT] [--cycle CYCLE]
-                     [--start START] [--end END] [--token TOKEN] [--host HOST]
-                     [--port PORT] [--secure SECURE] [--timeout TIMEOUT]
+usage: pyluxa4 timer [-h] --times TIMES --cmd CMD [--led LED] [--color COLOR]
+                     [--pattern PATTERN] [--wave WAVE] [--speed SPEED]
+                     [--repeat REPEAT] [--cycle CYCLE] [--start START]
+                     [--end END] [--token TOKEN] [--host HOST] [--port PORT]
+                     [--secure SECURE] [--timeout TIMEOUT]
 
 Setup timers
 
@@ -457,7 +347,7 @@ optional arguments:
   -h, --help         show this help message and exit
   --times TIMES      List of relative times (<num hours>:<num minutes>)
                      separated by commas.
-  --type TYPE        Timer event type: color, strobe, fade, wave, pattern, or
+  --cmd CMD          Timer event cmd: color, strobe, fade, wave, pattern, or
                      off
   --led LED          LED: 1-6, back, tab, or all
   --color COLOR      Color of timer alerts.
@@ -475,6 +365,8 @@ optional arguments:
                      verification(0), or specify a certificate.
   --timeout TIMEOUT  Timeout
 ```
+
+To learn more about setting timers, see [Setting Timers](./usage.md#setting-timers).
 
 ## Get
 

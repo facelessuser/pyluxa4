@@ -26,8 +26,9 @@ nav:
   - Usage:
     - Pyluxa4: index.md
     - Installation: install.md
-    - CLI: cli.md
-    - HTTPS: https.md
+    - Usage: usage.md
+    - Commands: commands.md
+    - API: api.md
   - About:
     - Contributing &amp; Support: about/contributing.md
     - Development: about/development.md
