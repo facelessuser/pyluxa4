@@ -1,4 +1,5 @@
 """Common functions and constants."""
+import warnings
 
 LED_ALL = 0xff
 LED_FRONT = 0x41
@@ -182,3 +183,13 @@ def resolve_wave(value):
         except Exception:
             raise ValueError('Invalid wave value of {}'.format(w))
     return w
+
+
+def warn_deprecated(message, stacklevel=2):  # pragma: no cover
+    """Warn deprecated."""
+
+    warnings.warn(
+        message,
+        category=DeprecationWarning,
+        stacklevel=stacklevel
+    )

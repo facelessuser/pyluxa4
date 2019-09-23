@@ -1,5 +1,10 @@
 # Changelog
 
+## 1.6.0
+
+- **NEW**: Deprecate the timer argument `--type` in favor of `--cmd` which corresponds to how it is stored in the
+  scheduler.
+
 ## 1.5.1
 
 - **FIX**: Better scheduler algorithm. Handles lapse in time (computer sleeping), more efficient, etc.

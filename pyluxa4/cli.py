@@ -249,7 +249,9 @@ def cmd_timer(argv):
     parser.add_argument(
         '--times', help="List of relative times (<num hours>:<num minutes>) separated by commas.", required=True
     )
-    parser.add_argument('--type', help="Timer event type: color, strobe, fade, wave, pattern, or off", required=True)
+    group = parser.add_mutually_exclusive_group(required=True)
+    group.add_argument('--cmd', help="Timer event cmd: color, strobe, fade, wave, pattern, or off")
+    group.add_argument('--type', help=argparse.SUPPRESS)
     parser.add_argument('--led', action=LedAction, default=cmn.LED_ALL, help="LED: 1-6, back, tab, or all")
     parser.add_argument('--color', help="Color of timer alerts.")
     parser.add_argument('--pattern', action=PatternAction, help="Pattern of timer alerts.")
@@ -267,7 +269,13 @@ def cmd_timer(argv):
     connection_args(parser)
     args = parser.parse_args(argv)
 
-    if args.type == "color":
+    if args.type:
+        command = args.type
+        cmn.warn_deprecated('--type has been deprecated, please use --cmd')
+    else:
+        command = args.cmd
+
+    if command == "color":
         cmd = "color"
         color_key = "color"
         color_value = args.color
@@ -275,7 +283,7 @@ def cmd_timer(argv):
         speed = None
         repeat = None
         wave = None
-    elif args.type == "fade":
+    elif command == "fade":
         cmd = "fade"
         color_key = "color"
         color_value = args.color
@@ -283,7 +291,7 @@ def cmd_timer(argv):
         speed = args.speed
         repeat = None
         wave = None
-    elif args.type == "strobe":
+    elif command == "strobe":
         cmd = "strobe"
         color_key = "color"
         color_value = args.color
@@ -291,7 +299,7 @@ def cmd_timer(argv):
         speed = args.speed
         repeat = args.repeat
         wave = None
-    elif args.type == "wave":
+    elif command == "wave":
         cmd = "wave"
         color_key = "color"
         color_value = args.color
@@ -299,7 +307,7 @@ def cmd_timer(argv):
         speed = args.speed
         repeat = args.repeat
         wave = args.wave
-    elif args.type == "pattern":
+    elif command == "pattern":
         cmd = "pattern"
         color_key = "pattern"
         color_value = args.pattern
@@ -307,7 +315,7 @@ def cmd_timer(argv):
         repeat = args.repeat
         speed = None
         wave = None
-    elif args.type == "off":
+    elif command == "off":
         cmd = "off"
         color_key = None
         color_value = None
@@ -316,7 +324,7 @@ def cmd_timer(argv):
         speed = None
         wave = None
     else:
-        parser.error('Unrecognized --type {}'.format(args.type))
+        parser.error('Unrecognized --type {}'.format(command))
 
     if cmd in ('color', 'fade', 'strobe', 'wave') and color_value is None:
         parser.error('--color is required with --type color')
