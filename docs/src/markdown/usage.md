@@ -171,39 +171,39 @@ from the time the timer was added.
 For instance, if we wanted to strobe a red light in an hour and 30 minutes, we could use the following command:
 
 ```
-pyluxa4 timer --type strobe --color red --speed 10 --repeat 10 --times 1:30
+pyluxa4 timer --cmd strobe --color red --speed 10 --repeat 10 --times 1:30
 ```
 
 If we wanted to do it at ten minutes from now followed by another 5 minutes after that:
 
 ```
-pyluxa4 timer --type strobe --color red --speed 10 --repeat 10 --times 0:10,0:5
+pyluxa4 timer --cmd strobe --color red --speed 10 --repeat 10 --times 0:10,0:5
 ```
 
 We could even repeat the cycle to flash to iterate through the timers twice, essentially flashing the red light at
 10 minutes, 5 minutes, 10 minutes, and 5 minutes
 
 ```
-pyluxa4 timer --type strobe --color red --speed 10 --repeat 10 --times 0:10,0:5 --cycle 2
+pyluxa4 timer --cmd strobe --color red --speed 10 --repeat 10 --times 0:10,0:5 --cycle 2
 ```
 
 We could even do it continuously every 30 minutes by specifying the cycle as 0 (meaning forever):
 
 ```
-pyluxa4 timer --type strobe --color red --speed 10 --repeat 10 --times 0:30 --cycle 0
+pyluxa4 timer --cmd strobe --color red --speed 10 --repeat 10 --times 0:30 --cycle 0
 ```
 
 You can also delay when the times start by specifying a specific time to wait for before starting the timer. For
 instance, here we start flashing the light every 30 minutes starting at 9:00 AM:
 
 ```
-pyluxa4 timer --type strobe --color red --speed 10 --repeat 10 --times 0:30 --cycle 0 --start 9:00
+pyluxa4 timer --cmd strobe --color red --speed 10 --repeat 10 --times 0:30 --cycle 0 --start 9:00
 ```
 
 You could also terminate a timer after at a specific time, for example 5:00 PM:
 
 ```
-pyluxa4 timer --type strobe --color red --speed 10 --repeat 10 --times 0:30 --cycle 0 --start 9:00 --end 17:00
+pyluxa4 timer --cmd strobe --color red --speed 10 --repeat 10 --times 0:30 --cycle 0 --start 9:00 --end 17:00
 ```
 
 As mentioned, times are just a special kind of scheduled event, you can actually put them in a schedule file and they
