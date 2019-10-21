@@ -99,7 +99,7 @@ list of events where each event is a hash of key value pairs that describes the 
   {
     "cmd": "color",
     "days": "wkd",
-    "times": ['15:00'],
+    "times": ["15:00"],
     "args": {
       "color": "red"
     }
@@ -107,7 +107,7 @@ list of events where each event is a hash of key value pairs that describes the 
   {
     "cmd": "color",
     "days": "wkd",
-    "times": ['16:00'],
+    "times": ["16:00"],
     "args": {
       "color": "green"
     }

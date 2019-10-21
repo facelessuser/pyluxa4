@@ -17,7 +17,13 @@ functional.
 - Install via the provided package manager for your distro, or build from source. For Ubuntu:
 
     ```
-    sudo apt-get install libusb-1.0-0-dev libudev-dev
+    sudo apt install libhidapi-hidraw0
+    ```
+
+    or
+
+    ```
+    apt install libhidapi-libusb0
     ```
 
 ## Install
