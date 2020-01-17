@@ -18,6 +18,7 @@ Pyluxa
 RGB
 SSL
 Tox
+Twemoji
 USB
 Ubuntu
 Virtualenv
