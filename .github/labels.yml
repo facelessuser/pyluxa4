@@ -1,0 +1,34 @@
+template: 'facelessuser:master-labels:labels.yml:master'
+
+# Wildcard labels
+
+brace_expansion: true
+extended_glob: true
+
+rules:
+  - labels: ['C: infrastructure']
+    patterns: ['*|{tools,requirements,.github}/**|-*.md']
+
+  - labels: ['C: source']
+    patterns: ['pyluxa4/**']
+
+  - labels: ['C: tests']
+    patterns: ['tests/**']
+
+  - labels: ['C: docs']
+    patterns: ['docs/**|*.md']
+
+  - labels: ['C: cli']
+    patterns: ['pyluxa4/cli.py']
+
+  - labels: ['C: scheduler']
+    patterns: ['pyluxa4/scheduler.py']
+
+  - labels: ['C: server']
+    patterns: ['pyluxa4/server.py']
+
+  - labels: ['C: usb']
+    patterns: ['pyluxa4/usb.py']
+
+  - labels: ['C: client']
+    patterns: ['pyluxa4/client.py']
