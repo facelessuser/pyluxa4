@@ -16,10 +16,10 @@ of the library to be functional.
 
 ## Documentation
 
-Documentation is found here: http://facelessuser.github.io/pyluxa4/
+Documentation is found here: https://facelessuser.github.io/pyluxa4/
 
 ## License
 
 MIT License
 
-Copyright (c) 2019 Isaac Muse
+Copyright (c) 2019 - 2020 Isaac Muse
