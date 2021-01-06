@@ -22,4 +22,4 @@ Documentation is found here: https://facelessuser.github.io/pyluxa4/
 
 MIT License
 
-Copyright (c) 2019 - 2020 Isaac Muse
+Copyright (c) 2019 - 2021 Isaac Muse

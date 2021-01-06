@@ -21,6 +21,7 @@ matrix:
       ignores:
       - ':is(code, pre, a.magiclink, span.keys)'
       - ':is(.MathJax_Preview, .md-nav__link, .md-footer-custom-text, .md-source__repository, .headerlink, .md-icon)'
+      - 'a.md-footer-social__link[title]'
   - pyspelling.filters.url:
 
 - name: markdown
