@@ -2,6 +2,9 @@
 
 ## 1.7
 
+-   **NEW**: Update supported Python versions to Python 3.8 - 3.12.
+-   **NEW**: Use `coloraide` to handle color parsing.
+
 ## 1.6
 
 -   **NEW**: Deprecate the timer argument `--type` in favor of `--cmd` which corresponds to how it is stored in the

@@ -60,8 +60,9 @@ optional arguments:
 
 ## Color
 
-The `color` command sets the color on the device. The color is specified either in the form `#RRGGBB`, `#RGB`, or using
-webcolor names. `off` is also accepted and is an alias for `black` which turns off the lights.
+The `color` command sets the color on the device. The color can be specified via CSS color syntax including, but not
+limited to, hex colors, RGB syntax, webcolor names, HSL, etc. Alpha will be ignored and out of gamut colors will be
+gamut mapped into sRGB.
 
 You can also use Luxafor's shorthand for the built-in color presets:
 
@@ -105,7 +106,7 @@ optional arguments:
 The `fade` command will fade a color in, or in the case of `off` out. You can specify the speed of the fade which
 to increase how long it takes to fade the color. A low value will be faster than a big value.
 
-Color can be any value excepted by the [`color`](#color) command except Luxafor shorthand for basic colors (e.g. `R`,
+Color can be any value accepted by the [`color`](#color) command except Luxafor shorthand for basic colors (e.g. `R`,
 `G`, `B`, etc.).
 
 If needed, you can also control each LED individually, or by the groups front and back.
@@ -140,7 +141,7 @@ The `strobe` command will cause a color to blink on and off. You can control how
 
 If needed, you can also control each LED individually, or by the groups front and back.
 
-Color can be any value excepted by the [`color`](#color) command except Luxafor shorthand for basic colors (e.g. `R`,
+Color can be any value accepted by the [`color`](#color) command except Luxafor shorthand for basic colors (e.g. `R`,
 `G`, `B`, etc.).
 
 ```console
@@ -184,7 +185,7 @@ Wave | Alias
 
 You cannot control individual LEDs with the wave command as all the LEDs are needed to perform the wave effect.
 
-Color can be any value excepted by the [`color`](#color) command except Luxafor shorthand for basic colors (e.g. `R`,
+Color can be any value accepted by the [`color`](#color) command except Luxafor shorthand for basic colors (e.g. `R`,
 `G`, `B`, etc.).
 
 ```console
