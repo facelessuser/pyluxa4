@@ -156,7 +156,7 @@ name2hex_map = {
     'yellowgreen': '#9acd32'
 }
 
-hex2name_map = dict([(v, k) for k, v in name2hex_map.items()])
+hex2name_map = {v: k for k, v in name2hex_map.items()}
 
 
 def hex2name(value):

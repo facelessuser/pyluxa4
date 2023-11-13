@@ -13,13 +13,22 @@ requires-python = ">=3.8"
 authors = [
     { name = "Isaac Muse", email = "Isaac.Muse@gmail.com" },
 ]
+
 keywords = [
     "luxafor"
 ]
+
 dynamic = [
     "classifiers",
-    "dependencies",
     "version",
+]
+
+dependencies = [
+    "hid",
+    "requests",
+    "flask",
+    "gevent",
+    "Flask-HTTPAuth"
 ]
 
 [project.urls]
@@ -112,12 +121,12 @@ envlist=
 ; [testenv]
 ; passenv=LANG
 ; deps=
-;     -rrequirements/project.txt
 ;     -rrequirements/test.txt
 ; commands=
-;     {envbindir}/py.test --cov pyluxa4 --cov-append tests
-;     {envbindir}/coverage html -d {envtmpdir}/coverage
-;     {envbindir}/coverage report --show-missing
+;    {envbindir}/py.test --cov pyluxa4 --cov-append tests
+;    {envbindir}/coverage html -d {envtmpdir}/coverage
+;    {envbindir}/coverage xml
+;    {envbindir}/coverage report --show-missing
 
 [testenv:lint]
 deps=
@@ -129,7 +138,6 @@ commands=
 deps=
     -r requirements/docs.txt
 commands=
-    "{envpython}" tools/buildwheel.py
-    "{envpython}" -m mkdocs build --clean --verbose --strict
-    "{envbindir}"/pyspelling
+    {envpython} -m mkdocs build --clean --verbose --strict
+    {envbindir}/pyspelling
 """

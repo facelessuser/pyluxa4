@@ -150,8 +150,8 @@ def resolve_led(value):
         try:
             led = int(led)
             validate_led(led)
-        except Exception:
-            raise ValueError('Invalid LED value of {}'.format(led))
+        except Exception as e:
+            raise ValueError('Invalid LED value of {}'.format(led)) from e
     return led
 
 
@@ -165,8 +165,8 @@ def resolve_pattern(value):
         try:
             p = int(p)
             validate_pattern(p)
-        except Exception:
-            raise ValueError('Invalid pattern value of {}'.format(p))
+        except Exception as e:
+            raise ValueError('Invalid pattern value of {}'.format(p)) from e
     return p
 
 
@@ -180,8 +180,8 @@ def resolve_wave(value):
         try:
             w = int(w)
             validate_wave(w)
-        except Exception:
-            raise ValueError('Invalid wave value of {}'.format(w))
+        except Exception as e:
+            raise ValueError('Invalid wave value of {}'.format(w)) from e
     return w
 
 

@@ -227,7 +227,7 @@ class Scheduler:
             start = None
             end = None
             try:
-                allowed = set(['cmd', 'days', 'times', 'args', 'timer'])
+                allowed = {'cmd', 'days', 'times', 'args', 'timer'}
                 if 'timer' in entry:
                     allowed.add('start')
                     allowed.add('end')
