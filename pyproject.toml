@@ -28,7 +28,8 @@ dependencies = [
     "requests",
     "flask",
     "gevent",
-    "Flask-HTTPAuth"
+    "Flask-HTTPAuth",
+    "coloraide"
 ]
 
 [project.urls]
