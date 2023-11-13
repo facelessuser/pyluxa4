@@ -6,14 +6,14 @@
 `pyluxa4`. When installing the module, a tool will be added called `pyluxa4`. Assuming your Python installation's
 bin/Script folder is added to your system's path, you will be able to access it from the command line:
 
-```
+```console
 $ pyluxa4 --version
 pyluxa4 1.5
 ```
 
 You can also access it via:
 
-```
+```console
 $ python3 -m pyluxa4 --version
 pyluxa4 1.5
 ```
@@ -22,16 +22,16 @@ pyluxa4 1.5
 
 Generally, `pyluxa4` is designed to be used by running a server, and then executing commands:
 
-1. Start the server:
+1.  Start the server:
 
-    ```
+    ```console
     $ pyluxa4 serve
     [2019-09-21 15:21:49] INFO: Starting Luxafor server...
     ```
 
-2. Run a command:
+2.  Run a command:
 
-    ```
+    ```console
     $ pyluxa4 api
     {'error': '', 'path': '/pyluxa4/api/version', 'status': 'success', 'version': '1.5.1', 'version_path': '/pyluxa4/api/v1.5'}
     ```
@@ -39,7 +39,7 @@ Generally, `pyluxa4` is designed to be used by running a server, and then execut
 If you have multiple devices connected, and you want to specify a specific one, you can run the `list` command to see
 the connected devices. Devices are listed in the form `index> path`.
 
-```
+```console
 $ pyluxa4 list
 0> \\?\hid#vid_04d8&pid_f372#6&38a95344&1&0000#{4d1e55b2-f16f-11cf-88cb-001111000030}
 ```
@@ -47,13 +47,13 @@ $ pyluxa4 list
 Then we can then specify from the command line which device to use when we start the server. Using the index, it would
 be:
 
-```
+```console
 pyluxa4 serve --device-index 0
 ```
 
 Using the path, it would be:
 
-```
+```console
 pyluxa4 serve --device-path "\\?\hid#vid_04d8&pid_f372#6&38a95344&1&0000#{4d1e55b2-f16f-11cf-88cb-001111000030}"
 ```
 
@@ -62,7 +62,7 @@ pyluxa4 serve --device-path "\\?\hid#vid_04d8&pid_f372#6&38a95344&1&0000#{4d1e55
 If the server is running in a console, you can always press ++ctrl+c++, but if your server is running in the background,
 you can kill the server with the `kill` command.
 
-```
+```console
 $ pyluxa4 kill
 ```
 
@@ -79,7 +79,7 @@ To run the commands, simply call `pyluxa4` with the command, followed by the com
 
 To set a color, simply specify the `color` command with the desired color:
 
-```
+```console
 $ pyluxa4 color red
 {'code': 200, 'error': '', 'path': '/pyluxa4/api/v1.5/command/color', 'status': 'success'}
 ```
@@ -117,28 +117,28 @@ list of events where each event is a hash of key value pairs that describes the 
 
 Then we can send the command to the server:
 
-```
+```console
 $ pyluxa4 scheduler --schedule myschedule.json
 {'code': 200, 'error': '', 'path': '/pyluxa4/api/v1.5/command/scheduler', 'status': 'success'}
 ```
 
 If we want to clear existing scheduling events while sending our new schedule, simply add the `--clear` command.
 
-```
+```console
 $ pyluxa4 scheduler --schedule myschedule.json --clear
 {'code': 200, 'error': '', 'path': '/pyluxa4/api/v1.5/command/scheduler', 'status': 'success'}
 ```
 
 If desired, you can also just run `--clear` without a schedule remove all scheduled events.
 
-```
+```console
 $ pyluxa4 scheduler --clear
 {'code': 200, 'error': '', 'path': '/pyluxa4/api/v1.5/command/scheduler', 'status': 'success'}
 ```
 
 To get an output of loaded events in the schedule (timers not included), we can run:
 
-```
+```console
 $ pyluxa4 get schedule
 {'code': 200, 'error': '', 'path': '/pyluxa4/api/v1.5/scheduler/schedule', 'schedule': [{'args': {'color': 'red'}, 'cmd': 'color', 'days': ['wkd'], 'times': ['15:00']}, {'args': {'color': 'green'}, 'cmd': 'color', 'days': ['wkd'], 'times': ['16:00']}], 'status': 'success'}
 ```
@@ -150,13 +150,14 @@ Parameters | Description
 `times`    | A list of times that the even will be run on. Times are specified as 24 hour time format.
 `args`     | Is a hash of key value pairs of arguments to pass the the specified command.
 
-!!! tip "Sending Schedule on Server Start"
-    You can also load a schedule while starting the server via the `--schedule` parameter:
+/// tip | Sending Schedule on Server Start
+You can also load a schedule while starting the server via the `--schedule` parameter:
 
-    ```
-    pyluxa4 serve --schedule myschedule.json
-    [2019-09-22 14:05:10] INFO: Starting Luxafor server...
-    ```
+```console
+$ pyluxa4 serve --schedule myschedule.json
+[2019-09-22 14:05:10] INFO: Starting Luxafor server...
+```
+///
 
 ## Setting Timers
 
@@ -170,40 +171,40 @@ from the time the timer was added.
 
 For instance, if we wanted to strobe a red light in an hour and 30 minutes, we could use the following command:
 
-```
-pyluxa4 timer --cmd strobe --color red --speed 10 --repeat 10 --times 1:30
+```console
+$ pyluxa4 timer --cmd strobe --color red --speed 10 --repeat 10 --times 1:30
 ```
 
 If we wanted to do it at ten minutes from now followed by another 5 minutes after that:
 
-```
-pyluxa4 timer --cmd strobe --color red --speed 10 --repeat 10 --times 0:10,0:5
+```console
+$ pyluxa4 timer --cmd strobe --color red --speed 10 --repeat 10 --times 0:10,0:5
 ```
 
 We could even repeat the cycle to flash to iterate through the timers twice, essentially flashing the red light at
 10 minutes, 5 minutes, 10 minutes, and 5 minutes
 
-```
-pyluxa4 timer --cmd strobe --color red --speed 10 --repeat 10 --times 0:10,0:5 --cycle 2
+```console
+$ pyluxa4 timer --cmd strobe --color red --speed 10 --repeat 10 --times 0:10,0:5 --cycle 2
 ```
 
 We could even do it continuously every 30 minutes by specifying the cycle as 0 (meaning forever):
 
-```
-pyluxa4 timer --cmd strobe --color red --speed 10 --repeat 10 --times 0:30 --cycle 0
+```console
+$ pyluxa4 timer --cmd strobe --color red --speed 10 --repeat 10 --times 0:30 --cycle 0
 ```
 
 You can also delay when the times start by specifying a specific time to wait for before starting the timer. For
 instance, here we start flashing the light every 30 minutes starting at 9:00 AM:
 
-```
-pyluxa4 timer --cmd strobe --color red --speed 10 --repeat 10 --times 0:30 --cycle 0 --start 9:00
+```console
+$ pyluxa4 timer --cmd strobe --color red --speed 10 --repeat 10 --times 0:30 --cycle 0 --start 9:00
 ```
 
 You could also terminate a timer after at a specific time, for example 5:00 PM:
 
-```
-pyluxa4 timer --cmd strobe --color red --speed 10 --repeat 10 --times 0:30 --cycle 0 --start 9:00 --end 17:00
+```console
+$ pyluxa4 timer --cmd strobe --color red --speed 10 --repeat 10 --times 0:30 --cycle 0 --start 9:00 --end 17:00
 ```
 
 As mentioned, times are just a special kind of scheduled event, you can actually put them in a schedule file and they
@@ -226,14 +227,14 @@ soon as a schedule is loaded. We could specify a timer with a relative time of `
 
 You can clear all running timers by calling the `scheduler` command with the `--cancel` parameter:
 
-```
+```console
 $ pyluxa4 scheduler --cancel
 {'code': 200, 'error': '', 'path': '/pyluxa4/api/v1.5/command/scheduler', 'status': 'success'}
 ```
 
 To get an output of loaded timers, we can run:
 
-```
+```console
 $ pyluxa4 get timers
 {'code': 200, 'error': '', 'path': '/pyluxa4/api/v1.5/scheduler/timers', 'schedule': [{'args': {}, 'cmd': 'off', 'days': 'all', 'end': None, 'start': None, 'timer': 1, 'times': ['0:10']}], 'status': 'success'}
 ```
@@ -272,8 +273,8 @@ IP.2                       = 192.168.1.2
 
 Afterwards, run the following command. Enter the information that you'd like:
 
-```
-openssl req -x509 -out pyluxa4.cer -newkey rsa:4096 -nodes -keyout private.key -extensions v3_req -days 3650 -config cert.conf
+```console
+$ openssl req -x509 -out pyluxa4.cer -newkey rsa:4096 -nodes -keyout private.key -extensions v3_req -days 3650 -config cert.conf
 ```
 
 You should now have a certificate `pyluxa4.cer` and a private key file `private.key`.
@@ -281,13 +282,13 @@ You should now have a certificate `pyluxa4.cer` and a private key file `private.
 
 Afterwards, you we can use the `--ssl-cert` and `--ssl-key` parameters to enable HTTPS in the server:
 
-```
-pyluxa4 serve --ssl-cert pyluxa4.cer --ssl-key private.key
+```console
+$ pyluxa4 serve --ssl-cert pyluxa4.cer --ssl-key private.key
 ```
 
 Now the server will only accept commands over HTTPS.
 
-```
+```console
 $ pyluxa4 api
 {'status': 'fail', 'code': 0, 'error': 'Server does not appear to be running'}
 ```
@@ -295,7 +296,7 @@ $ pyluxa4 api
 To send commands with over HTTPS to the server, simply use the `--secure` parameter. If you send the command with `0`,
 it will ignore verifying the certificate:
 
-```
+```console
 $ pyluxa4 api --secure 0
 c:\Python36\lib\site-packages\urllib3\connectionpool.py:851: InsecureRequestWarning: Unverified HTTPS request is being made. Adding certificate verification is strongly advised. See: https://urllib3.readthedocs.io/en/latest/advanced-usage.html#ssl-warnings
   InsecureRequestWarning)
@@ -304,7 +305,7 @@ c:\Python36\lib\site-packages\urllib3\connectionpool.py:851: InsecureRequestWarn
 
 If you provide the certificate instead, it will verify the certificate:
 
-```
+```console
 $ pyluxa4 api --secure pyluxa4.cer
 {'error': '', 'path': '/pyluxa4/api/version', 'status': 'success', 'version': '1.5.1', 'version_path': '/pyluxa4/api/v1.5'}
 ```
@@ -316,27 +317,24 @@ commands to your Luxafor device. Tokens should really only be used with SSL.
 
 Simply specify your desired token using the the `--token` parameter when initiating the server:
 
-```
-pyluxa4 serve --ssl-cert pyluxa4.cer --ssl-key private.key --token secret
+```console
+$ pyluxa4 serve --ssl-cert pyluxa4.cer --ssl-key private.key --token secret
 ```
 
 Now the server will reject commands that require authentication if they are sent without the token.
 
-```
+```console
 $ pyluxa4 color red --secure pyluxa4.cer
 {'status': 'fail', 'code': 401, 'error': 'Unauthorized Access'}
 ```
 
 But when we provide the token, the command passes:
 
-```
+```console
 $ pyluxa4 color red --secure pyluxa4.cer --token secret
 {'code': 200, 'error': '', 'path': '/pyluxa4/api/v1.5/command/color', 'status': 'success'}
 ```
 
-!!! note "Commands that Don't Require Authentication"
-    `api` is the one command that does not require authentication. It will accept commands with or without tokens.
-
---8<--
-refs.txt
---8<--
+/// note | Commands that Don't Require Authentication
+`api` is the one command that does not require authentication. It will accept commands with or without tokens.
+///

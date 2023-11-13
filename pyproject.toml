@@ -1,7 +1,135 @@
 [build-system]
 requires = [
-    "setuptools>=42",
-    "wheel"
+    "hatchling>=0.21.1",
+]
+build-backend = "hatchling.build"
+
+[project]
+name = "pyluxa4"
+description = "Luxafor flag control library/tool."
+readme = "README.md"
+license = "MIT"
+requires-python = ">=3.8"
+authors = [
+    { name = "Isaac Muse", email = "Isaac.Muse@gmail.com" },
+]
+keywords = [
+    "luxafor"
+]
+dynamic = [
+    "classifiers",
+    "dependencies",
+    "version",
 ]
 
-build-backend = "setuptools.build_meta"
+[project.urls]
+Homepage = "https://github.com/facelessuser/pyluxa4"
+
+[tool.hatch.metadata]
+allow-direct-references = true
+
+[tool.hatch.version]
+source = "code"
+path = "pyluxa4/__meta__.py"
+
+[tool.hatch.build.targets.wheel]
+include = [
+    "/pyluxa4",
+]
+
+[tool.hatch.build.targets.sdist]
+include = [
+    "/docs/src/markdown/**/*.md",
+    "/docs/src/markdown/**/*.gif",
+    "/docs/src/markdown/**/*.png",
+    "/docs/src/markdown/dictionary/*.txt",
+    "/docs/theme/**/*.css",
+    "/docs/theme/**/*.js",
+    "/docs/theme/**/*.html",
+    "/pyluxa4/**/*.py",
+    "/requirements/*.txt",
+    "/.pyspelling.yml",
+    "/mkdocs.yml"
+]
+
+# [tool.mypy]
+# files = [
+#     "pyluxa4"
+# ]
+# strict = true
+# show_error_codes = true
+
+[tool.hatch.metadata.hooks.custom]
+
+[tool.ruff]
+line-length = 120
+
+extend-exclude = [
+    "tools/oklab_srgb_gamut_approximation.py"
+]
+
+select = [
+    "A",    # flake8-builtins
+    "B",    # flake8-bugbear
+    "D",    # pydocstyle
+    "C4",   # flake8-comprehensions
+    "N",    # pep8-naming
+    "E",    # pycodestyle
+    "F",    # pyflakes
+    "PGH",  # pygrep-hooks
+    "RUF",  # ruff
+    # "UP",   # pyupgrade
+    "W",    # pycodestyle
+    "YTT",  # flake8-2020,
+    "PERF"  # Perflint
+]
+
+ignore = [
+    "E741",
+    "D202",
+    "D401",
+    "D212",
+    "D203",
+    "N802",
+    "N801",
+    "N803",
+    "N806",
+    "N818",
+    "RUF012",
+    "RUF005",
+    "PGH004",
+    "RUF100"
+]
+
+[tool.tox]
+legacy_tox_ini = """
+[tox]
+isolated_build = true
+envlist=
+    py38,py39,py310,py311,py312,
+    lint
+
+; [testenv]
+; passenv=LANG
+; deps=
+;     -rrequirements/project.txt
+;     -rrequirements/test.txt
+; commands=
+;     {envbindir}/py.test --cov pyluxa4 --cov-append tests
+;     {envbindir}/coverage html -d {envtmpdir}/coverage
+;     {envbindir}/coverage report --show-missing
+
+[testenv:lint]
+deps=
+    -r requirements/lint.txt
+commands=
+    "{envbindir}"/ruff check .
+
+[testenv:documents]
+deps=
+    -r requirements/docs.txt
+commands=
+    "{envpython}" tools/buildwheel.py
+    "{envpython}" -m mkdocs build --clean --verbose --strict
+    "{envbindir}"/pyspelling
+"""

@@ -21,5 +21,3 @@ Documentation is found here: https://facelessuser.github.io/pyluxa4/
 ## License
 
 MIT License
-
-Copyright (c) 2019 - 2021 Isaac Muse

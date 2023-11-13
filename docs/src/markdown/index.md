@@ -16,7 +16,3 @@ There are already various other libraries out that control the Luxafor devices. 
 while many did exactly as advertised, none really did all that I was looking for. `pyluxa4` is a simple solution that
 works on all operating systems, is easily controlled from anywhere on a local network, provides a scheduler so you can
 setup lights to run at specific times, and an interface for setting timers.
-
---8<--
-refs.txt
---8<--
