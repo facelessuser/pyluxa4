@@ -3,6 +3,7 @@ Accessors
 CLI
 CSS
 Changelog
+HSL
 HTTPS
 IP
 JSON
@@ -35,6 +36,7 @@ pre
 prerelease
 prereleases
 pyhidapi
+sRGB
 sublicense
 tuple
 webcolor
