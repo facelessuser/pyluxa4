@@ -62,9 +62,9 @@ jobs:
 
   lint:
     strategy:
-      max-parallel: 4
+      max-parallel: 1
       matrix:
-        python-version: [3.9]
+        python-version: ['3.11']
 
     env:
       TOXENV: lint
@@ -72,9 +72,9 @@ jobs:
     runs-on: ubuntu-latest
 
     steps:
-    - uses: actions/checkout@v2
+    - uses: actions/checkout@v4
     - name: Set up Python ${{ matrix.python-version }}
-      uses: actions/setup-python@v1
+      uses: actions/setup-python@v4
       with:
         python-version: ${{ matrix.python-version }}
     - name: Install dependencies
@@ -85,28 +85,20 @@ jobs:
         python -m tox
 
   documents:
-    strategy:
-      max-parallel: 4
-      matrix:
-        python-version: [3.9]
-
-    env:
-      TOXENV: documents
-
     runs-on: ubuntu-latest
 
     steps:
-    - uses: actions/checkout@v2
-    - name: Set up Python ${{ matrix.python-version }}
-      uses: actions/setup-python@v1
+    - uses: actions/checkout@v4
+    - name: Set up Python
+      uses: actions/setup-python@v4
       with:
-        python-version: ${{ matrix.python-version }}
+        python-version: 3.11
     - name: Install dependencies
       run: |
-        python -m pip install --upgrade pip setuptools tox
+        python -m pip install --upgrade pip setuptools tox build
     - name: Install Aspell
       run: |
         sudo apt-get install aspell aspell-en
     - name: Build documents
       run: |
-        python -m tox
+        python -m tox -e documents

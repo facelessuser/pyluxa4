@@ -4,7 +4,7 @@ The `list` command lists all the available Luxafor devices connected to the mach
 in the list and the path at which it is found. Either the index or path can be used in the `serve` command to specify
 which device to connect to, the path will always take precedence.
 
-```
+```console
 $ pyluxa4 list --help
 usage: pyluxa4 list [-h]
 
@@ -31,11 +31,12 @@ You can also ensure the server only takes HTTPS requests by using `--ssl-key` an
 Commands sent via the client should use the `--secure <option>` option to either send requests with verification (`1`),
 requests with no verification (`0`), or to specify a certificate to validate against.
 
-!!! warning "Linux"
-    You may need to run the server as `sudo` in order to connect to the Luxafor device. If you get errors about not
-    being able to connect, try `sudo`.
+/// warning | Linux
+You may need to run the server as `sudo` in order to connect to the Luxafor device. If you get errors about not
+being able to connect, try `sudo`.
+///
 
-```
+```console
 $ pyluxa4 serve --help
 usage: pyluxa4 serve [-h] [--schedule SCHEDULE] [--device-path DEVICE_PATH]
                      [--device-index DEVICE_INDEX] [--host HOST] [--port PORT]
@@ -64,20 +65,20 @@ webcolor names. `off` is also accepted and is an alias for `black` which turns o
 
 You can also use Luxafor's shorthand for the built-in color presets:
 
-- `R` (red)
-- `G` (green)
-- `B` (blue)
-- `C` (cyan)
-- `Y` (yellow)
-- `M` (magenta)
-- `W` (white)
-- `O` (off)
+-   `R` (red)
+-   `G` (green)
+-   `B` (blue)
+-   `C` (cyan)
+-   `Y` (yellow)
+-   `M` (magenta)
+-   `W` (white)
+-   `O` (off)
 
 If needed, you can also control each LED individually, or by the groups front and back. Though, the `--led` option will
 be ignored if you use Luxafor's built-in, color shorthand, as that is executed using a command that does not expose
 single LED resolution.
 
-```
+```console
 $ pyluxa4 color --help
 usage: pyluxa4 color [-h] [--led LED] [--token TOKEN] [--host HOST]
                      [--port PORT] [--secure SECURE] [--timeout TIMEOUT]
@@ -109,7 +110,7 @@ Color can be any value excepted by the [`color`](#color) command except Luxafor 
 
 If needed, you can also control each LED individually, or by the groups front and back.
 
-```
+```console
 $ pyluxa4 fade --help
 usage: pyluxa4 fade [-h] [--led LED] [--speed SPEED] [--token TOKEN]
                     [--host HOST] [--port PORT] [--secure SECURE]
@@ -142,7 +143,7 @@ If needed, you can also control each LED individually, or by the groups front an
 Color can be any value excepted by the [`color`](#color) command except Luxafor shorthand for basic colors (e.g. `R`,
 `G`, `B`, etc.).
 
-```
+```console
 $ pyluxa4 strobe --help
 usage: pyluxa4 strobe [-h] [--led LED] [--speed SPEED] [--repeat REPEAT]
                       [--token TOKEN] [--host HOST] [--port PORT]
@@ -186,7 +187,7 @@ You cannot control individual LEDs with the wave command as all the LEDs are nee
 Color can be any value excepted by the [`color`](#color) command except Luxafor shorthand for basic colors (e.g. `R`,
 `G`, `B`, etc.).
 
-```
+```console
 $ pyluxa4 wave --help
 usage: pyluxa4 wave [-h] [--wave WAVE] [--speed SPEED] [--repeat REPEAT]
                     [--token TOKEN] [--host HOST] [--port PORT]
@@ -231,7 +232,7 @@ Pattern | Alias
 You cannot control individual LEDs with the pattern command as all the LEDs are needed to perform the patterns.
 
 
-```
+```console
 $ pyluxa4 pattern --help
 usage: pyluxa4 pattern [-h] [--repeat REPEAT] [--token TOKEN] [--host HOST]
                        [--port PORT] [--secure SECURE] [--timeout TIMEOUT]
@@ -260,7 +261,7 @@ The `off` command turns off all lights on the Luxafor device.
 You cannot control which LED is turned off with this command. If you need per LED resolution, simply use `pyluxa4 color
 off --led <led>` to control individual LEDs.
 
-```
+```console
 $ pyluxa4 off --help
 usage: pyluxa4 off [-h] [--token TOKEN] [--host HOST] [--port PORT]
                    [--secure SECURE] [--timeout TIMEOUT]
@@ -281,7 +282,7 @@ optional arguments:
 
 The `kill` command is used to kill an already running server.
 
-```
+```console
 $ pyluxa4 kill --help
 usage: pyluxa4 kill [-h] [--token TOKEN] [--host HOST] [--port PORT]
                     [--secure SECURE] [--timeout TIMEOUT]
@@ -306,7 +307,7 @@ at the specified times on the specified days. Events are appended to previously 
 provided. If desired, you can run `--clear` without `--schedule` which will simply clear all events. `--clear` does not
 cancel timers, it only removes normal, scheduled events. To cancel timers, use `--cancel`.
 
-```
+```console
 $ pyluxa4 scheduler --help
 usage: pyluxa4 scheduler [-h] [--schedule SCHEDULE] [--clear] [--cancel]
                          [--token TOKEN] [--host HOST] [--port PORT]
@@ -333,7 +334,7 @@ To learn more about using the scheduler see [Scheduling Commands](./usage.md#sch
 
 The `timer` command provides a way to set off a timer that will execute a command based on a relative time.
 
-```
+```console
 $ pyluxa4 timer --help
 usage: pyluxa4 timer [-h] --times TIMES --cmd CMD [--led LED] [--color COLOR]
                      [--pattern PATTERN] [--wave WAVE] [--speed SPEED]
@@ -373,7 +374,7 @@ To learn more about setting timers, see [Setting Timers](./usage.md#setting-time
 The `get` command allows you to retrieve information. Currently you can only retrieve the loaded `schedule` (scheduled
 non-timer events) or scheduled `timers`:
 
-```
+```console
 $ pyluxa4 get schedule
 {'code': 200, 'error': '', 'path': '/pyluxa4/api/v1.2/scheduler/schedule', 'schedule': [{'args': {'pattern': 'police', 'repeat': 3}, 'cmd': 'pattern', 'days': ['all'], 'times': '20:16'}, {'args': {'color': 'red', 'speed': 100}, 'cmd': 'fade', 'days': 'all', 'times': ['20:15', '20:17']}], 'status': 'success'}
 ```
@@ -403,7 +404,7 @@ optional arguments:
 
 The `api` command simply returns the API for the current running server.
 
-```
+```console
 $ pyluxa4 api --help
 usage: pyluxa4 api [-h] [--host HOST] [--port PORT] [--secure SECURE]
                    [--timeout TIMEOUT]
@@ -418,7 +419,3 @@ optional arguments:
                      verification(0), or specify a certificate.
   --timeout TIMEOUT  Timeout
 ```
-
---8<--
-refs.txt
---8<--

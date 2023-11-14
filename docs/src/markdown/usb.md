@@ -112,7 +112,7 @@ Sets all the LEDs of the Luxafor device off.
 
 ## Luxafor.basic_color()
 
-```py3
+````py3
 def basic_color(self, color):
     """
     Build basic color command.
@@ -130,7 +130,7 @@ def basic_color(self, color):
     ```
 
     """
-```
+````
 
 Using the built-in color codes, set all the LEDs to the color.
 
@@ -141,7 +141,7 @@ Parameters | Description
 
 ## Luxafor.color()
 
-```py3
+````py3
 def color(self, color, *, led=LED_ALL):
     """
     Build static color command.
@@ -159,7 +159,7 @@ def color(self, color, *, led=LED_ALL):
     ```
 
     """
-```
+````
 
 Set LEDs to the specified colors. Each LED can be controlled individually. If a built-in color code is used, the command
 will revert to `basic_color` functionality, which means `led` specifics will be ignored and all LED will be set.
@@ -171,7 +171,7 @@ Parameters | Description
 
 ## Luxafor.fade()
 
-```py3
+````py3
 def fade(self, color, *, led=LED_ALL, speed=1, wait=False):
     """
     Build fade command.
@@ -189,7 +189,7 @@ def fade(self, color, *, led=LED_ALL, speed=1, wait=False):
     ```
 
     """
-```
+````
 
 Fade a color in (or out if the color is `off` or `black`). Each LED can be controlled individually via `led`. The
 duration/speed of the fade can also be controlled. If desired, you can wait for the command to complete as well.
@@ -205,7 +205,7 @@ Parameters | Description
 
 ## Luxafor.strobe()
 
-```py3
+````py3
 def strobe(self, color, *, led=LED_ALL, speed=0, repeat=0, wait=False):
     """
     Build strobe command.
@@ -223,7 +223,7 @@ def strobe(self, color, *, led=LED_ALL, speed=0, repeat=0, wait=False):
     ```
 
     """
-```
+````
 
 Strobe the LEDs with the specified color. Each LED can be controlled individually via `led`. You can also control the
 speed and how many times the strobe repeats. If desired, you can wait for the command to complete as well. Commands
@@ -239,7 +239,7 @@ Parameters | Description
 
 ## Luxafor.wave()
 
-```py3
+````py3
 def wave(self, color, *, wave=WAVE_SHORT, speed=0, repeat=0, wait=False):
     """
     Build wave command.
@@ -257,7 +257,7 @@ def wave(self, color, *, wave=WAVE_SHORT, speed=0, repeat=0, wait=False):
     ```
 
     """
-```
+````
 
 Apply a wave effect using the specified color across the LEDs. You can control the speed and how many times the wave
 is repeated. If desired, you can wait for the command to complete as well. Commands that employ `repeat=0` will continue
@@ -273,7 +273,7 @@ Parameters | Description
 
 ## Luxafor.pattern()
 
-```py3
+````py3
 def pattern(self, pattern, *, repeat=0, wait=False):
     """
     Build pattern command.
@@ -286,7 +286,7 @@ def pattern(self, pattern, *, repeat=0, wait=False):
     ```
 
     """
-```
+````
 
 Initiate one of the built-in patterns in the Luxafor device. You can also control how man times the pattern repeats. If
 desired, you can wait for the command to complete as well. Commands that employ `repeat=0` will continue forever, so

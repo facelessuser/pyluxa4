@@ -474,7 +474,7 @@ def run(
 
     with usb.Luxafor(device_index, device_path) as lf:
         luxafor = lf
-        tokens = set([token])
+        tokens = {token,}
         schedule = scheduler.Scheduler(luxafor, logger)
         if events is not None:
             err = schedule.read_schedule(events)
