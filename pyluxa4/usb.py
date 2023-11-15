@@ -5,8 +5,8 @@ apmorton/pyhidapi: https://github.com/apmorton/pyhidapi
 libusb/hidapi: https://github.com/libusb/hidapi
 
 """
-import hid
 import os
+from . import hid
 from .common import (
     LED_ALL, LED_BACK, LED_FRONT, LED_1, LED_2, LED_3, LED_4, LED_5, LED_6,
     WAVE_SHORT, WAVE_LONG, WAVE_OVERLAPPING_SHORT, WAVE_OVERLAPPING_LONG,
@@ -59,7 +59,7 @@ def resolve_color(color):
     """Resolve color."""
 
     c = Color(color if color.lower() != 'off' else 'black').normalize().convert('srgb').fit()
-    return tuple(round(i * 255) for i in c)
+    return tuple(round(i * 255) for i in c.coords())
 
 
 def enumerate_luxafor():

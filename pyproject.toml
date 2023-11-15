@@ -24,7 +24,6 @@ dynamic = [
 ]
 
 dependencies = [
-    "hid",
     "requests",
     "flask",
     "gevent",
