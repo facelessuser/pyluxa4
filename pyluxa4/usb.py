@@ -5,8 +5,8 @@ apmorton/pyhidapi: https://github.com/apmorton/pyhidapi
 libusb/hidapi: https://github.com/libusb/hidapi
 
 """
-import hid
 import os
+from . import hid
 from .common import (
     LED_ALL, LED_BACK, LED_FRONT, LED_1, LED_2, LED_3, LED_4, LED_5, LED_6,
     WAVE_SHORT, WAVE_LONG, WAVE_OVERLAPPING_SHORT, WAVE_OVERLAPPING_LONG,
@@ -16,7 +16,7 @@ from .common import (
     PATTERN_1, PATTERN_2, PATTERN_3, PATTERN_4, PATTERN_5, PATTERN_6, PATTERN_7, PATTERN_8
 )
 from .import common as cmn
-from .csscolors import name2hex
+from coloraide import Color
 
 __version__ = '0.1'
 
@@ -58,30 +58,8 @@ def clamp(value, mn=0, mx=255):
 def resolve_color(color):
     """Resolve color."""
 
-    orig = color = color.lower()
-    if color == 'off':
-        color = 'black'
-    if not color.startswith('#'):
-        color = name2hex(color)
-        if color is None:
-            raise ValueError('{} is not a valid color name'.format(orig))
-
-    if len(color) == 7:
-        color = (
-            int(color[1:3], 16),
-            int(color[3:5], 16),
-            int(color[5:7], 16)
-        )
-    elif len(color) == 4:
-        color = (
-            int(color[1:2] * 2, 16),
-            int(color[2:3] * 2, 16),
-            int(color[3:4] * 2, 16)
-        )
-    else:
-        raise ValueError('{} is not a valid color code'.format(orig))
-
-    return color
+    c = Color(color if color.lower() != 'off' else 'black').normalize().convert('srgb').fit()
+    return tuple(round(i * 255) for i in c.coords())
 
 
 def enumerate_luxafor():

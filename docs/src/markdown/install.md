@@ -11,8 +11,16 @@ functional.
     $ brew install hidapi
     ```
 
--   Windows: simply download the [pre-built binaries][hidapi-binaries] and make them
-    available in your path.
+    Update environment variables to include the path in `DYLD_LIBRARY_PATH` if not available. As an example:
+
+    ```bash
+    DYLD_LIBRARY_PATH="${DYLD_LIBRARY_PATH}:/usr/local/Cellar/hidapi/0.14.0/lib"
+    export DYLD_LIBRARY_PATH
+    ```
+
+-   Windows: simply download the [pre-built binaries][hidapi-binaries] and make them available in your path. The
+    pre-built binaries include 32 bit and 64 bit architecture. Make sure to use the correct one for your system and
+    Python.
 
 -   Install via the provided package manager for your distro, or build from source. For Ubuntu:
 
