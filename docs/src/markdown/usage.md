@@ -48,13 +48,21 @@ Then we can then specify from the command line which device to use when we start
 be:
 
 ```console
-pyluxa4 serve --device-index 0
+$ pyluxa4 serve --device-index 0
 ```
 
 Using the path, it would be:
 
 ```console
-pyluxa4 serve --device-path "\\?\hid#vid_04d8&pid_f372#6&38a95344&1&0000#{4d1e55b2-f16f-11cf-88cb-001111000030}"
+$ pyluxa4 serve --device-path "\\?\hid#vid_04d8&pid_f372#6&38a95344&1&0000#{4d1e55b2-f16f-11cf-88cb-001111000030}"
+```
+
+Normally, the serve command will find the `hidapi` library as long as its path is found in the systems appropriate
+environmental variable, but if it is not, or you'd like to explicitly specify the path to avoid any DLL hijacking, then
+you can specify the absolute path to the hidapi library with the `--hidapi`.
+
+```console
+$ python3 -m pyluxa4 serve --hidapi /usr/local/Cellar/hidapi/0.14.0/lib/libhidapi.dylib
 ```
 
 ## Killing a Server

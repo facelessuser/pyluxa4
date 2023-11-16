@@ -38,24 +38,24 @@ being able to connect, try `sudo`.
 
 ```console
 $ pyluxa4 serve --help
-usage: pyluxa4 serve [-h] [--schedule SCHEDULE] [--device-path DEVICE_PATH]
-                     [--device-index DEVICE_INDEX] [--host HOST] [--port PORT]
-                     [--ssl-key SSL_KEY] [--ssl-cert SSL_CERT] [--token TOKEN]
+usage: pyluxa4 serve [-h] [--schedule SCHEDULE] [--device-path DEVICE_PATH] [--device-index DEVICE_INDEX] [--hidapi HIDAPI] [--host HOST]
+                     [--port PORT] [--ssl-key SSL_KEY] [--ssl-cert SSL_CERT] [--token TOKEN]
 
-Run server
+Run server.
 
-optional arguments:
+options:
   -h, --help            show this help message and exit
   --schedule SCHEDULE   JSON schedule file.
   --device-path DEVICE_PATH
-                        Luxafor device path
+                        Luxafor device path.
   --device-index DEVICE_INDEX
-                        Luxafor device index
+                        Luxafor device index.
+  --hidapi HIDAPI       Explicit, absolute path to where the hidapi library can be found.
   --host HOST           Host
-  --port PORT           Port
-  --ssl-key SSL_KEY     SSL key file (for https://)
-  --ssl-cert SSL_CERT   SSL cert file (for https://)
-  --token TOKEN         Assign a token that must be used when sending commands
+  --port PORT           Port.
+  --ssl-key SSL_KEY     SSL key file (for https://).
+  --ssl-cert SSL_CERT   SSL cert file (for https://).
+  --token TOKEN         Assign a token that must be used when sending commands.
 ```
 
 ## Color
