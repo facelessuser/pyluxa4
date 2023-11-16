@@ -83,22 +83,22 @@ class TimerAction(argparse.Action):
 def connection_args(parser):
     """Connection arguments to control the request."""
 
-    parser.add_argument('--host', default=client.HOST, help="Host")
-    parser.add_argument('--port', type=int, default=client.PORT, help="Port")
+    parser.add_argument('--host', default=client.HOST, help="Host.")
+    parser.add_argument('--port', type=int, default=client.PORT, help="Port.")
     parser.add_argument(
         '--secure', default=None,
         help="Enable https requests: enable verification (1), disable verification(0), or specify a certificate."
     )
-    parser.add_argument('--timeout', type=int, default=client.TIMEOUT, help="Timeout")
+    parser.add_argument('--timeout', type=int, default=client.TIMEOUT, help="Timeout.")
 
 
 def cmd_color(argv):
     """Set to color."""
 
-    parser = argparse.ArgumentParser(prog='pyluxa4 color', description="Set color")
+    parser = argparse.ArgumentParser(prog='pyluxa4 color', description="Set color.")
     parser.add_argument('color', help="Color value.")
-    parser.add_argument('--led', action=LedAction, default=cmn.LED_ALL, help="LED: 1-6, back, front, or all")
-    parser.add_argument('--token', default='', help="Send API token")
+    parser.add_argument('--led', action=LedAction, default=cmn.LED_ALL, help="LED: 1-6, back, front, or all.")
+    parser.add_argument('--token', default='', help="Send API token.")
     connection_args(parser)
     args = parser.parse_args(argv)
 
@@ -112,11 +112,11 @@ def cmd_color(argv):
 def cmd_fade(argv):
     """Fade to color."""
 
-    parser = argparse.ArgumentParser(prog='pyluxa4 fade', description="Fade to color")
+    parser = argparse.ArgumentParser(prog='pyluxa4 fade', description="Fade to color.")
     parser.add_argument('color', help="Color value.")
-    parser.add_argument('--led', action=LedAction, default=cmn.LED_ALL, help="LED: 1-6, back, tab, or all")
-    parser.add_argument('--speed', action=SpeedAction, type=int, default=0, help="Speed of fade: 0-255")
-    parser.add_argument('--token', default='', help="Send API token")
+    parser.add_argument('--led', action=LedAction, default=cmn.LED_ALL, help="LED: 1-6, back, tab, or all.")
+    parser.add_argument('--speed', action=SpeedAction, type=int, default=0, help="Speed of fade: 0-255.")
+    parser.add_argument('--token', default='', help="Send API token.")
     connection_args(parser)
     args = parser.parse_args(argv)
 
@@ -131,12 +131,12 @@ def cmd_fade(argv):
 def cmd_strobe(argv):
     """Strobe color."""
 
-    parser = argparse.ArgumentParser(prog='pyluxa4 strobe', description="Strobe color")
+    parser = argparse.ArgumentParser(prog='pyluxa4 strobe', description="Strobe color.")
     parser.add_argument('color', help="Color value.")
-    parser.add_argument('--led', action=LedAction, default=cmn.LED_ALL, help="LED: 1-6, back, front, or all")
-    parser.add_argument('--speed', action=SpeedAction, type=int, default=0, help="Speed of strobe: 0-255")
-    parser.add_argument('--repeat', action=RepeatAction, type=int, default=0, help="Number of times to repeat: 0-255")
-    parser.add_argument('--token', default='', help="Send API token")
+    parser.add_argument('--led', action=LedAction, default=cmn.LED_ALL, help="LED: 1-6, back, front, or all.")
+    parser.add_argument('--speed', action=SpeedAction, type=int, default=0, help="Speed of strobe: 0-255.")
+    parser.add_argument('--repeat', action=RepeatAction, type=int, default=0, help="Number of times to repeat: 0-255.")
+    parser.add_argument('--token', default='', help="Send API token.")
     connection_args(parser)
     args = parser.parse_args(argv)
 
@@ -152,12 +152,12 @@ def cmd_strobe(argv):
 def cmd_wave(argv):
     """Show color with wave effect."""
 
-    parser = argparse.ArgumentParser(prog='pyluxa4 wave', description="Wave effect")
+    parser = argparse.ArgumentParser(prog='pyluxa4 wave', description="Wave effect.")
     parser.add_argument('color', help="Color value.")
-    parser.add_argument('--wave', action=WaveAction, default=cmn.WAVE_SHORT, help="Wave configuration: 1-5")
-    parser.add_argument('--speed', action=SpeedAction, type=int, default=0, help="Speed of wave effect: 0-255")
-    parser.add_argument('--repeat', action=RepeatAction, type=int, default=0, help="Number of times to repeat: 0-255")
-    parser.add_argument('--token', default='', help="Send API token")
+    parser.add_argument('--wave', action=WaveAction, default=cmn.WAVE_SHORT, help="Wave configuration: 1-5.")
+    parser.add_argument('--speed', action=SpeedAction, type=int, default=0, help="Speed of wave effect: 0-255.")
+    parser.add_argument('--repeat', action=RepeatAction, type=int, default=0, help="Number of times to repeat: 0-255.")
+    parser.add_argument('--token', default='', help="Send API token.")
     connection_args(parser)
     args = parser.parse_args(argv)
 
@@ -173,10 +173,10 @@ def cmd_wave(argv):
 def cmd_pattern(argv):
     """Show pattern."""
 
-    parser = argparse.ArgumentParser(prog='pyluxa4 pattern', description="Display pattern")
+    parser = argparse.ArgumentParser(prog='pyluxa4 pattern', description="Display pattern.")
     parser.add_argument('pattern', action=PatternAction, help="Pattern value.")
-    parser.add_argument('--repeat', action=RepeatAction, type=int, default=0, help="Number of times to repeat: 0-255")
-    parser.add_argument('--token', default='', help="Send API token")
+    parser.add_argument('--repeat', action=RepeatAction, type=int, default=0, help="Number of times to repeat: 0-255.")
+    parser.add_argument('--token', default='', help="Send API token.")
     connection_args(parser)
     args = parser.parse_args(argv)
 
@@ -190,8 +190,8 @@ def cmd_pattern(argv):
 def cmd_off(argv):
     """Set off."""
 
-    parser = argparse.ArgumentParser(prog='pyluxa4 off', description="Turn off")
-    parser.add_argument('--token', default='', help="Send API token")
+    parser = argparse.ArgumentParser(prog='pyluxa4 off', description="Turn off.")
+    parser.add_argument('--token', default='', help="Send API token.")
     connection_args(parser)
     args = parser.parse_args(argv)
 
@@ -203,7 +203,7 @@ def cmd_off(argv):
 def cmd_version(argv):
     """Get the server to respond with the version."""
 
-    parser = argparse.ArgumentParser(prog='pyluxa4 api', description="Request version")
+    parser = argparse.ArgumentParser(prog='pyluxa4 api', description="Request version.")
     connection_args(parser)
     args = parser.parse_args(argv)
 
@@ -213,8 +213,8 @@ def cmd_version(argv):
 def cmd_kill(argv):
     """Kill the running server."""
 
-    parser = argparse.ArgumentParser(prog='pyluxa4 kill', description="Kill server")
-    parser.add_argument('--token', default='', help="Send API token")
+    parser = argparse.ArgumentParser(prog='pyluxa4 kill', description="Kill server.")
+    parser.add_argument('--token', default='', help="Send API token.")
     connection_args(parser)
     args = parser.parse_args(argv)
 
@@ -226,11 +226,11 @@ def cmd_kill(argv):
 def cmd_scheduler(argv):
     """Send a schedule to execute patterns and/or clear existing schedules."""
 
-    parser = argparse.ArgumentParser(prog='pyluxa4 scheduler', description="Schedule events")
+    parser = argparse.ArgumentParser(prog='pyluxa4 scheduler', description="Schedule events.")
     parser.add_argument('--schedule', help="JSON schedule file.")
-    parser.add_argument('--clear', action='store_true', help="Clear all scheduled events")
+    parser.add_argument('--clear', action='store_true', help="Clear all scheduled events.")
     parser.add_argument('--cancel', action='store_true', help="Cancel timers.")
-    parser.add_argument('--token', default='', help="Send API token")
+    parser.add_argument('--token', default='', help="Send API token.")
     connection_args(parser)
     args = parser.parse_args(argv)
 
@@ -245,27 +245,27 @@ def cmd_scheduler(argv):
 def cmd_timer(argv):
     """Setup timers."""
 
-    parser = argparse.ArgumentParser(prog='pyluxa4 timer', description="Setup timers")
+    parser = argparse.ArgumentParser(prog='pyluxa4 timer', description="Setup timers.")
     parser.add_argument(
         '--times', help="List of relative times (<num hours>:<num minutes>) separated by commas.", required=True
     )
     group = parser.add_mutually_exclusive_group(required=True)
-    group.add_argument('--cmd', help="Timer event cmd: color, strobe, fade, wave, pattern, or off")
+    group.add_argument('--cmd', help="Timer event cmd: color, strobe, fade, wave, pattern, or off.")
     group.add_argument('--type', help=argparse.SUPPRESS)
-    parser.add_argument('--led', action=LedAction, default=cmn.LED_ALL, help="LED: 1-6, back, tab, or all")
+    parser.add_argument('--led', action=LedAction, default=cmn.LED_ALL, help="LED: 1-6, back, tab, or all.")
     parser.add_argument('--color', help="Color of timer alerts.")
     parser.add_argument('--pattern', action=PatternAction, help="Pattern of timer alerts.")
     parser.add_argument(
         '--wave', action=WaveAction, default=cmn.WAVE_SHORT, help="Force a given wave effect instead of strobe."
     )
-    parser.add_argument('--speed', action=SpeedAction, type=int, default=0, help="Speed of strobe or wave: 0-255")
-    parser.add_argument('--repeat', action=RepeatAction, type=int, default=0, help="Number of times to repeat: 0-255")
+    parser.add_argument('--speed', action=SpeedAction, type=int, default=0, help="Speed of strobe or wave: 0-25.5")
+    parser.add_argument('--repeat', action=RepeatAction, type=int, default=0, help="Number of times to repeat: 0-255.")
     parser.add_argument(
         '--cycle', action=TimerAction, type=int, default=1, help="Number of times to cycle through the timers."
     )
     parser.add_argument('--start', help="Delay the timer to a specific time.")
     parser.add_argument('--end', help="End timer at a specific time.")
-    parser.add_argument('--token', default='', help="Send API token")
+    parser.add_argument('--token', default='', help="Send API token.")
     connection_args(parser)
     args = parser.parse_args(argv)
 
@@ -362,9 +362,9 @@ def cmd_timer(argv):
 def cmd_get(argv):
     """Get information."""
 
-    parser = argparse.ArgumentParser(prog='pyluxa4 get', description="Get information")
-    parser.add_argument('info', help="Request information: schedule or timers")
-    parser.add_argument('--token', default='', help="Send API token")
+    parser = argparse.ArgumentParser(prog='pyluxa4 get', description="Get information.")
+    parser.add_argument('info', help="Request information: schedule or timers.")
+    parser.add_argument('--token', default='', help="Send API token.")
     connection_args(parser)
     args = parser.parse_args(argv)
 
@@ -384,16 +384,19 @@ def cmd_serve(argv):
     """Start the server."""
     from . import server
 
-    parser = argparse.ArgumentParser(prog='pyluxa4 serve', description="Run server")
+    parser = argparse.ArgumentParser(prog='pyluxa4 serve', description="Run server.")
     parser.add_argument('--schedule', default='', help="JSON schedule file.")
-    parser.add_argument('--device-path', default=None, help="Luxafor device path")
-    parser.add_argument('--device-index', type=int, default=0, help="Luxafor device index")
-    parser.add_argument('--host', default=server.HOST, help="Host")
-    parser.add_argument('--port', type=int, default=server.PORT, help="Port")
-    parser.add_argument('--ssl-key', default=None, help="SSL key file (for https://)")
-    parser.add_argument('--ssl-cert', default=None, help="SSL cert file (for https://)")
+    parser.add_argument('--device-path', default=None, help="Luxafor device path.")
+    parser.add_argument('--device-index', type=int, default=0, help="Luxafor device index.")
     parser.add_argument(
-        '--token', default='', help="Assign a token that must be used when sending commands"
+        '--hidapi', default=None, help="Explicit, absolute path to where the hidapi library can be found."
+    )
+    parser.add_argument('--host', default=server.HOST, help="Host")
+    parser.add_argument('--port', type=int, default=server.PORT, help="Port.")
+    parser.add_argument('--ssl-key', default=None, help="SSL key file (for https://).")
+    parser.add_argument('--ssl-cert', default=None, help="SSL cert file (for https://).")
+    parser.add_argument(
+        '--token', default='', help="Assign a token that must be used when sending commands."
     )
     args = parser.parse_args(argv)
 
@@ -405,7 +408,7 @@ def cmd_serve(argv):
     if args.ssl_cert:
         kwargs['certfile'] = args.ssl_cert
 
-    server.run(args.host, args.port, index, path, args.token, process_schedule(args.schedule), **kwargs)
+    server.run(args.host, args.port, index, path, args.token, process_schedule(args.schedule), args.hidapi, **kwargs)
 
 
 def cmd_list(argv):
@@ -434,7 +437,7 @@ def main():
         action='store',
         help=(
             "Command to send: color, off, fade, strobe, wave, pattern, api, serve, "
-            "kill, get, schedule, and timer"
+            "kill, get, schedule, and timer."
         )
     )
     args = parser.parse_args(argv[0:1])

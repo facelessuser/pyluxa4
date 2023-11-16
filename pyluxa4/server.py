@@ -458,7 +458,7 @@ def server_error(error):
 
 def run(
     host=HOST, port=PORT, device_index=0, device_path=None, token=None, events=None,
-    debug=False, **kwargs
+    hidapi=None, debug=False, **kwargs
 ):
     """Run server."""
 
@@ -467,6 +467,8 @@ def run(
     global tokens
     global schedule
     global background
+
+    usb.init(hidapi)
 
     log_handler.setFormatter(
         logging.Formatter(fmt='[%(asctime)s] %(levelname)s: %(message)s', datefmt="%Y-%m-%d %H:%M:%S")

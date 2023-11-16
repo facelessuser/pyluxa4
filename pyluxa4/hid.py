@@ -23,6 +23,7 @@ LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
 OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 SOFTWARE.
 """
+import os
 import sys
 import ctypes
 import atexit
@@ -43,25 +44,6 @@ library_paths = (
     'libhidapi-0.dll'
 )
 
-for lib in library_paths:
-    try:
-        if (3, 8) <= sys.version_info and sys.platform.startswith('win'):
-            hidapi = ctypes.CDLL(lib, winmode=0)
-        else:
-            hidapi = ctypes.cdll.LoadLibrary(lib)
-        break
-    except OSError:
-        pass
-else:
-    error = "Unable to load any of the following libraries:{}"\
-        .format(' '.join(library_paths))
-    raise ImportError(error)
-
-
-hidapi.hid_init()
-atexit.register(hidapi.hid_exit)
-
-
 class HIDException(Exception):
     """Custom `HID` exception."""
 
@@ -80,58 +62,88 @@ class DeviceInfo(ctypes.Structure):
 
         return ret
 
-DeviceInfo._fields_ = [
-    ('path', ctypes.c_char_p),
-    ('vendor_id', ctypes.c_ushort),
-    ('product_id', ctypes.c_ushort),
-    ('serial_number', ctypes.c_wchar_p),
-    ('release_number', ctypes.c_ushort),
-    ('manufacturer_string', ctypes.c_wchar_p),
-    ('product_string', ctypes.c_wchar_p),
-    ('usage_page', ctypes.c_ushort),
-    ('usage', ctypes.c_ushort),
-    ('interface_number', ctypes.c_int),
-    ('next', ctypes.POINTER(DeviceInfo)),
-]
 
-hidapi.hid_init.argtypes = []
-hidapi.hid_init.restype = ctypes.c_int
-hidapi.hid_exit.argtypes = []
-hidapi.hid_exit.restype = ctypes.c_int
-hidapi.hid_enumerate.argtypes = [ctypes.c_ushort, ctypes.c_ushort]
-hidapi.hid_enumerate.restype = ctypes.POINTER(DeviceInfo)
-hidapi.hid_free_enumeration.argtypes = [ctypes.POINTER(DeviceInfo)]
-hidapi.hid_free_enumeration.restype = None
-hidapi.hid_open.argtypes = [ctypes.c_ushort, ctypes.c_ushort, ctypes.c_wchar_p]
-hidapi.hid_open.restype = ctypes.c_void_p
-hidapi.hid_open_path.argtypes = [ctypes.c_char_p]
-hidapi.hid_open_path.restype = ctypes.c_void_p
-hidapi.hid_write.argtypes = [ctypes.c_void_p, ctypes.c_char_p, ctypes.c_size_t]
-hidapi.hid_write.restype = ctypes.c_int
-hidapi.hid_read_timeout.argtypes = [ctypes.c_void_p, ctypes.c_char_p, ctypes.c_size_t, ctypes.c_int]
-hidapi.hid_read_timeout.restype = ctypes.c_int
-hidapi.hid_read.argtypes = [ctypes.c_void_p, ctypes.c_char_p, ctypes.c_size_t]
-hidapi.hid_read.restype = ctypes.c_int
-hidapi.hid_get_input_report.argtypes = [ctypes.c_void_p, ctypes.c_char_p, ctypes.c_size_t]
-hidapi.hid_get_input_report.restype = ctypes.c_int
-hidapi.hid_set_nonblocking.argtypes = [ctypes.c_void_p, ctypes.c_int]
-hidapi.hid_set_nonblocking.restype = ctypes.c_int
-hidapi.hid_send_feature_report.argtypes = [ctypes.c_void_p, ctypes.c_char_p, ctypes.c_int]
-hidapi.hid_send_feature_report.restype = ctypes.c_int
-hidapi.hid_get_feature_report.argtypes = [ctypes.c_void_p, ctypes.c_char_p, ctypes.c_size_t]
-hidapi.hid_get_feature_report.restype = ctypes.c_int
-hidapi.hid_close.argtypes = [ctypes.c_void_p]
-hidapi.hid_close.restype = None
-hidapi.hid_get_manufacturer_string.argtypes = [ctypes.c_void_p, ctypes.c_wchar_p, ctypes.c_size_t]
-hidapi.hid_get_manufacturer_string.restype = ctypes.c_int
-hidapi.hid_get_product_string.argtypes = [ctypes.c_void_p, ctypes.c_wchar_p, ctypes.c_size_t]
-hidapi.hid_get_product_string.restype = ctypes.c_int
-hidapi.hid_get_serial_number_string.argtypes = [ctypes.c_void_p, ctypes.c_wchar_p, ctypes.c_size_t]
-hidapi.hid_get_serial_number_string.restype = ctypes.c_int
-hidapi.hid_get_indexed_string.argtypes = [ctypes.c_void_p, ctypes.c_int, ctypes.c_wchar_p, ctypes.c_size_t]
-hidapi.hid_get_indexed_string.restype = ctypes.c_int
-hidapi.hid_error.argtypes = [ctypes.c_void_p]
-hidapi.hid_error.restype = ctypes.c_wchar_p
+def init(api=None):
+    """Initialize."""
+
+    global hidapi
+
+    if api is not None:
+        if not os.path.exists(api):
+            raise ValueError('Cannot find library path "{}"'.format(api))
+        if not os.path.isabs(api):
+            raise ValueError('Library paths must be specified as absolute paths, "{}" is not absolute'.format(api))
+        paths = (api,)
+    else:
+        paths = library_paths
+
+    for lib in paths:
+        try:
+            if api is None and (3, 8) <= sys.version_info and sys.platform.startswith('win'):
+                hidapi = ctypes.CDLL(lib, winmode=0)
+            else:
+                hidapi = ctypes.cdll.LoadLibrary(lib)
+            break
+        except OSError:
+            pass
+    else:
+        raise ImportError("Unable to load any of the following libraries:{}".format(' '.join(library_paths)))
+
+    hidapi.hid_init()
+    atexit.register(hidapi.hid_exit)
+
+    DeviceInfo._fields_ = [
+        ('path', ctypes.c_char_p),
+        ('vendor_id', ctypes.c_ushort),
+        ('product_id', ctypes.c_ushort),
+        ('serial_number', ctypes.c_wchar_p),
+        ('release_number', ctypes.c_ushort),
+        ('manufacturer_string', ctypes.c_wchar_p),
+        ('product_string', ctypes.c_wchar_p),
+        ('usage_page', ctypes.c_ushort),
+        ('usage', ctypes.c_ushort),
+        ('interface_number', ctypes.c_int),
+        ('next', ctypes.POINTER(DeviceInfo)),
+    ]
+
+    hidapi.hid_init.argtypes = []
+    hidapi.hid_init.restype = ctypes.c_int
+    hidapi.hid_exit.argtypes = []
+    hidapi.hid_exit.restype = ctypes.c_int
+    hidapi.hid_enumerate.argtypes = [ctypes.c_ushort, ctypes.c_ushort]
+    hidapi.hid_enumerate.restype = ctypes.POINTER(DeviceInfo)
+    hidapi.hid_free_enumeration.argtypes = [ctypes.POINTER(DeviceInfo)]
+    hidapi.hid_free_enumeration.restype = None
+    hidapi.hid_open.argtypes = [ctypes.c_ushort, ctypes.c_ushort, ctypes.c_wchar_p]
+    hidapi.hid_open.restype = ctypes.c_void_p
+    hidapi.hid_open_path.argtypes = [ctypes.c_char_p]
+    hidapi.hid_open_path.restype = ctypes.c_void_p
+    hidapi.hid_write.argtypes = [ctypes.c_void_p, ctypes.c_char_p, ctypes.c_size_t]
+    hidapi.hid_write.restype = ctypes.c_int
+    hidapi.hid_read_timeout.argtypes = [ctypes.c_void_p, ctypes.c_char_p, ctypes.c_size_t, ctypes.c_int]
+    hidapi.hid_read_timeout.restype = ctypes.c_int
+    hidapi.hid_read.argtypes = [ctypes.c_void_p, ctypes.c_char_p, ctypes.c_size_t]
+    hidapi.hid_read.restype = ctypes.c_int
+    hidapi.hid_get_input_report.argtypes = [ctypes.c_void_p, ctypes.c_char_p, ctypes.c_size_t]
+    hidapi.hid_get_input_report.restype = ctypes.c_int
+    hidapi.hid_set_nonblocking.argtypes = [ctypes.c_void_p, ctypes.c_int]
+    hidapi.hid_set_nonblocking.restype = ctypes.c_int
+    hidapi.hid_send_feature_report.argtypes = [ctypes.c_void_p, ctypes.c_char_p, ctypes.c_int]
+    hidapi.hid_send_feature_report.restype = ctypes.c_int
+    hidapi.hid_get_feature_report.argtypes = [ctypes.c_void_p, ctypes.c_char_p, ctypes.c_size_t]
+    hidapi.hid_get_feature_report.restype = ctypes.c_int
+    hidapi.hid_close.argtypes = [ctypes.c_void_p]
+    hidapi.hid_close.restype = None
+    hidapi.hid_get_manufacturer_string.argtypes = [ctypes.c_void_p, ctypes.c_wchar_p, ctypes.c_size_t]
+    hidapi.hid_get_manufacturer_string.restype = ctypes.c_int
+    hidapi.hid_get_product_string.argtypes = [ctypes.c_void_p, ctypes.c_wchar_p, ctypes.c_size_t]
+    hidapi.hid_get_product_string.restype = ctypes.c_int
+    hidapi.hid_get_serial_number_string.argtypes = [ctypes.c_void_p, ctypes.c_wchar_p, ctypes.c_size_t]
+    hidapi.hid_get_serial_number_string.restype = ctypes.c_int
+    hidapi.hid_get_indexed_string.argtypes = [ctypes.c_void_p, ctypes.c_int, ctypes.c_wchar_p, ctypes.c_size_t]
+    hidapi.hid_get_indexed_string.restype = ctypes.c_int
+    hidapi.hid_error.argtypes = [ctypes.c_void_p]
+    hidapi.hid_error.restype = ctypes.c_wchar_p
 
 
 def enumerate(vid=0, pid=0):  # noqa: A001
