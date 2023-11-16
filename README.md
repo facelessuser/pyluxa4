@@ -1,6 +1,10 @@
 # Python Luxafor
 
-`pyluxa4` is a Python library for controller [Luxafor](https://luxafor.com/) devices. You can set colors, blink them,
+> **warning**
+> This library has only been tested on the [Luxafor Flag](https://luxafor.com/product/flag/). It may or may not work on
+> other devices.
+
+`pyluxa4` is a Python library for controlling [Luxafor](https://luxafor.com/) devices. You can set colors, blink them,
 fade them, apply a wave effect, and even run its built-in patterns. All of this is done by running a small server that
 is accessed locally on port 5000 (the port can be changed). Once running, you can issue commands from the CLI tool,
 which in turns communicates with the server using a REST API.

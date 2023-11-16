@@ -1,5 +1,10 @@
 # Python Luxafor
 
+/// warning
+This library has only been tested on the [Luxafor Flag](https://luxafor.com/product/flag/). It may or may not work on
+other devices.
+///
+
 `pyluxa4` is a Python library for controlling [Luxafor][luxafor] devices and is cross platform. It runs on Windows,
 macOS, and Linux. You can set colors, strobe them, fade them, apply wave effects, and even run its built-in patterns.
 All of this is done by running a small server that is accessed locally on port 5000 (the port can be changed).
