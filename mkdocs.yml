@@ -36,7 +36,7 @@ theme:
     sponsor: "https://github.com/sponsors/facelessuser"
 
 nav:
-  - Usage:
+  - Pyluxa4:
     - Pyluxa4: index.md
     - Installation: install.md
     - Usage: usage.md
