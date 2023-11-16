@@ -49,6 +49,12 @@ MSG_SIZE = 8
 CMD_REPORT_NUM = 0
 
 
+def init(hidapi=None):
+    """Initialize USB setup."""
+
+    hid.init(hidapi)
+
+
 def clamp(value, mn=0, mx=255):
     """Clamp the value to the the given minimum and maximum."""
 
