@@ -4,8 +4,8 @@
 
 -   **NEW**: Update supported Python versions to Python 3.8 - 3.12.
 -   **NEW**: Use `coloraide` to handle color parsing.
--   **NEW**: Vendor `hid` and provide fixes for loading the libraries on Windows with Python 3.8+.
 -   **NEW**: Add `--hdiapi` option to the `serve` command to explicitly define an absolute path to the hidapi library.
+-   **FIX**: Vendor `hid` and provide fixes for loading the libraries on Windows with Python 3.8+.
 
 ## 1.6
 
